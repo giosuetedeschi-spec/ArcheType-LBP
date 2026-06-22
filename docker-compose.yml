@@ -34,12 +34,13 @@ services:
       SPRING_DATASOURCE_USERNAME: archetype
       SPRING_DATASOURCE_PASSWORD: archetype_secret
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
+      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://frontend:80
     ports:
       - "8080:8080"
 
   frontend:
     build:
-      context: ./frontend
+      context: ./archetype-frontend
       dockerfile: Dockerfile
     container_name: archetype-frontend
     restart: unless-stopped
@@ -47,6 +48,8 @@ services:
       - backend
     ports:
       - "3000:80"
+    environment:
+      - VITE_API_URL=http://backend:8080/api
 
   populate:
     build:
