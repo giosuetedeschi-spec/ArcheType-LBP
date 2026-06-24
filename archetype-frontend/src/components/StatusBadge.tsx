@@ -1,4 +1,4 @@
-import type { GameStatus } from "@/lib/games-data";
+export type GameStatus = "wishlist" | "playing" | "finished" | "abandoned";
 
 const LABELS: Record<GameStatus, string> = {
   playing: "In corso",

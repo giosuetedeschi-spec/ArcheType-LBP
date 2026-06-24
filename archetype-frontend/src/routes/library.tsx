@@ -1,11 +1,13 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
-import { GAMES, type GameStatus } from "@/lib/games-data";
+import type { GameStatus } from "@/components/StatusBadge";
 import { useLibrary } from "@/lib/library-store";
 import { GameCard } from "@/components/GameCard";
 import { STATUS_LABELS } from "@/components/StatusBadge";
-import { Search, Heart } from "lucide-react";
+import { gameApi, type Game } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { Search, Heart, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/library")({
   head: () => ({
@@ -30,7 +32,12 @@ function LibraryPage() {
   const [tab, setTab] = useState<GameStatus | "all">("all");
   const [search, setSearch] = useState("");
 
-  const counts = useMemo(() => {
+  const { data: games, isLoading } = useQuery({
+    queryKey: ["games"],
+    queryFn: gameApi.list,
+  });
+
+  const counted = useMemo(() => {
     const list = Object.values(entries);
     return {
       all: list.length,
@@ -41,16 +48,22 @@ function LibraryPage() {
     };
   }, [entries]);
 
+  const gameMap = useMemo(() => {
+    const map: Record<number, Game> = {};
+    (games ?? []).forEach((g) => { map[g.id] = g; });
+    return map;
+  }, [games]);
+
   const results = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return GAMES.filter((g) => {
+    return (games ?? []).filter((g) => {
       const e = entries[g.id];
       if (!e) return false;
       if (tab !== "all" && e.status !== tab) return false;
       if (q && !g.name.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [entries, tab, search]);
+  }, [entries, tab, search, games]);
 
   return (
     <AppLayout>
@@ -73,7 +86,7 @@ function LibraryPage() {
       <div className="card-surface mb-6 flex gap-1 overflow-x-auto p-1.5">
         {TABS.map((t) => {
           const active = tab === t.key;
-          const count = counts[t.key];
+          const count = counts[t.key as keyof typeof counted];
           return (
             <button
               key={t.key}
@@ -102,7 +115,13 @@ function LibraryPage() {
         })}
       </div>
 
-      {results.length === 0 ? (
+      {isLoading && (
+        <div className="flex items-center justify-center py-16">
+          <Loader2 className="h-8 w-8 animate-spin text-brand" />
+        </div>
+      )}
+
+      {!isLoading && results.length === 0 ? (
         <div className="card-surface grid place-items-center gap-3 p-12 text-center">
           <Heart className="h-10 w-10 text-muted-foreground" />
           <p className="text-muted-foreground">
