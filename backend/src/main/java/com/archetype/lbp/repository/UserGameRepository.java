@@ -9,5 +9,6 @@ import java.util.List;
 public interface UserGameRepository extends JpaRepository<UserGame, Long> {
     List<UserGame> findByUserId(Long userId);
     List<UserGame> findByUserIdAndStatus(Long userId, String status);
+    boolean existsByUserIdAndGameId(Long userId, Long gameId);
     void deleteByUserIdAndGameId(Long userId, Long gameId);
 }
