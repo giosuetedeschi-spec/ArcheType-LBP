@@ -1,11 +1,11 @@
 package com.archetype.lbp.service;
 
 import com.archetype.lbp.Game;
-import com.archetype.lbp.dto.GameRequest;
-import com.archetype.lbp.dto.GameResponse;
+import com.archetype.lbp.dto.*;
 import com.archetype.lbp.exception.ResourceNotFoundException;
 import com.archetype.lbp.repository.GameRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
@@ -20,6 +20,35 @@ public class GameService {
     @Transactional(readOnly = true)
     public List<GameResponse> listAll() {
         return gameRepo.findAll().stream().map(this::toResponse).collect(Collectors.toList());
+    }
+
+    @Transactional(readOnly = true)
+    public PagedResponse<GameResponse> filter(GameFilterRequest filter) {
+        Sort sort = Sort.by(filter.getSortDir().equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC,
+                filter.getSortBy());
+        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), sort);
+
+        Page<Game> page = gameRepo.findAll(
+                GameRepository.withFilters(
+                        filter.getName(),
+                        filter.getGenre(),
+                        filter.getDeveloper(),
+                        filter.getMinPrice(),
+                        filter.getMaxPrice(),
+                        filter.getMinRating(),
+                        filter.getReleasedAfter(),
+                        filter.getReleasedBefore()
+                ),
+                pageable
+        );
+
+        PagedResponse<GameResponse> resp = new PagedResponse<>();
+        resp.setContent(page.getContent().stream().map(this::toResponse).collect(Collectors.toList()));
+        resp.setPage(page.getNumber());
+        resp.setSize(page.getSize());
+        resp.setTotalElements(page.getTotalElements());
+        resp.setTotalPages(page.getTotalPages());
+        return resp;
     }
 
     @Transactional(readOnly = true)
