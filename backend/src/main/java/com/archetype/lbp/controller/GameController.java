@@ -1,8 +1,6 @@
 package com.archetype.lbp.controller;
 
-import com.archetype.lbp.dto.ApiResponse;
-import com.archetype.lbp.dto.GameRequest;
-import com.archetype.lbp.dto.GameResponse;
+import com.archetype.lbp.dto.*;
 import com.archetype.lbp.service.GameService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -20,6 +18,11 @@ public class GameController {
     @GetMapping
     public ResponseEntity<ApiResponse<List<GameResponse>>> list() {
         return ResponseEntity.ok(ApiResponse.ok(gameService.listAll()));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<ApiResponse<PagedResponse<GameResponse>>> filter(GameFilterRequest filter) {
+        return ResponseEntity.ok(ApiResponse.ok(gameService.filter(filter)));
     }
 
     @GetMapping("/{id}")
