@@ -1,9 +1,11 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
-import { GAMES, type GameStatus } from "@/lib/games-data";
+import type { GameStatus } from "@/components/StatusBadge";
 import { useLibrary } from "@/lib/library-store";
 import { STATUS_LABELS } from "@/components/StatusBadge";
-import { Star, Monitor, Apple, Terminal, ArrowLeft, Trash2 } from "lucide-react";
+import { gameApi, type Game } from "@/lib/api";
+import { useQuery } from "@tanstack/react-query";
+import { Star, ArrowLeft, Trash2, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/game/$id")({
   component: GamePage,
@@ -12,25 +14,42 @@ export const Route = createFileRoute("/game/$id")({
       <p className="text-center text-muted-foreground">Gioco non trovato.</p>
     </AppLayout>
   ),
-  loader: ({ params }) => {
-    const game = GAMES.find((g) => g.id === Number(params.id));
-    if (!game) throw notFound();
-    return { game };
-  },
-  head: ({ loaderData }) => ({
-    meta: loaderData
-      ? [{ title: `${loaderData.game.name} — SteamStats` }, { name: "description", content: loaderData.game.shortDescription }]
-      : [{ title: "Gioco" }],
-  }),
 });
 
 const STATUS_OPTIONS: GameStatus[] = ["wishlist", "playing", "finished", "abandoned"];
 
 function GamePage() {
-  const { game } = Route.useLoaderData();
-  const entry = useLibrary((s) => s.entries[game.id]);
+  const { id } = Route.useParams();
+
+  const { data: game, isLoading, error } = useQuery({
+    queryKey: ["game", id],
+    queryFn: () => gameApi.get(Number(id)),
+  });
+
+  const entries = useLibrary((s) => s.entries);
   const setStatus = useLibrary((s) => s.setStatus);
   const setHours = useLibrary((s) => s.setHours);
+
+  if (isLoading) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center py-24">
+          <Loader2 className="h-8 w-8 animate-spin text-brand" />
+        </div>
+      </AppLayout>
+    );
+  }
+
+  if (error || !game) {
+    throw notFound();
+  }
+
+  const entry = entries[game.id];
+  const genres = game.genres?.split(",").map((g) => g.trim()).filter(Boolean) ?? [];
+
+  const coverStyle = game.headerImageUrl
+    ? { backgroundImage: `url(${game.headerImageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
+    : { background: "linear-gradient(135deg, var(--brand) 0%, var(--accent) 100%)" };
 
   return (
     <AppLayout>
@@ -39,40 +58,31 @@ function GamePage() {
       </Link>
 
       <div className="card-surface overflow-hidden">
-        <div className="relative h-56 sm:h-72" style={{ backgroundImage: game.cover }}>
+        <div className="relative h-56 sm:h-72" style={coverStyle}>
           <div className="absolute inset-0 bg-gradient-to-t from-surface to-transparent" />
         </div>
         <div className="grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_320px]">
           <div>
             <div className="flex flex-wrap items-center gap-2 text-xs text-muted-foreground">
-              {game.genres.map((g: string) => (
+              {genres.map((g) => (
                 <span key={g} className="rounded bg-surface-2 px-2 py-0.5">{g}</span>
               ))}
-              <span>· {game.releaseYear} · {game.developer}</span>
+              {game.releaseDate && <span>· {game.releaseDate} · {game.developer}</span>}
             </div>
             <h1 className="mt-2 text-3xl font-bold sm:text-4xl">{game.name}</h1>
-            <p className="mt-4 max-w-2xl text-muted-foreground">{game.shortDescription}</p>
+            {game.description && <p className="mt-4 max-w-2xl text-muted-foreground">{game.description}</p>}
 
             <div className="mt-6 flex flex-wrap items-center gap-6">
-              <div className="flex items-center gap-2">
-                <Star className="h-5 w-5 fill-accent text-accent" />
-                <span className="font-display text-2xl font-bold">{game.rating}</span>
-                <span className="text-sm text-muted-foreground">/ 100</span>
-              </div>
-              <div className="flex gap-2 text-muted-foreground">
-                {game.platforms.includes("windows") && <Monitor className="h-5 w-5" />}
-                {game.platforms.includes("mac") && <Apple className="h-5 w-5" />}
-                {game.platforms.includes("linux") && <Terminal className="h-5 w-5" />}
-              </div>
+              {game.rating != null && (
+                <div className="flex items-center gap-2">
+                  <Star className="h-5 w-5 fill-accent text-accent" />
+                  <span className="font-display text-2xl font-bold">{game.rating.toFixed(1)}</span>
+                  <span className="text-sm text-muted-foreground">/ 5.0</span>
+                </div>
+              )}
               <div className="text-xl font-bold text-brand">
-                {game.price === 0 ? "Free to play" : `${game.price.toFixed(2)} €`}
+                {game.price == null || game.price === 0 ? "Free to play" : `${game.price.toFixed(2)} €`}
               </div>
-            </div>
-
-            <div className="mt-6 flex flex-wrap gap-2">
-              {game.tags.map((t: string) => (
-                <span key={t} className="rounded-md border border-border bg-surface-2 px-2 py-1 text-xs">{t}</span>
-              ))}
             </div>
           </div>
 

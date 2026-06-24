@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import type { GameStatus } from "./games-data";
+import type { GameStatus } from "@/components/StatusBadge";
 
 interface LibraryEntry {
   gameId: number;
@@ -41,6 +41,6 @@ export const useLibrary = create<LibraryState>()(
           return { entries: { ...s.entries, [gameId]: { ...e, hoursPlayed: hours } } };
         }),
     }),
-    { name: "steamstats-library" }
+    { name: "archetype-library" }
   )
 );
