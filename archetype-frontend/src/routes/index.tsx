@@ -4,6 +4,7 @@ import { GameCard } from "@/components/GameCard";
 import { StatusBadge } from "@/components/StatusBadge";
 import { gameApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
+import { useI18n } from "@/i18n/I18nContext";
 import { Clock, Trophy, Heart, XCircle, ArrowRight, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/")({
@@ -17,6 +18,8 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
+  const { t } = useI18n();
+
   const { data: games, isLoading, error } = useQuery({
     queryKey: ["games"],
     queryFn: gameApi.list,
@@ -31,20 +34,19 @@ function Home() {
       <section className="card-surface relative mb-8 overflow-hidden p-6 sm:p-10">
         <div className="absolute -right-20 -top-20 h-72 w-72 rounded-full bg-[image:var(--gradient-brand)] opacity-20 blur-3xl" />
         <div className="relative">
-          <p className="text-sm font-medium text-brand">Bentornato, Player</p>
+          <p className="text-sm font-medium text-brand">{t("auth.welcome")}, Player</p>
           <h1 className="mt-2 text-3xl font-bold sm:text-4xl">
-            La tua collezione,<br /> finalmente organizzata.
+            {t("home.whatToPlay")}
           </h1>
           <p className="mt-3 max-w-xl text-muted-foreground">
-            Esplora {totalGames > 0 ? `${totalResults}+ giochi` : "il catalogo"}, organizza il backlog
-            e tieni traccia delle tue statistiche di gioco.
+            {t("home.heroSubtitle")}
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link to="/catalog" className="btn-brand inline-flex items-center gap-2 px-5 py-2.5 text-sm">
-              Esplora il catalogo <ArrowRight className="h-4 w-4" />
+              {t("home.exploreCatalog")} <ArrowRight className="h-4 w-4" />
             </Link>
             <Link to="/library" className="inline-flex items-center gap-2 rounded-md border border-border bg-surface-2 px-5 py-2.5 text-sm font-medium hover:bg-surface-3">
-              Apri la libreria
+              {t("home.openLibrary")}
             </Link>
           </div>
         </div>
@@ -52,41 +54,40 @@ function Home() {
 
       {/* Stats Cards */}
       <section className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard label="Giochi totali" value={totalGames} icon={<Clock className="h-4 w-4" />} tone="brand" />
-        <StatCard label="In corso" value={0} icon={<Clock className="h-4 w-4" />} tone="playing" />
-        <StatCard label="Finiti" value={0} icon={<Trophy className="h-4 w-4" />} tone="finished" />
-        <StatCard label="Wishlist" value={0} icon={<Heart className="h-4 w-4" />} tone="wishlist" />
+        <StatCard label={t("home.totalGames")} value={totalGames} icon={<Clock className="h-4 w-4" />} tone="brand" />
+        <StatCard label={t("game.status.playing")} value={0} icon={<Clock className="h-4 w-4" />} tone="playing" />
+        <StatCard label={t("game.status.finished")} value={0} icon={<Trophy className="h-4 w-4" />} tone="finished" />
+        <StatCard label={t("game.status.wishlist")} value={0} icon={<Heart className="h-4 w-4" />} tone="wishlist" />
       </section>
 
       {/* Featured Games */}
       <section className="mb-4 flex items-end justify-between">
         <div>
-          <h2 className="text-2xl font-bold">In evidenza</h2>
-          <p className="text-sm text-muted-foreground">Una selezione dal catalogo</p>
+          <h2 className="text-2xl font-bold">{t("home.featured")}</h2>
         </div>
         <Link to="/catalog" className="text-sm font-medium text-brand hover:underline">
-          Vedi tutto →
+          {t("home.seeAll")} →
         </Link>
       </section>
 
       {isLoading && (
         <div className="flex items-center justify-center py-16">
           <Loader2 className="h-8 w-8 animate-spin text-brand" />
-          <span className="ml-3 text-muted-foreground">Caricamento giochi...</span>
+          <span className="ml-3 text-muted-foreground">{t("common.loading")}</span>
         </div>
       )}
 
       {error && (
         <div className="rounded-md border border-red-500/30 bg-red-500/10 p-4 text-sm text-red-400">
-          Errore nel caricamento dei giochi. Riprova più tardi.
+          {t("common.error")}
         </div>
       )}
 
       {!isLoading && !error && featured.length === 0 && (
         <div className="rounded-lg border border-border bg-surface-2 p-12 text-center">
-          <p className="text-muted-foreground">Nessun gioco nel catalogo.</p>
+          <p className="text-muted-foreground">{t("home.noGames")}</p>
           <Link to="/catalog" className="mt-3 inline-block text-sm font-medium text-brand hover:underline">
-            Aggiungi giochi dal catalogo →
+            {t("home.exploreCatalog")} →
           </Link>
         </div>
       )}
