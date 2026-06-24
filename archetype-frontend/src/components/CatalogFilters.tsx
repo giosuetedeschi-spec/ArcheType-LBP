@@ -28,10 +28,16 @@ export function CatalogFiltersBar({
   filters,
   onChange,
   resultCount,
+  totalPages,
+  page,
+  onPageChange,
 }: {
   filters: CatalogFilters;
   onChange: (f: CatalogFilters) => void;
   resultCount: number;
+  totalPages?: number;
+  page?: number;
+  onPageChange?: (p: number) => void;
 }) {
   const [open, setOpen] = useState(false);
   const update = <K extends keyof CatalogFilters>(k: K, v: CatalogFilters[K]) =>
@@ -103,6 +109,29 @@ export function CatalogFiltersBar({
         </div>
       )}
 
+      {/* Pagination (mobile-visible, desktop handled in page) */}
+      {totalPages && totalPages > 1 && onPageChange && page !== undefined && (
+        <div className="mt-3 flex items-center justify-center gap-2 border-t border-border pt-3">
+          <button
+            disabled={page === 0}
+            onClick={() => onPageChange(page - 1)}
+            className="rounded-md border border-border bg-surface-2 px-2 py-1 text-xs disabled:opacity-40"
+          >
+            ←
+          </button>
+          <span className="text-xs text-muted-foreground">
+            {page + 1}/{totalPages}
+          </span>
+          <button
+            disabled={page >= totalPages - 1}
+            onClick={() => onPageChange(page + 1)}
+            className="rounded-md border border-border bg-surface-2 px-2 py-1 text-xs disabled:opacity-40"
+          >
+            →
+          </button>
+        </div>
+      )}
+
       <div className={`${open ? "block" : "hidden"} lg:hidden`}>
         <FiltersPanel filters={filters} update={update} toggle={toggle} />
       </div>
@@ -113,9 +142,11 @@ export function CatalogFiltersBar({
 export function FiltersSidebar({
   filters,
   onChange,
+  colorblindMode,
 }: {
   filters: CatalogFilters;
   onChange: (f: CatalogFilters) => void;
+  colorblindMode?: string;
 }) {
   const update = <K extends keyof CatalogFilters>(k: K, v: CatalogFilters[K]) =>
     onChange({ ...filters, [k]: v });
