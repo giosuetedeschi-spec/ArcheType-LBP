@@ -1,0 +1,130 @@
+{
+  "app": {
+    "title": "ArcheType",
+    "loading": "Loading...",
+    "welcome": "Welcome"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "catalog": "Catalog",
+    "library": "Library",
+    "wishlist": "Wishlist",
+    "stats": "Stats",
+    "profile": "Profile",
+    "leaderboard": "Leaderboard",
+    "friends": "Friends"
+  },
+  "home": {
+    "whatToPlay": "What to play?",
+    "heroSubtitle": "Explore, organize, and track your game collection.",
+    "exploreCatalog": "Explore Catalog",
+    "openLibrary": "Open Library",
+    "featured": "Featured",
+    "totalGames": "Total Games",
+    "playing": "Playing",
+    "finished": "Finished",
+    "wishlist": "Wishlist",
+    "seeAll": "See all",
+    "noGames": "No games in the catalog yet.",
+    "abandonedCount": "You have {count} abandoned games in your library."
+  },
+  "catalog": {
+    "search": "Search games, developers, or tags...",
+    "filters": "Filters",
+    "sort": {
+      "popular": "Popular",
+      "rating": "Best Rating",
+      "priceAsc": "Price: Low to High",
+      "priceDesc": "Price: High to Low",
+      "yearDesc": "Newest"
+    },
+    "genres": "Genres",
+    "platforms": "Platforms",
+    "priceMax": "Max Price",
+    "freeOnly": "Free only",
+    "minRating": "Min Rating",
+    "tags": "Tags",
+    "clearAll": "Clear all",
+    "results": "{count} results",
+    "buyOnSteam": "Buy on Steam",
+    "freeOnSteam": "Free on Steam",
+    "confirmBuy": "Ready to buy?",
+    "confirmBuyDesc": "You'll be redirected to Steam to complete the purchase.",
+    "cancel": "Cancel",
+    "continue": "Continue to Steam"
+  },
+  "game": {
+    "back": "Back",
+    "addToWishlist": "Add to Wishlist",
+    "removeFromWishlist": "Remove from Wishlist",
+    "playedHours": "Played Hours",
+    "myLibrary": "My Library",
+    "status": {
+      "wishlist": "Wishlist",
+      "playing": "Playing",
+      "finished": "Finished",
+      "abandoned": "Abandoned"
+    },
+    "graphs": "Funny Graphs",
+    "remove": "Remove from Library",
+    "steamBuy": "Open in Steam"
+  },
+  "library": {
+    "title": "My Library",
+    "subtitle": "Organize your wishlist and backlog.",
+    "search": "Search in library...",
+    "all": "All",
+    "empty": "Your library is empty. Add games from the catalog.",
+    "emptySection": "No games in this section.",
+    "exploreCatalog": "Explore Catalog"
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "yesMaster": "Yes, Master",
+    "added": "Added",
+    "remove": "Remove",
+    "steamLink": "Open in Steam"
+  },
+  "profile": {
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "playing": "Playing",
+      "away": "Away"
+    },
+    "wishlistPreview": "Wishlist",
+    "graphs": "Analytics",
+    "friends": "Friends",
+    "settings": "Settings"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "highscore": "Highscore",
+    "boss": "Boss!",
+    "topFriends": "Top 1 Friends",
+    "score": "{score}%"
+  },
+  "auth": {
+    "login": "Sign In",
+    "loginSteam": "Sign in with Steam",
+    "loginGoogle": "Sign in with Google",
+    "logout": "Sign Out",
+    "error": "Sign-in failed. Try again.",
+    "welcome": "Welcome"
+  },
+  "colorblind": {
+    "label": "Vision",
+    "normal": "Normal",
+    "protanopia": "Protanopia",
+    "deuteranopia": "Deuteranopia",
+    "tritanopia": "Tritanopia"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong. Try again.",
+    "retry": "Try again",
+    "goHome": "Go home",
+    "free": "Free",
+    "price": "{price} €"
+  }
+}

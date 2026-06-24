@@ -1,5 +1,6 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { ColorblindProvider } from "@/contexts/ColorblindContext";
+import { I18nProvider } from "@/i18n/I18nContext";
 import {
   Outlet,
   Link,
@@ -119,9 +120,11 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ColorblindProvider>
-        <Outlet />
-      </ColorblindProvider>
+      <I18nProvider>
+        <ColorblindProvider>
+          <Outlet />
+        </ColorblindProvider>
+      </I18nProvider>
     </QueryClientProvider>
   );
 }
