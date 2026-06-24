@@ -4,6 +4,86 @@
 
 The frontend is a React SPA built with Vite, TypeScript, and Tailwind CSS. It communicates with the Spring Boot backend via REST API calls.
 
+**Wireframe source**: `my frontend.jpeg` — paper wireframe sketches showing the exact screen flow.
+
+## Screen Flow (from wireframe)
+
+```
+Loading Page
+    │
+    ▼ (auto-redirect)
+Login Page
+    │ [Steam OAuth] [Google OAuth]
+    ▼
+Home Page
+    │ [Game card click] ──────────────────────► Game Page
+    │ [Game card click] ──────────────────────► Game Page
+    │ [Search] [Filters] [Tags] [Grid/Cards]
+    │ [Profile icon click]
+    ▼
+User Profile
+    │ [Click "wishlist"]
+    ▼
+Wishlist Page
+    │ [Game card] [Heart icon] [Steam buy link]
+    ▼
+Leaderboard (Classifiche)
+    │ [Friends ranking] [Highscore] [Stats]
+```
+
+## Detailed Screen Descriptions
+
+### 1. Loading Page
+- Centered logo placeholder
+- Auto-redirects to Login after check
+
+### 2. Login Page
+- Logo placeholder
+- "Welcome" header
+- **Steam sign-in button** (primary)
+- **Google sign-in button**
+- Error display field (hidden by default)
+
+### 3. Home Page (Dashboard)
+- **Top nav**: Search bar (center), Profile shortcut (right)
+- **Hero section**: "What to play?" header
+- **Layout toggle**: Grid view / Cards view
+- **Filters panel**: Expandable filter chips
+- **Tags**: Quick-filter tags as toggle buttons
+- **Game cards grid**: Clickable → navigates to Game Page
+
+### 4. Game Page
+- Game title
+- Rating/stars (vote)
+- Tags display
+- **Wishlist toggle button**: Add/remove from wishlist
+- **Back button**: Return to previous page
+- **User account section**: Played hours
+- **"Funny graphs"**: Interactive data breakdowns (charts)
+
+### 5. User Profile
+- Status indicator: "Ready" / "Playing" / custom
+- Wishlist preview section
+- Custom analytical graphs (Graph 1, Graph 2)
+- Click trigger: "click profile to wish list" → Wishlist page
+- Friend profiles clickable → navigate to friend profile
+
+### 6. Wishlist Page
+- Header: "Wishlist" title
+- **"Yes, Master" prompt** (maybe a motivational/random prompt)
+- Game item cards layout:
+  - Game image (thumbnail)
+  - Little game info (title, developer, genres)
+  - Date added
+  - Heart icon (add/remove from favorites)
+  - Direct button: "Open in Steam" (external link)
+
+### 7. Leaderboard (Classifiche)
+- Top rankings among friends
+- Sections: Highscore, "boss!", "Top 1 Friends"
+- Score statistics (e.g., 91%)
+- Friend profile links
+
 ## Tech Stack
 
 | Technology | Version | Purpose |
@@ -14,214 +94,87 @@ The frontend is a React SPA built with Vite, TypeScript, and Tailwind CSS. It co
 | Tailwind CSS | 4.x | Utility-first styling |
 | shadcn/ui | latest | Component library (Radix-based) |
 | React Router | 6.x | Client-side routing |
-| Recharts | latest | Charts (Grafici di Utilizzo) |
+| Recharts | latest | Charts (funny graphs on Game Page) |
 | Sonner | latest | Toast notifications |
-| Zod | latest | Form validation |
+| Zustand | latest | Local state (library store, user prefs) |
+| TanStack Query | latest | Server state, caching |
 | Bun | 1.x | Package manager |
 
-## Color Palette
+## Color Palette (from Palette colori proposta.md)
 
-| Name | Hex | Usage |
-|------|-----|-------|
-| Vivid Royal | `#141aad` | Primary actions, links |
-| Midnight Violet | `#32213a` | Backgrounds, dark surfaces |
-| Golden Glow | `#ead94c` | Accents, highlights, badges |
-| Tangerine Dream | `#ff9b71` | CTAs, warnings, active states |
-
-## Layout Structure
-
-```
-┌─────────────────────────────────────────────────────────────┐
-│  HEADER / NAVBAR                                            │
-│  [Logo] [Search ] [ Wishlist ] [ Library ] [ Profile ]     │
-├──────────────┬──────────────────────────────────────────────┤
-│              │                                              │
-│  SIDEBAR     │  MAIN CONTENT AREA                           │
-│  (Filters)   │                                              │
-│              │  ┌─────────────────────────────────────┐     │
-│  □ Genre     │  │ Page-specific content               │     │
-│  □ Price     │  │                                      │     │
-│  □ Rating    │  │  - Game cards grid                  │     │
-│  □ Status    │  │  - Statistics charts                │     │
-│  □ Year      │  │  - User profile                     │     │
-│  □ Dev       │  │  - etc.                             │     │
-│              │  │                                      │     │
-│  [Apply]     │  └─────────────────────────────────────┘     │
-│  [Reset]     │                                              │
-│              │                                              │
-├──────────────┴──────────────────────────────────────────────┤
-│  FOOTER                                                     │
-└─────────────────────────────────────────────────────────────┘
-```
-
-## Page Routes
-
-| Route | Component | Description |
-|-------|-----------|-------------|
-| `/` | `HomePage` | Landing / dashboard overview |
-| `/catalog` | `CatalogPage` | Full game catalog with filters |
-| `/game/:id` | `GameDetailPage` | Single game details |
-| `/library` | `LibraryPage` | User's game library |
-| `/wishlist` | `WishlistPage` | User's wishlist |
-| `/stats` | `StatsPage` | Usage statistics & charts |
-| `/profile` | `ProfilePage` | User profile & settings |
-| `/friends` | `FriendsPage` | Friends list & search |
-| `/login` | `LoginPage` | Authentication |
-| `/loading` | `LoadingPage` | Initial app loading state |
+| Name | Hex | RGB | Usage |
+|------|-----|-----|-------|
+| Vivid Royal | `#141aad` | rgb(20, 26, 173) | Primary actions, links, brand |
+| Midnight Violet | `#32213a` | rgb(50, 33, 58) | Backgrounds, dark surfaces |
+| Golden Glow | `#ead94c` | rgb(234, 217, 76) | Accents, highlights, stars/ratings |
+| Tangerine Dream | `#ff9b71` | rgb(255, 155, 113) | CTAs, warnings, active states |
 
 ## Component Hierarchy
 
 ```
 App
+├── LoadingPage
+├── LoginPage
 ├── AppLayout
 │   ├── Header
 │   │   ├── Logo
 │   │   ├── SearchBar
-│   │   └── NavLinks
-│   ├── Sidebar (collapsible on catalog/filters pages)
-│   │   ├── FilterSection (genre, price, rating, etc.)
-│   │   └── SortControls
+│   │   └── ProfileShortcut
+│   ├── NavLinks
 │   └── Footer
-├── Routes
-│   ├── HomePage
-│   │   ├── WelcomeBanner
-│   │   ├── RecentGames
-│   │   └── QuickStats
-│   ├── CatalogPage
-│   │   ├── GameGrid
-│   │   ├── GameCard
-│   │   └── Pagination
-│   ├── GameDetailPage
-│   │   ├── GameHeader
-│   │   ├── GameInfo
-│   │   ├── AddToLibraryButton
-│   │   └── AddToWishlistButton
-│   ├── LibraryPage
-│   │   ├── StatusTabs (wishlist/playing/finished/abandoned)
-│   │   ├── GameList
-│   │   └── GameCard (with status badge)
-│   ├── StatsPage
-│   │   ├── StatusChart (pie/bar)
-│   │   ├── GenreChart
-│   │   ├── TimelineChart
-│   │   └── SummaryCards
-│   ├── ProfilePage
-│   │   ├── Avatar
-│   │   ├── UserInfo
-│   │   └── SettingsForm
-│   └── FriendsPage
-│       ├── FriendSearch
-│       ├── FriendList
-│       └── FriendCard
-└── Shared
-    ├── GameCard
-    ├── StatusBadge
-    ├── LoadingSpinner
-    ├── EmptyState
-    └── ErrorBoundary
-```
-
-## Data Flow
-
-```
-┌─────────────┐     HTTP/REST      ┌──────────────┐
-│   React     │ ◄──────────────►  │  Spring Boot  │
-│   Frontend  │     JSON          │   Backend     │
-└──────┬──────┘                    └──────┬───────┘
-       │                                  │
-       │  State Management                │
-       │  ┌─────────────┐                │
-       │  │ React Query │                │
-       │  │ (TanStack)  │                │
-       │  └─────────────┘                │
-       │                                  │
-       │  Local Storage                   │
-       │  ┌─────────────┐                │
-       │  │ user prefs  │                │
-       │  │ auth token  │                │
-       │  └─────────────┘                │
-       │                                  │
-┌──────▼──────┐                    ┌──────▼───────┐
-│  Context    │                    │  PostgreSQL   │
-│  Providers  │                    │  Database     │
-│ - AuthCtx   │                    └──────────────┘
-│ - ThemeCtx  │
-│ - FilterCtx │
-└─────────────┘
+├── HomePage
+│   ├── WelcomeBanner ("What to play?")
+│   ├── LayoutToggle (Grid/Cards)
+│   ├── FiltersPanel
+│   ├── TagsRow
+│   └── GameGrid → GameCard[]
+├── GamePage
+│   ├── GameHeader (image + title)
+│   ├── RatingStars
+│   ├── TagsDisplay
+│   ├── WishlistToggle
+│   ├── BackButton
+│   ├── UserAccountSection (played hours)
+│   └── FunnyGraphs (recharts)
+├── ProfilePage
+│   ├── Avatar + Status
+│   ├── WishlistPreview
+│   ├── AnalyticalGraphs (Graph1, Graph2)
+│   └── FriendLinks
+├── WishlistPage
+│   ├── Title + YesMaster prompt
+│   └── WishlistItem[] (img, info, date, heart, Steam link)
+└── LeaderboardPage
+    ├── Highscore section
+    ├── Boss section
+    ├── Top1Friends section
+    └── ScoreStats
 ```
 
 ## API Integration
 
-### API Client (`lib/api.ts`)
+### API Client Types (matching backend DTOs)
 
 ```typescript
-const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:8080/api';
-
-// GET requests
-fetchGames(filter: GameFilterRequest): Promise<PagedResponse<GameResponse>>
-fetchGame(id: number): Promise<GameResponse>
-fetchUserStats(userId: number): Promise<UserStatsResponse>
-fetchUserGames(userId: number, status?: string): Promise<UserGameResponse[]>
-
-// POST requests
-createUser(data: UserRequest): Promise<UserResponse>
-addGameToLibrary(userId: number, data: UserGameRequest): Promise<UserGameResponse>
-addToWishlist(userId: number, gameId: number): Promise<void>
-
-// PUT requests
-updateGameStatus(userId: number, gameId: number, status: string): Promise<UserGameResponse>
-updateProfile(userId: number, data: Partial<UserRequest>): Promise<UserResponse>
-
-// DELETE requests
-removeGameFromLibrary(userId: number, gameId: number): Promise<void>
-removeFromWishlist(userId: number, gameId: number): Promise<void>
+// GET /api/games → list all games
+// GET /api/games/filter → filtered + paginated
+// GET /api/games/{id} → single game detail
+// GET /api/users/{id}/stats → user statistics
+// GET /api/users/{id}/games → user backlog
+// POST /api/users/{id}/games → add to backlog
+// PUT /api/users/{id}/games/{id} → update status
+// DELETE /api/users/{id}/games/{id} → remove from backlog
 ```
 
-### React Query Keys
-
-```typescript
-const queryKeys = {
-  games: ['games'] as const,
-  game: (id: number) => ['game', id] as const,
-  userGames: (userId: number) => ['user-games', userId] as const,
-  userStats: (userId: number) => ['user-stats', userId] as const,
-  wishlist: (userId: number) => ['wishlist', userId] as const,
-  friends: (userId: number) => ['friends', userId] as const,
-};
-```
-
-## State Management
+### State Management
 
 | Layer | Tool | What it manages |
 |---|---|---|
 | Server State | TanStack Query | API data, caching, refetching |
 | UI State | React useState/useReducer | Modals, sidebar toggle, filters |
 | Global State | React Context | Auth, theme, user preferences |
+| Local Store | Zustand + persist | Library status, user game data |
 | Form State | React Hook Form + Zod | Form validation |
-| URL State | React Router | Pagination, route params |
-
-## Authentication Flow
-
-```
-1. User visits app → check localStorage for token
-2. If no token → redirect to /login
-3. Login form → POST /api/auth/login → receive JWT
-4. Store token in localStorage
-5. Attach token to all API requests via interceptor
-6. On 401 response → clear token, redirect to /login
-```
-
-## Loading States
-
-```
-App Init → LoadingPage (check auth, fetch initial data)
-  ↓
-Homepage → fetch recent games + stats (parallel)
-  ↓
-CatalogPage → fetch games with filters (cached by query key)
-  ↓
-GameDetailPage → fetch single game + user-game status
-```
 
 ## Responsive Design
 
@@ -229,39 +182,12 @@ GameDetailPage → fetch single game + user-game status
 |---|---|
 | Mobile (< 640px) | Single column, hamburger menu, filters in bottom sheet |
 | Tablet (640-1024px) | Collapsible sidebar, 2-column grid |
-| Desktop (> 1024px) | Full sidebar, 3-4 column grid |
+| Desktop (> 1024px) | Full sidebar, grid/cards toggle, 3-4 columns |
 
-## Key Features per Page
+## Key Decisions
 
-### Homepage
-- Welcome banner with user stats summary
-- Recently added games carousel
-- Quick action buttons (Browse Catalog, View Wishlist)
-- Mini stats preview
-
-### Catalog
-- Full filter sidebar (genre, price range, rating, year, developer, multiplayer)
-- Sort controls (name, price, rating, release date)
-- Paginated game grid
-- Search bar in header
-
-### Library
-- Status tabs: All / Wishlist / Playing / Finished / Abandoned
-- Game cards with status badge
-- Quick status change dropdown
-- Play time tracking
-
-### Stats
-- Status distribution pie chart
-- Genre distribution bar chart
-- Play time over time (line chart)
-- Top developers (horizontal bar)
-- Summary cards (total games, total spent, avg rating)
-
-### Profile
-- Avatar upload
-- Username/email editing
-- Theme toggle (dark/light)
-- Language selector
-- Colorblind mode toggle
-- Friends visibility toggle
+1. **Separate Wishlist from Backlog** — Per the wireframe and DB proposal, they're independent. A game can be in both.
+2. **"What to play?" hero** — The home page starts with this question, prompting action.
+3. **Profile has custom graphs** — The wireframe shows "funny graphs" and 91% stats on profile.
+4. **Wishlist has Steam buy button** — Direct external link to Steam store.
+5. **Leaderboard among friends** — Social competition feature.
