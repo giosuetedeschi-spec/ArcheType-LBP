@@ -34,6 +34,7 @@ public class StatsService {
 
         stats.setGamesByGenre(groupByGenre(backlogs));
         stats.setGamesByDeveloper(groupByDeveloper(backlogs));
+        stats.setGamesByYear(groupByYear(backlogs));
 
         stats.setAverageRating(calculateAverageRating(backlogs));
         stats.setTotalSpent(calculateTotalSpent(backlogs));
@@ -49,11 +50,11 @@ public class StatsService {
 
     private Map<String, Long> groupByGenre(java.util.List<Backlog> backlogs) {
         return backlogs.stream()
-                .filter(b -> b.getGame().getDescription() != null) // placeholder
-                .collect(Collectors.groupingBy(
-                        b -> b.getGame().getDeveloper() != null ? b.getGame().getDeveloper().getName() : "Unknown",
-                        Collectors.counting()
-                ));
+                .filter(b -> b.getGame().getGenres() != null)
+                .flatMap(b -> java.util.Arrays.stream(b.getGame().getGenres().split(",")))
+                .map(String::trim)
+                .filter(s -> !s.isEmpty())
+                .collect(Collectors.groupingBy(g -> g, Collectors.counting()));
     }
 
     private Map<String, Long> groupByDeveloper(java.util.List<Backlog> backlogs) {
@@ -61,6 +62,15 @@ public class StatsService {
                 .filter(b -> b.getGame().getDeveloper() != null)
                 .collect(Collectors.groupingBy(
                         b -> b.getGame().getDeveloper().getName(),
+                        Collectors.counting()
+                ));
+    }
+
+    private Map<String, Long> groupByYear(java.util.List<Backlog> backlogs) {
+        return backlogs.stream()
+                .filter(b -> b.getGame().getReleaseDate() != null)
+                .collect(Collectors.groupingBy(
+                        b -> String.valueOf(b.getGame().getReleaseDate().getYear()),
                         Collectors.counting()
                 ));
     }
