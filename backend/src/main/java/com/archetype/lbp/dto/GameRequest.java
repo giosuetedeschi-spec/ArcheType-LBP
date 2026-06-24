@@ -27,6 +27,8 @@ public class GameRequest {
     @DecimalMax(value = "5.00")
     private BigDecimal rating;
 
+    private String genres;
+
     private String description;
 
     private String headerImageUrl;

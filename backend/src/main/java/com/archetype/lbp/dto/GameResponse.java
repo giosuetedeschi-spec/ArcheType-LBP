@@ -15,6 +15,7 @@ public class GameResponse {
     private String publisher;
     private BigDecimal price;
     private BigDecimal rating;
+    private String genres;
     private String description;
     private String headerImageUrl;
     private Boolean multiplayer;
