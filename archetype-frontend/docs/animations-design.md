@@ -143,12 +143,19 @@ body[data-animations="true"]::before {
 
 ## Palette mappa
 
-| Token CSS | Uso animazione | Colore originale |
-|-----------|----------------|-------------------|
-| `--color-brand` | gradient-shift, glow, orbs | vivid-royal `#141aad` |
-| `--color-accent` | gradient-shift, orbs | golden-glow `#ead94c` |
-| `--color-brand-glow` | particles, glow pulse | brand-glow cyan |
-| `--color-status-wishlist` | accent orbs (opzionale) | magenta |
+| Token CSS | Hex | Uso animazione | Colore |
+|-----------|-----|-------------|--------|
+| `--color-brand` | `#141aad` | gradient-shift, glow, orbs | vivid-royal |
+| `--color-accent` | `#ead94c` | gradient-shift, orbs | golden-glow |
+| `--color-brand-glow` | cyan | particles, glow pulse | brand-glow |
+| `--color-status-wishlist` | magenta | orbs accent | - |
+
+## Esperienza attuale
+
+Tutti i componenti e le route usano esclusivamente i token CSS.
+L'unica eccezione (`rgb(0 0 0 / 0.15)` nel contatore tab della libreria)
+è stata corretta in `oklch(from var(--foreground) l c h / 0.12)` con
+`from` per adattarsi automaticamente a light/dark e colorblind mode.
 
 ## File da creare/modificare
 
