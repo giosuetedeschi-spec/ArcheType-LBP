@@ -2,7 +2,7 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
 import { GameCard } from "@/components/GameCard";
 import { StatusBadge } from "@/components/StatusBadge";
-import { gameApi } from "@/lib/api";
+import { gameApi, statsApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { useI18n } from "@/i18n/I18nContext";
 import { Clock, Trophy, Heart, XCircle, ArrowRight, Loader2 } from "lucide-react";
@@ -25,8 +25,23 @@ function Home() {
     queryFn: gameApi.list,
   });
 
+  const { data: stats } = useQuery({
+    queryKey: ["stats", 1],
+    queryFn: () => statsApi.get(1),
+  });
+
+  if (error) {
+    return (
+      <AppLayout>
+        <div className="flex items-center justify-center py-24">
+          <p className="text-muted-foreground">Errore di connessione al server.</p>
+        </div>
+      </AppLayout>
+    );
+  }
+
   const featured = (games ?? []).slice(0, 6);
-  const totalGames = games?.length ?? 0;
+  const totalGames = stats?.totalGames ?? games?.length ?? 0;
 
   return (
     <AppLayout>
@@ -53,12 +68,23 @@ function Home() {
       </section>
 
       {/* Stats Cards */}
-      <section className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
-        <StatCard label={t("home.totalGames")} value={totalGames} icon={<Clock className="h-4 w-4" />} tone="brand" />
-        <StatCard label={t("game.status.playing")} value={0} icon={<Clock className="h-4 w-4" />} tone="playing" />
-        <StatCard label={t("game.status.finished")} value={0} icon={<Trophy className="h-4 w-4" />} tone="finished" />
-        <StatCard label={t("game.status.wishlist")} value={0} icon={<Heart className="h-4 w-4" />} tone="wishlist" />
-      </section>
+      {isLoading ? (
+        <div className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          {[1,2,3,4].map((i) => (
+            <div key={i} className="card-surface p-4">
+              <div className="h-3 w-16 animate-pulse rounded bg-surface-2" />
+              <div className="mt-3 h-7 w-10 animate-pulse rounded bg-surface-2" />
+            </div>
+          ))}
+        </div>
+      ) : (
+        <section className="mb-8 grid grid-cols-2 gap-3 sm:grid-cols-4">
+          <StatCard label={t("home.totalGames")} value={totalGames} icon={<Clock className="h-4 w-4" />} tone="brand" />
+          <StatCard label={t("game.status.playing")} value={stats?.playingCount ?? 0} icon={<Clock className="h-4 w-4" />} tone="playing" />
+          <StatCard label={t("game.status.finished")} value={stats?.finishedCount ?? 0} icon={<Trophy className="h-4 w-4" />} tone="finished" />
+          <StatCard label={t("game.status.wishlist")} value={stats?.wishlistCount ?? 0} icon={<Heart className="h-4 w-4" />} tone="wishlist" />
+        </section>
+      )}
 
       {/* Featured Games */}
       <section className="mb-4 flex items-end justify-between">
