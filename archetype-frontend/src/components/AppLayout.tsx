@@ -1,5 +1,5 @@
 import { Link } from "@tanstack/react-router";
-import { Library, LayoutGrid, Gamepad2, Search, Heart } from "lucide-react";
+import { Library, LayoutGrid, Gamepad2, Search, Heart, Trophy, Users } from "lucide-react";
 import type { ReactNode } from "react";
 import { ColorblindToggle } from "@/components/ColorblindToggle";
 import { LanguageToggle } from "@/components/LanguageToggle";
@@ -20,7 +20,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <NavLink to="/catalog" icon={<Search className="h-4 w-4" />}>Catalogo</NavLink>
             <NavLink to="/library" icon={<Library className="h-4 w-4" />}>Libreria</NavLink>
             <NavLink to="/wishlist" icon={<Heart className="h-4 w-4" />}>Wishlist</NavLink>
-          </nav>
+            <NavLink to="/leaderboard" icon={<Trophy className="h-4 w-4" />}>Classifiche</NavLink>
+            <NavLink to="/friends" icon={<Users className="h-4 w-4" />}>Amici</NavLink>
+            </nav>
+            <NavLink to="/wishlist" icon={<Heart className="h-4 w-4" />}>Wishlist</NavLink>
+            <NavLink to="/leaderboard" icon={<Trophy className="h-4 w-4" />}>Classifiche</NavLink>
+            <NavLink to="/friends" icon={<Users className="h-4 w-4" />}>Amici</NavLink>
+            </nav>
           <div className="ml-auto flex items-center gap-3">
             <LanguageToggle />
             <ColorblindToggle />
@@ -38,6 +44,8 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <NavLink to="/catalog" icon={<Search className="h-4 w-4" />}>Catalogo</NavLink>
           <NavLink to="/library" icon={<Library className="h-4 w-4" />}>Libreria</NavLink>
           <NavLink to="/wishlist" icon={<Heart className="h-4 w-4" />}>Wishlist</NavLink>
+          <NavLink to="/leaderboard" icon={<Trophy className="h-4 w-4" />}>Classifiche</NavLink>
+          <NavLink to="/friends" icon={<Users className="h-4 w-4" />}>Amici</NavLink>
         </nav>
       </header>
       <main className="mx-auto max-w-7xl px-4 py-8 sm:px-6">{children}</main>
