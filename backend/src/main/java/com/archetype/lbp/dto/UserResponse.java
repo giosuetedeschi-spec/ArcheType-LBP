@@ -8,5 +8,8 @@ public class UserResponse {
     private Long id;
     private String username;
     private String email;
+    private String avatarUrl;
+    private String status;
+    private String bio;
     private LocalDateTime createdAt;
 }
