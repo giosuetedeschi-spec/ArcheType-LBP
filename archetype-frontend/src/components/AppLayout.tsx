@@ -1,10 +1,34 @@
+import { useEffect } from "react";
 import { Link } from "@tanstack/react-router";
 import { Library, LayoutGrid, Gamepad2, Search } from "lucide-react";
 import type { ReactNode } from "react";
 
+const ANIMATIONS_DEFAULT = !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
+
 export function AppLayout({ children }: { children: ReactNode }) {
+  // Apply animation preferences + respect reduced motion on mount
+  useEffect(() => {
+    const stored = localStorage.getItem("preferences.animations") as string | null;
+    const enabled = stored !== null ? stored === "true" : ANIMATIONS_DEFAULT;
+    const root = document.documentElement;
+
+    //ponytail: boolean attrs via JS — no runtime library needed
+    root.setAttribute("data-animations", String(enabled));
+    root.setAttribute("data-glow", String(enabled));
+    root.setAttribute("data-stagger", String(enabled));
+    root.setAttribute("data-float-orbs", String(enabled && window.location.pathname === "/"));
+  }, []);
+
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* orbs: background layer before content — pointer-events-none by design in CSS */}
+      {children && children !== null && (
+        <div className="orbs-layer" aria-hidden="true">
+          <div className="orb orb-brand" />
+          <div className="orb orb-accent" />
+          <div className="orb orb-magenta" />
+        </div>
+      )}
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 sm:px-6">
           <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold">
