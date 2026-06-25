@@ -52,6 +52,10 @@ export interface User {
   id: number;
   username: string;
   email: string;
+  avatarUrl?: string;
+  status?: string;
+  bio?: string;
+  createdAt?: string;
 }
 
 async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
@@ -105,4 +109,6 @@ export const userApi = {
   list: () => fetchJSON<User[]>(`${API_BASE}/users`),
   get: (id: number) => fetchJSON<User>(`${API_BASE}/users/${id}`),
   create: (user: Partial<User> & { password: string }) => fetchJSON<User>(`${API_BASE}/users`, { method: "POST", body: JSON.stringify(user) }),
+  update: (id: number, body: { avatarUrl?: string; status?: string; bio?: string }) =>
+    fetchJSON<User>(`${API_BASE}/users/${id}`, { method: "PUT", body: JSON.stringify(body) }),
 };
