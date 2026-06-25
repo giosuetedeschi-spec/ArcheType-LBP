@@ -1,9 +1,8 @@
 import { createFileRoute, Link, notFound } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
-import { useLibrary } from "@/lib/library-store";
 import { StatusBadge } from "@/components/StatusBadge";
-import { gameApi } from "@/lib/api";
-import { useQuery } from "@tanstack/react-query";
+import { gameApi, userGameApi } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useI18n } from "@/i18n/I18nContext";
 import { Star, ArrowLeft, Trash2, Loader2, ShoppingCart, Heart, Clock } from "lucide-react";
 
@@ -16,16 +15,36 @@ export const Route = createFileRoute("/game/$id")({
   ),
 });
 
+const USER_ID = 1; // ponytail: single-user mode until auth lands
+
 function GamePage() {
   const { id } = Route.useParams();
   const { t } = useI18n();
-  const entries = useLibrary((s) => s.entries);
-  const setStatus = useLibrary((s) => s.setStatus);
-  const setHours = useLibrary((s) => s.setHours);
+  const queryClient = useQueryClient();
+  const gameId = Number(id);
 
   const { data: game, isLoading, error } = useQuery({
-    queryKey: ["game", id],
-    queryFn: () => gameApi.get(Number(id)),
+    queryKey: ["game", gameId],
+    queryFn: () => gameApi.get(gameId),
+  });
+
+  const { data: libraryEntries } = useQuery({
+    queryKey: ["userGames", USER_ID],
+    queryFn: () => userGameApi.list(USER_ID),
+  });
+
+  const setStatusMutation = useMutation({
+    mutationFn: (status: string | null) =>
+      status === null
+        ? userGameApi.remove(USER_ID, gameId)
+        : userGameApi.setStatus(USER_ID, gameId, status),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userGames"] }),
+  });
+
+  const setHoursMutation = useMutation({
+    mutationFn: (hours: number) =>
+      userGameApi.setHours(USER_ID, gameId, hours),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userGames"] }),
   });
 
   if (isLoading) {
@@ -40,7 +59,7 @@ function GamePage() {
 
   if (error || !game) throw notFound();
 
-  const entry = entries[game.id];
+  const entry = libraryEntries?.find((e) => e.gameId === gameId);
   const genres = game.genres?.split(",").map((g) => g.trim()).filter(Boolean) ?? [];
   const inWishlist = entry?.status === "wishlist";
 
@@ -119,7 +138,7 @@ function GamePage() {
               {(["wishlist", "playing", "finished", "abandoned"] as const).map((s) => (
                 <button
                   key={s}
-                  onClick={() => setStatus(game.id, s)}
+                  onClick={() => setStatusMutation.mutate(s)}
                   className={`rounded-md border px-3 py-2 text-xs font-medium transition-colors ${
                     entry?.status === s
                       ? "border-brand bg-brand text-brand-foreground"
@@ -133,7 +152,7 @@ function GamePage() {
 
             {/* Wishlist Toggle */}
             <button
-              onClick={() => setStatus(game.id, inWishlist ? null : "wishlist")}
+              onClick={() => setStatusMutation.mutate(inWishlist ? null : "wishlist")}
               className={`mt-3 w-full inline-flex items-center justify-center gap-2 rounded-md border px-3 py-2 text-xs font-medium transition-colors ${
                 inWishlist
                   ? "border-wishlist bg-wishlist/10 text-wishlist"
@@ -156,7 +175,7 @@ function GamePage() {
                     type="number"
                     min={0}
                     value={entry.hoursPlayed}
-                    onChange={(e) => setHours(game.id, Math.max(0, Number(e.target.value)))}
+                    onChange={(e) => setHoursMutation.mutate(Math.max(0, Number(e.target.value)))}
                     className="w-full rounded-md border border-border bg-surface-2 px-3 py-2 text-sm focus:border-brand focus:outline-none"
                   />
                 </div>
@@ -166,7 +185,7 @@ function GamePage() {
             {/* Remove */}
             {entry && (
               <button
-                onClick={() => setStatus(game.id, null)}
+                onClick={() => setStatusMutation.mutate(null)}
                 className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-md border border-destructive/40 px-3 py-2 text-xs font-medium text-destructive hover:bg-destructive/10"
               >
                 <Trash2 className="h-3 w-3" /> {t("game.remove")}

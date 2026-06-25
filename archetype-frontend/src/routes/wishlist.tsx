@@ -1,10 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
+import { useMemo } from "react";
 import { AppLayout } from "@/components/AppLayout";
-import { gameApi } from "@/lib/api";
-import { useLibrary } from "@/lib/library-store";
-import { useQuery } from "@tanstack/react-query";
+import { gameApi, userGameApi } from "@/lib/api";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { useI18n } from "@/i18n/I18nContext";
-import { Heart, ShoppingCart, Calendar, Loader2 } from "lucide-react";
+import { Heart, ShoppingCart, Loader2 } from "lucide-react";
 
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
@@ -16,30 +16,39 @@ export const Route = createFileRoute("/wishlist")({
   component: WishlistPage,
 });
 
-interface WishlistItem {
-  id: number;
-  gameId: number;
-  priority: number;
-  notes?: string;
-  addedAt: string;
-}
+// ponytail: single-user until auth lands
+const USER_ID = 1;
 
 function WishlistPage() {
   const { t } = useI18n();
-  const entries = useLibrary((s) => s.entries);
-  const setStatus = useLibrary((s) => s.setStatus);
+  const queryClient = useQueryClient();
 
-  const { data: games, isLoading } = useQuery({
+  const { data: games } = useQuery({
     queryKey: ["games"],
-    queryFn: gameApi.list,
+    queryFn: () => gameApi.list(),
   });
 
-  // Filter library entries that are in wishlist
-  const wishlistGameIds = Object.entries(entries)
-    .filter(([, e]) => e.status === "wishlist")
-    .map(([id]) => Number(id));
+  const { data: libraryEntries } = useQuery({
+    queryKey: ["userGames", USER_ID],
+    queryFn: () => userGameApi.list(USER_ID),
+  });
 
-  const wishlistGames = (games ?? []).filter((g) => wishlistGameIds.includes(g.id));
+  const removeMutation = useMutation({
+    mutationFn: (gameId: number) => userGameApi.remove(USER_ID, gameId),
+    onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userGames"] }),
+  });
+
+  const wishlistGameIds = useMemo(
+    () => (libraryEntries ?? []).filter((e) => e.status === "wishlist").map((e) => e.gameId),
+    [libraryEntries],
+  );
+
+  const wishlistGames = useMemo(
+    () => (games ?? []).filter((g: any) => wishlistGameIds.includes(g.id)),
+    [games, wishlistGameIds],
+  );
+
+  const isLoading = !games || !libraryEntries;
 
   return (
     <AppLayout>
@@ -66,11 +75,11 @@ function WishlistPage() {
 
       {!isLoading && wishlistGames.length > 0 && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {wishlistGames.map((game) => (
+          {wishlistGames.map((game: any) => (
             <WishlistCard
               key={game.id}
               game={game}
-              onRemove={() => setStatus(game.id, null)}
+              onRemove={() => removeMutation.mutate(game.id)}
               onBuy={() => window.open(`https://store.steampowered.com/app/${game.steamAppId}/`, "_blank")}
             />
           ))}
@@ -96,7 +105,6 @@ function WishlistCard({
 
   return (
     <div className="card-surface overflow-hidden flex flex-col">
-      {/* Image */}
       <div className="relative h-28" style={coverStyle}>
         <div className="absolute inset-0 bg-gradient-to-t from-surface/80 to-transparent" />
         <h3 className="absolute bottom-2 left-3 right-3 font-display text-sm font-bold text-white drop-shadow truncate">
@@ -104,7 +112,6 @@ function WishlistCard({
         </h3>
       </div>
 
-      {/* Info */}
       <div className="p-3 flex-1 flex flex-col">
         <div className="text-xs text-muted-foreground">
           {game.developer}
@@ -121,14 +128,12 @@ function WishlistCard({
         )}
 
         <div className="mt-auto pt-3 flex items-center justify-between gap-2">
-          {/* Price */}
           <span className="text-sm font-bold text-brand">
             {game.price == null || game.price === 0
               ? t("common.free")
               : t("common.price", { price: game.price.toFixed(2) })}
           </span>
 
-          {/* Actions */}
           <div className="flex items-center gap-1.5">
             <button
               onClick={onRemove}
