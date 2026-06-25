@@ -133,3 +133,6 @@
   transition: transform 0.15s ease, box-shadow 0.2s ease;
   &:hover { transform: translateY(-1px); box-shadow: 0 6px 20px -6px var(--brand); }
 }
+
+/* === Animations === */
+@import "../src/styles/animations.css";
