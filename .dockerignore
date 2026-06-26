@@ -9,3 +9,7 @@ target
 *.md
 LICENSE
 data/
+
+!mvnw
+!.mvn/
+!pom.xml
