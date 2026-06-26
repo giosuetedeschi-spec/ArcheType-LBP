@@ -13,6 +13,30 @@ export interface Game {
   genres?: string;
   description?: string;
   headerImageUrl?: string;
+  multiplayer?: boolean;
+}
+
+export interface GameFilterRequest {
+  search?: string;
+  genre?: string;
+  developer?: string;
+  minPrice?: number;
+  maxPrice?: number;
+  minRating?: number;
+  releasedAfter?: string;
+  releasedBefore?: string;
+  sortBy?: string;
+  sortDir?: string;
+  page?: number;
+  size?: number;
+}
+
+export interface PagedResponse {
+  content: Game[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
 }
 
 export interface UserGame {
@@ -47,6 +71,22 @@ export const gameApi = {
   update: (id: number, game: Partial<Game>) => fetchJSON<Game>(`${API_BASE}/games/${id}`, { method: "PUT", body: JSON.stringify(game) }),
   delete: (id: number) => fetchJSON<void>(`${API_BASE}/games/${id}`, { method: "DELETE" }),
   search: (q: string) => fetchJSON<Game[]>(`${API_BASE}/games/search?q=${encodeURIComponent(q)}`),
+  filter: (req: GameFilterRequest) => {
+    const params = new URLSearchParams();
+    if (req.search) params.set("name", req.search);
+    if (req.genre) params.set("genre", req.genre);
+    if (req.developer) params.set("developer", req.developer);
+    if (req.minPrice != null) params.set("minPrice", String(req.minPrice));
+    if (req.maxPrice != null) params.set("maxPrice", String(req.maxPrice));
+    if (req.minRating != null) params.set("minRating", String(req.minRating));
+    if (req.releasedAfter) params.set("releasedAfter", req.releasedAfter);
+    if (req.releasedBefore) params.set("releasedBefore", req.releasedBefore);
+    if (req.sortBy) params.set("sortBy", req.sortBy);
+    if (req.sortDir) params.set("sortDir", req.sortDir);
+    if (req.page != null) params.set("page", String(req.page));
+    if (req.size != null) params.set("size", String(req.size));
+    return fetchJSON<PagedResponse>(`${API_BASE}/games/filter?${params.toString()}`);
+  },
 };
 
 // User Games API
