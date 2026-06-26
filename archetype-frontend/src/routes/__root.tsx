@@ -1,4 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
+import { ColorblindProvider } from "@/contexts/ColorblindContext";
 import {
   Outlet,
   Link,
@@ -118,8 +119,9 @@ function RootComponent() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      {/* Required: nested routes render here. Removing <Outlet /> breaks all child routes. */}
-      <Outlet />
+      <ColorblindProvider>
+        <Outlet />
+      </ColorblindProvider>
     </QueryClientProvider>
   );
 }
