@@ -10,12 +10,6 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 sm:px-6">
           <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold">
-            <span className="grid h-9 w-9 place-items-center rounded-lg bg-[image:var(--gradient-brand)] text-brand-foreground">
-              <Gamepad2 className="h-5 w-5" />
-            </span>
-            <span>SteamStats</span>
-          </Link>
-          <nav className="hidden flex-1 items-center gap-1 md:flex">
             <NavLink to="/" icon={<LayoutGrid className="h-4 w-4" />}>Dashboard</NavLink>
             <NavLink to="/catalog" icon={<Search className="h-4 w-4" />}>Catalogo</NavLink>
             <NavLink to="/library" icon={<Library className="h-4 w-4" />}>Libreria</NavLink>
