@@ -3,6 +3,7 @@ import { Link } from "@tanstack/react-router";
 import { Library, LayoutGrid, Gamepad2, Search } from "lucide-react";
 import type { ReactNode } from "react";
 import { ColorblindToggle } from "@/components/ColorblindToggle";
+import { LanguageToggle } from "@/components/LanguageToggle";
 
 const ANIMATIONS_DEFAULT = !window.matchMedia?.("(prefers-reduced-motion: reduce)").matches;
 
@@ -44,6 +45,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <NavLink to="/library" icon={<Library className="h-4 w-4" />}>Libreria</NavLink>
           </nav>
           <div className="ml-auto flex items-center gap-3">
+            <LanguageToggle />
             <ColorblindToggle />
             <div className="hidden text-right sm:block">
               <div className="text-sm font-medium">Player_01</div>
