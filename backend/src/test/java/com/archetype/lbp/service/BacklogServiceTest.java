@@ -44,7 +44,7 @@ class BacklogServiceTest {
 
         game = new Game();
         game.setId(1L);
-        game.setAppid(730);
+        game.setSteamAppId(730);
         game.setName("Counter-Strike 2");
     }
 

@@ -31,11 +31,27 @@ public class User {
     @NotBlank
     private String passwordHash;
 
+    @Column(name = "avatar_url")
+    private String avatarUrl;
+
+    @Column(name = "status")
+    private String status = "online";
+
+    private String bio;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
+
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt = LocalDateTime.now();
 
     @PrePersist
     protected void onCreate() {
         if (createdAt == null) createdAt = LocalDateTime.now();
+    }
+
+    @PreUpdate
+    protected void onUpdate() {
+        updatedAt = LocalDateTime.now();
     }
 }

@@ -34,7 +34,7 @@ class UserServiceTest {
         user.setId(1L);
         user.setUsername("alice");
         user.setEmail("alice@example.com");
-        user.setPassword("hashed");
+        user.setPasswordHash("hashed");
     }
 
     @Test

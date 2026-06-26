@@ -97,7 +97,7 @@ public class BacklogService {
         game.setId(b.getGame().getId());
         game.setName(b.getGame().getName());
         game.setHeaderImageUrl(b.getGame().getHeaderImageUrl());
-        game.setDeveloper(b.getGame().getDeveloper() != null ? b.getGame().getDeveloper().getName() : null);
+        game.setDeveloper(b.getGame().getDeveloper());
         r.setGame(game);
 
         return r;

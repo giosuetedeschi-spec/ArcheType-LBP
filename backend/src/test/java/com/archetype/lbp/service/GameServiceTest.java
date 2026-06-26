@@ -11,6 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -34,24 +35,15 @@ class GameServiceTest {
 
     @BeforeEach
     void setUp() {
-        Developer dev = new Developer();
-        dev.setId(1L);
-        dev.setName("Valve");
-
-        Publisher pub = new Publisher();
-        pub.setId(1L);
-        pub.setName("Valve");
-
         game = new Game();
         game.setId(1L);
-        game.setAppid(730);
+        game.setSteamAppId(730);
         game.setName("Counter-Strike 2");
         game.setPrice(BigDecimal.ZERO);
         game.setRating(new BigDecimal("4.5"));
-        game.setDeveloper(dev);
-        game.setPublisher(pub);
+        game.setDeveloper("Valve");
+        game.setPublisher("Valve");
         game.setDescription("FPS game");
-        game.setMultiplayer(true);
     }
 
     @Test
@@ -123,14 +115,23 @@ class GameServiceTest {
     }
 
     @Test
-    void toResponse_mapsAllFields() {
-        var response = gameService.toResponse(game);
+    void create_responseHasExpectedFields() {
+        when(gameRepo.save(any(Game.class))).thenReturn(game);
+        var req = new GameRequest();
+        req.setSteamAppId(730);
+        req.setName("Counter-Strike 2");
+        req.setDeveloper("Valve");
+        req.setPublisher("Valve");
+        req.setPrice(BigDecimal.ZERO);
+        req.setRating(new BigDecimal("4.5"));
+        req.setDescription("FPS game");
+
+        var response = gameService.create(req);
         assertThat(response.getId()).isEqualTo(1L);
         assertThat(response.getSteamAppId()).isEqualTo(730);
         assertThat(response.getName()).isEqualTo("Counter-Strike 2");
         assertThat(response.getDeveloper()).isEqualTo("Valve");
         assertThat(response.getPublisher()).isEqualTo("Valve");
         assertThat(response.getRating()).isEqualByComparingTo(new BigDecimal("4.5"));
-        assertThat(response.getMultiplayer()).isTrue();
     }
 }

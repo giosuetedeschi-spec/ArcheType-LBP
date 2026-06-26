@@ -56,7 +56,7 @@ class GlobalExceptionHandlerTest {
 
     @Test
     void errorResponse_hasTimestamp() {
-        var err = new ErrorResponse(404, "Not Found", "missing");
+        var err = new ErrorResponse(404, "Not Found", "missing", java.time.LocalDateTime.now());
         assertThat(err.getTimestamp()).isNotNull();
         assertThat(err.getStatus()).isEqualTo(404);
         assertThat(err.getError()).isEqualTo("Not Found");
