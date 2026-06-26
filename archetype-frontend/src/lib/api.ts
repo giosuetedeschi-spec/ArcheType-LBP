@@ -105,6 +105,36 @@ export const userApi = {
   list: () => fetchJSON<User[]>(`${API_BASE}/users`),
   get: (id: number) => fetchJSON<User>(`${API_BASE}/users/${id}`),
   create: (user: Partial<User> & { password: string }) => fetchJSON<User>(`${API_BASE}/users`, { method: "POST", body: JSON.stringify(user) }),
+  update: (id: number, body: { avatarUrl?: string; status?: string; bio?: string }) =>
+    fetchJSON<User>(`${API_BASE}/users/${id}`, { method: "PUT", body: JSON.stringify(body) }),
+};
+
+// Stats API
+export const statsApi = {
+  get: (userId: number) => fetchJSON<{
+    totalGames: number;
+    wishlistCount: number;
+    playingCount: number;
+    finishedCount: number;
+    abandonedCount: number;
+    gamesByGenre: Record<string, number>;
+    gamesByDeveloper: Record<string, number>;
+    gamesByYear: Record<string, number>;
+    averageRating: number;
+    totalSpent: number;
+  }>(`${API_BASE}/users/${userId}/stats`),
+};
+
+// Friends API
+export const friendsApi = {
+  list: (userId: number) => fetchJSON<{ friendId: number; username: string; avatarUrl?: string; status: string; createdAt: string }[]>(`${API_BASE}/users/${userId}/friends`),
+  pending: (userId: number) => fetchJSON<{ friendId: number; username: string; avatarUrl?: string; status: string; createdAt: string }[]>(`${API_BASE}/users/${userId}/friends/pending`),
+  add: (userId: number, friendId: number) =>
+    fetchJSON<void>(`${API_BASE}/users/${userId}/friends`, { method: "POST", body: JSON.stringify({ friendId }) }),
+  update: (userId: number, friendId: number, action: string) =>
+    fetchJSON<void>(`${API_BASE}/users/${userId}/friends/${friendId}`, { method: "PUT", body: JSON.stringify({ action }) }),
+  remove: (userId: number, friendId: number) =>
+    fetchJSON<void>(`${API_BASE}/users/${userId}/friends/${friendId}`, { method: "DELETE" }),
 };
 
 export const statsApi = {
