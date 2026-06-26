@@ -189,3 +189,6 @@
 [data-colorblind="protanopia"] .status-playing::before,
 [data-colorblind="deuteranopia"] .status-playing::before { background: var(--status-playing); }
 [data-colorblind="tritanopia"] .status-playing::before { background: var(--status-playing); }
+
+/* === Animations === */
+@import "../src/styles/animations.css";

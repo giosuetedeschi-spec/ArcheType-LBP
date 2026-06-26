@@ -105,7 +105,7 @@ function LibraryPage() {
               <span
                 className="rounded-full px-1.5 py-0.5 text-xs"
                 style={{
-                  background: active ? "rgb(0 0 0 / 0.15)" : "var(--surface-2)",
+                  background: active ? "oklch(from var(--foreground) l c h / 0.12)" : "var(--surface-2)",
                 }}
               >
                 {count}

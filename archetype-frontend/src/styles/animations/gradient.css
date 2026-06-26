@@ -1,0 +1,41 @@
+/*
+ * Gradient shift — animazione sfondo globale
+ * Usa @property per interpolazione fluida dell'angle.
+ * Sotto tutto il contenuto, opacity bassa, zero distrazione.
+ */
+
+@property --gradient-angle {
+  syntax: '<angle>';
+  initial-value: 135deg;
+  inherits: false;
+}
+
+body[data-animations="true"]::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+
+  background: linear-gradient(
+    var(--gradient-angle),
+    oklch(from var(--color-brand) l c h / 0.08),
+    oklch(from var(--color-accent) l c h / 0.06) 50%,
+    oklch(from var(--color-brand) l c h / 0.08)
+  );
+
+  animation: gradientShift 25s linear infinite;
+}
+
+@keyframes gradientShift {
+  0%   { --gradient-angle: 135deg; }
+  50%  { --gradient-angle: 225deg; }
+  100% { --gradient-angle: 315deg; }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  body[data-animations="true"]::before {
+    animation: none;
+  }
+}
