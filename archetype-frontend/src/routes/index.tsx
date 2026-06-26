@@ -5,6 +5,11 @@ import { StatusBadge } from "@/components/StatusBadge";
 import { gameApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Clock, Trophy, Heart, XCircle, ArrowRight, Loader2 } from "lucide-react";
+import { useLibrary } from "@/lib/library-store";
+import { GameCard } from "@/components/GameCard";
+import { Clock, Trophy, Heart, XCircle, ArrowRight } from "lucide-react";
+import { STATUS_LABELS } from "@/components/StatusBadge";
+import { GAMES } from "@/lib/games-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -17,13 +22,16 @@ export const Route = createFileRoute("/")({
 });
 
 function Home() {
-  const { data: games, isLoading, error } = useQuery({
-    queryKey: ["games"],
-    queryFn: gameApi.list,
-  });
-
-  const featured = (games ?? []).slice(0, 6);
-  const totalGames = games?.length ?? 0;
+  const entries = useLibrary((s) => s.entries);
+  const list = Object.values(entries);
+  const totalHours = list.reduce((sum, e) => sum + e.hoursPlayed, 0);
+  const byStatus = {
+    playing: list.filter((e) => e.status === "playing").length,
+    finished: list.filter((e) => e.status === "finished").length,
+    abandoned: list.filter((e) => e.status === "abandoned").length,
+    wishlist: list.filter((e) => e.status === "wishlist").length,
+  };
+  const featured = GAMES.slice(0, 6);
 
   return (
     <AppLayout>
@@ -36,8 +44,7 @@ function Home() {
             La tua collezione,<br /> finalmente organizzata.
           </h1>
           <p className="mt-3 max-w-xl text-muted-foreground">
-            Esplora {totalGames > 0 ? `${totalResults}+ giochi` : "il catalogo"}, organizza il backlog
-            e tieni traccia delle tue statistiche di gioco.
+            Esplora oltre {GAMES.length}+ giochi, organizza il backlog e tieni traccia delle tue ore di gioco.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link to="/catalog" className="btn-brand inline-flex items-center gap-2 px-5 py-2.5 text-sm">

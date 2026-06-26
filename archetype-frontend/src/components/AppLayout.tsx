@@ -1,6 +1,7 @@
 import { Link } from "@tanstack/react-router";
 import { Library, LayoutGrid, Gamepad2, Search } from "lucide-react";
 import type { ReactNode } from "react";
+import { ColorblindToggle } from "@/components/ColorblindToggle";
 
 export function AppLayout({ children }: { children: ReactNode }) {
   return (
@@ -19,6 +20,7 @@ export function AppLayout({ children }: { children: ReactNode }) {
             <NavLink to="/library" icon={<Library className="h-4 w-4" />}>Libreria</NavLink>
           </nav>
           <div className="ml-auto flex items-center gap-3">
+            <ColorblindToggle />
             <div className="hidden text-right sm:block">
               <div className="text-sm font-medium">Player_01</div>
               <div className="text-xs text-muted-foreground">Lvl 42</div>

@@ -1,32 +1,59 @@
 package com.archetype.lbp.controller;
 
-import com.archetype.lbp.Game;
+import com.archetype.lbp.dto.*;
 import com.archetype.lbp.service.GameService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import java.util.List;
 
-@RestController @RequestMapping("/api/games")
-@RequiredArgsConstructor @CrossOrigin(origins = "*")
+@RestController
+@RequestMapping("/api/games")
+@RequiredArgsConstructor
 public class GameController {
     private final GameService gameService;
 
     @GetMapping
-    public List<Game> list() { return gameService.listAll(); }
+    public ResponseEntity<ApiResponse<List<GameResponse>>> list() {
+        return ResponseEntity.ok(ApiResponse.ok(gameService.listAll()));
+    }
+
+    @GetMapping("/filter")
+    public ResponseEntity<ApiResponse<PagedResponse<GameResponse>>> filter(GameFilterRequest filter) {
+        return ResponseEntity.ok(ApiResponse.ok(gameService.filter(filter)));
+    }
 
     @GetMapping("/{id}")
-    public Game get(@PathVariable Long id) { return gameService.getById(id); }
+    public ResponseEntity<ApiResponse<GameResponse>> get(@PathVariable Long id) {
+        return ResponseEntity.ok(ApiResponse.ok(gameService.getById(id)));
+    }
 
     @PostMapping
-    public Game create(@RequestBody Game game) { return gameService.create(game); }
+    public ResponseEntity<ApiResponse<GameResponse>> create(@Valid @RequestBody GameRequest req) {
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok(gameService.create(req), "Game created"));
+    }
 
     @PutMapping("/{id}")
-    public Game update(@PathVariable Long id, @RequestBody Game game) { return gameService.update(id, game); }
+    public ResponseEntity<ApiResponse<GameResponse>> update(@PathVariable Long id, @Valid @RequestBody GameRequest req) {
+        return ResponseEntity.ok(ApiResponse.ok(gameService.update(id, req), "Game updated"));
+    }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> delete(@PathVariable Long id) { gameService.delete(id); return ResponseEntity.ok().build(); }
+    public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
+        gameService.delete(id);
+        return ResponseEntity.ok(ApiResponse.ok(null, "Game deleted"));
+    }
 
     @GetMapping("/search")
-    public List<Game> search(@RequestParam String q) { return gameService.search(q); }
+    public ResponseEntity<ApiResponse<List<GameResponse>>> search(@RequestParam String q) {
+        return ResponseEntity.ok(ApiResponse.ok(gameService.search(q)));
+    }
+
+    @GetMapping("/genre/{genre}")
+    public ResponseEntity<ApiResponse<List<GameResponse>>> byGenre(@PathVariable String genre) {
+        return ResponseEntity.ok(ApiResponse.ok(gameService.byGenre(genre)));
+    }
 }
