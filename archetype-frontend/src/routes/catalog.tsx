@@ -1,9 +1,8 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
-import { gameApi } from "@/lib/api";
-import { useState, useEffect } from "react";
 import { GameCard } from "@/components/GameCard";
+import { GAMES } from "@/lib/games-data";
 import {
   CatalogFiltersBar,
   FiltersSidebar,
@@ -23,6 +22,7 @@ export const Route = createFileRoute("/catalog")({
 
 function Catalog() {
   const [filters, setFilters] = useState<CatalogFilters>(DEFAULT_FILTERS);
+  const games = GAMES;
 
   const results = useMemo(() => {
     const q = filters.search.trim().toLowerCase();

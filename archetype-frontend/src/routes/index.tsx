@@ -1,11 +1,10 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { AppLayout } from "@/components/AppLayout";
-import { gameApi, userGameApi } from "@/lib/api";
 import { useLibrary } from "@/lib/library-store";
-import { useState, useEffect } from "react";
 import { GameCard } from "@/components/GameCard";
 import { Clock, Trophy, Heart, XCircle, ArrowRight } from "lucide-react";
 import { STATUS_LABELS } from "@/components/StatusBadge";
+import { GAMES } from "@/lib/games-data";
 
 export const Route = createFileRoute("/")({
   head: () => ({
@@ -27,7 +26,7 @@ function Home() {
     abandoned: list.filter((e) => e.status === "abandoned").length,
     wishlist: list.filter((e) => e.status === "wishlist").length,
   };
-  const featured = games.slice(0, 6);
+  const featured = GAMES.slice(0, 6);
 
   return (
     <AppLayout>
@@ -37,7 +36,7 @@ function Home() {
           <p className="text-sm font-medium text-brand">Bentornato, Player_01</p>
           <h1 className="mt-2 text-3xl font-bold sm:text-4xl">La tua collezione Steam,<br /> finalmente organizzata.</h1>
           <p className="mt-3 max-w-xl text-muted-foreground">
-            Esplora oltre {games.length}+ giochi, organizza il backlog e tieni traccia delle tue ore di gioco.
+            Esplora oltre {GAMES.length}+ giochi, organizza il backlog e tieni traccia delle tue ore di gioco.
           </p>
           <div className="mt-5 flex flex-wrap gap-3">
             <Link to="/catalog" className="btn-brand inline-flex items-center gap-2 px-5 py-2.5 text-sm">
