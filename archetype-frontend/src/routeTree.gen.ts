@@ -9,14 +9,44 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as WishlistRouteImport } from './routes/wishlist'
+import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as LoadingRouteImport } from './routes/loading'
 import { Route as LibraryRouteImport } from './routes/library'
+import { Route as LeaderboardRouteImport } from './routes/leaderboard'
+import { Route as FriendsRouteImport } from './routes/friends'
 import { Route as CatalogRouteImport } from './routes/catalog'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as GameIdRouteImport } from './routes/game.$id'
 
+const WishlistRoute = WishlistRouteImport.update({
+  id: '/wishlist',
+  path: '/wishlist',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LoadingRoute = LoadingRouteImport.update({
+  id: '/loading',
+  path: '/loading',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LibraryRoute = LibraryRouteImport.update({
   id: '/library',
   path: '/library',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const LeaderboardRoute = LeaderboardRouteImport.update({
+  id: '/leaderboard',
+  path: '/leaderboard',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FriendsRoute = FriendsRouteImport.update({
+  id: '/friends',
+  path: '/friends',
   getParentRoute: () => rootRouteImport,
 } as any)
 const CatalogRoute = CatalogRouteImport.update({
@@ -38,44 +68,127 @@ const GameIdRoute = GameIdRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/catalog': typeof CatalogRoute
+  '/friends': typeof FriendsRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/library': typeof LibraryRoute
+  '/loading': typeof LoadingRoute
+  '/profile': typeof ProfileRoute
+  '/wishlist': typeof WishlistRoute
   '/game/$id': typeof GameIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/catalog': typeof CatalogRoute
+  '/friends': typeof FriendsRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/library': typeof LibraryRoute
+  '/loading': typeof LoadingRoute
+  '/profile': typeof ProfileRoute
+  '/wishlist': typeof WishlistRoute
   '/game/$id': typeof GameIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/catalog': typeof CatalogRoute
+  '/friends': typeof FriendsRoute
+  '/leaderboard': typeof LeaderboardRoute
   '/library': typeof LibraryRoute
+  '/loading': typeof LoadingRoute
+  '/profile': typeof ProfileRoute
+  '/wishlist': typeof WishlistRoute
   '/game/$id': typeof GameIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/catalog' | '/library' | '/game/$id'
+  fullPaths:
+    | '/'
+    | '/catalog'
+    | '/friends'
+    | '/leaderboard'
+    | '/library'
+    | '/loading'
+    | '/profile'
+    | '/wishlist'
+    | '/game/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/catalog' | '/library' | '/game/$id'
-  id: '__root__' | '/' | '/catalog' | '/library' | '/game/$id'
+  to:
+    | '/'
+    | '/catalog'
+    | '/friends'
+    | '/leaderboard'
+    | '/library'
+    | '/loading'
+    | '/profile'
+    | '/wishlist'
+    | '/game/$id'
+  id:
+    | '__root__'
+    | '/'
+    | '/catalog'
+    | '/friends'
+    | '/leaderboard'
+    | '/library'
+    | '/loading'
+    | '/profile'
+    | '/wishlist'
+    | '/game/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CatalogRoute: typeof CatalogRoute
+  FriendsRoute: typeof FriendsRoute
+  LeaderboardRoute: typeof LeaderboardRoute
   LibraryRoute: typeof LibraryRoute
+  LoadingRoute: typeof LoadingRoute
+  ProfileRoute: typeof ProfileRoute
+  WishlistRoute: typeof WishlistRoute
   GameIdRoute: typeof GameIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/wishlist': {
+      id: '/wishlist'
+      path: '/wishlist'
+      fullPath: '/wishlist'
+      preLoaderRoute: typeof WishlistRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/loading': {
+      id: '/loading'
+      path: '/loading'
+      fullPath: '/loading'
+      preLoaderRoute: typeof LoadingRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/library': {
       id: '/library'
       path: '/library'
       fullPath: '/library'
       preLoaderRoute: typeof LibraryRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/leaderboard': {
+      id: '/leaderboard'
+      path: '/leaderboard'
+      fullPath: '/leaderboard'
+      preLoaderRoute: typeof LeaderboardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/friends': {
+      id: '/friends'
+      path: '/friends'
+      fullPath: '/friends'
+      preLoaderRoute: typeof FriendsRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/catalog': {
@@ -105,7 +218,12 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CatalogRoute: CatalogRoute,
+  FriendsRoute: FriendsRoute,
+  LeaderboardRoute: LeaderboardRoute,
   LibraryRoute: LibraryRoute,
+  LoadingRoute: LoadingRoute,
+  ProfileRoute: ProfileRoute,
+  WishlistRoute: WishlistRoute,
   GameIdRoute: GameIdRoute,
 }
 export const routeTree = rootRouteImport

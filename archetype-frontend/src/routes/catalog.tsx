@@ -124,8 +124,6 @@ const sortMap: Record<string, string> = {
   "year-desc": "releaseDate",
 };
 
-import { useQuery } from "@tanstack/react-query";
-
 function useGameFilter(filters: GameFilterRequest) {
   return useQuery<PagedResponse>({
     queryKey: ["games", "filter", filters],

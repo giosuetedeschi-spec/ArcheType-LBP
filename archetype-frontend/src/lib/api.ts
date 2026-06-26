@@ -111,7 +111,6 @@ export const userApi = {
   create: (user: Partial<User> & { password: string }) => fetchJSON<User>(`${API_BASE}/users`, { method: "POST", body: JSON.stringify(user) }),
   update: (id: number, body: { avatarUrl?: string; status?: string; bio?: string }) =>
     fetchJSON<User>(`${API_BASE}/users/${id}`, { method: "PUT", body: JSON.stringify(body) }),
-<<<<<<< HEAD
 };
 
 // Stats API
@@ -140,21 +139,4 @@ export const friendsApi = {
     fetchJSON<void>(`${API_BASE}/users/${userId}/friends/${friendId}`, { method: "PUT", body: JSON.stringify({ action }) }),
   remove: (userId: number, friendId: number) =>
     fetchJSON<void>(`${API_BASE}/users/${userId}/friends/${friendId}`, { method: "DELETE" }),
-};
-
-export const statsApi = {
-  get: (userId: number) => fetchJSON<{
-    totalGames: number;
-    wishlistCount: number;
-    playingCount: number;
-    finishedCount: number;
-    abandonedCount: number;
-    gamesByGenre: Record<string, number>;
-    gamesByDeveloper: Record<string, number>;
-    gamesByYear: Record<string, number>;
-    averageRating: number;
-    totalSpent: number;
-  }>(`${API_BASE}/users/${userId}/stats`),
-=======
->>>>>>> origin/feature/user-profile
 };

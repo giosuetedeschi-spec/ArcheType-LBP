@@ -18,7 +18,7 @@ export const Route = createFileRoute("/leaderboard")({
 const USER_ID = 1;
 
 const PALETTE = [
- -playing)",
+  "var(--status-playing)",
   "var(--status-finished)",
   "var(--status-wishlist)",
   "var(--color-brand)",

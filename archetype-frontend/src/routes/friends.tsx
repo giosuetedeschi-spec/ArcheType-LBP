@@ -92,10 +92,11 @@ function FriendsPage() {
     <AppLayout>
       <div className="mx-auto max-w-2xl space-y-6">
         {/* Header */}
-        <div className="flex items-center justify-between1 className="flex items-center gap-2 text-2xl font-bold sm:text-3xl">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center gap-2">
             <Users className="h-6 w-6 text-brand" />
-            Amici
-          </h1>
+            <h1 className="text-2xl font-bold sm:text-3xl">Amici</h1>
+          </div>
           <button
             onClick={() => setShowAdd(true)}
             className="btn-brand inline-flex items-center gap-2 px-4 py-2 text-sm"
@@ -156,7 +157,7 @@ function FriendsPage() {
                 <PendingCard
                   key={f.friendId}
                   friend={f}
-                  onAccept={() => actionMutation.mutate({ friendId: f.friendId," })}
+                  onAccept={() => actionMutation.mutate({ friendId: f.friendId, action: "accept" })}
                   onReject={() => actionMutation.mutate({ friendId: f.friendId, action: "reject" })}
                 />
               ))
