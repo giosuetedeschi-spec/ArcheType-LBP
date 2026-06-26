@@ -1,6 +1,6 @@
 import { Search, X, SlidersHorizontal } from "lucide-react";
 import { useState } from "react";
-import { ALL_GENRES, ALL_TAGS, ALL_PLATFORMS } from "@/lib/games-data";
+import { ALL_GENRES, ALL_TAGS, ALL_PLATFORMS } from "@/lib/filter-options";
 
 export interface CatalogFilters {
   search: string;
