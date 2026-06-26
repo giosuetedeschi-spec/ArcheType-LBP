@@ -106,3 +106,18 @@ export const userApi = {
   get: (id: number) => fetchJSON<User>(`${API_BASE}/users/${id}`),
   create: (user: Partial<User> & { password: string }) => fetchJSON<User>(`${API_BASE}/users`, { method: "POST", body: JSON.stringify(user) }),
 };
+
+export const statsApi = {
+  get: (userId: number) => fetchJSON<{
+    totalGames: number;
+    wishlistCount: number;
+    playingCount: number;
+    finishedCount: number;
+    abandonedCount: number;
+    gamesByGenre: Record<string, number>;
+    gamesByDeveloper: Record<string, number>;
+    gamesByYear: Record<string, number>;
+    averageRating: number;
+    totalSpent: number;
+  }>(`${API_BASE}/users/${userId}/stats`),
+};

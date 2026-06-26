@@ -2,10 +2,9 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useMemo, useState } from "react";
 import { AppLayout } from "@/components/AppLayout";
 import type { GameStatus } from "@/components/StatusBadge";
-import { useLibrary } from "@/lib/library-store";
 import { GameCard } from "@/components/GameCard";
 import { STATUS_LABELS } from "@/components/StatusBadge";
-import { gameApi, type Game } from "@/lib/api";
+import { gameApi, userGameApi } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Heart, Loader2 } from "lucide-react";
 
@@ -19,6 +18,8 @@ export const Route = createFileRoute("/library")({
   component: LibraryPage,
 });
 
+const USER_ID = 1; // ponytail: single-user until auth lands
+
 const TABS: { key: GameStatus | "all"; label: string; color: string }[] = [
   { key: "all", label: "Tutti", color: "var(--brand)" },
   { key: "wishlist", label: STATUS_LABELS.wishlist, color: "var(--status-wishlist)" },
@@ -28,42 +29,54 @@ const TABS: { key: GameStatus | "all"; label: string; color: string }[] = [
 ];
 
 function LibraryPage() {
-  const entries = useLibrary((s) => s.entries);
   const [tab, setTab] = useState<GameStatus | "all">("all");
   const [search, setSearch] = useState("");
 
-  const { data: games, isLoading } = useQuery({
+  const { data: games } = useQuery({
     queryKey: ["games"],
-    queryFn: gameApi.list,
+    queryFn: () => gameApi.list(),
   });
 
-  const counted = useMemo(() => {
-    const list = Object.values(entries);
+  const { data: libraryEntries } = useQuery({
+    queryKey: ["userGames", USER_ID],
+    queryFn: () => userGameApi.list(USER_ID),
+  });
+
+  const entryMap = useMemo(() => {
+    const map: Record<number, string> = {};
+    (libraryEntries ?? []).forEach((e) => { map[e.gameId] = e.status; });
+    return map;
+  }, [libraryEntries]);
+
+  const counts = useMemo(() => {
+    const list = Object.values(entryMap);
     return {
       all: list.length,
-      wishlist: list.filter((e) => e.status === "wishlist").length,
-      playing: list.filter((e) => e.status === "playing").length,
-      finished: list.filter((e) => e.status === "finished").length,
-      abandoned: list.filter((e) => e.status === "abandoned").length,
+      wishlist: list.filter((s) => s === "wishlist").length,
+      playing: list.filter((s) => s === "playing").length,
+      finished: list.filter((s) => s === "finished").length,
+      abandoned: list.filter((s) => s === "abandoned").length,
     };
-  }, [entries]);
+  }, [entryMap]);
 
   const gameMap = useMemo(() => {
-    const map: Record<number, Game> = {};
-    (games ?? []).forEach((g) => { map[g.id] = g; });
+    const map: Record<number, (typeof games)> = {};
+    (games ?? []).forEach((g) => { map[g.id] = g as any; });
     return map;
   }, [games]);
 
   const results = useMemo(() => {
     const q = search.trim().toLowerCase();
     return (games ?? []).filter((g) => {
-      const e = entries[g.id];
-      if (!e) return false;
-      if (tab !== "all" && e.status !== tab) return false;
+      const status = entryMap[g.id];
+      if (!status) return false;
+      if (tab !== "all" && status !== tab) return false;
       if (q && !g.name.toLowerCase().includes(q)) return false;
       return true;
     });
-  }, [entries, tab, search, games]);
+  }, [entryMap, tab, search, games]);
+
+  const isLoading = !games || !libraryEntries;
 
   return (
     <AppLayout>
@@ -86,7 +99,7 @@ function LibraryPage() {
       <div className="card-surface mb-6 flex gap-1 overflow-x-auto p-1.5">
         {TABS.map((t) => {
           const active = tab === t.key;
-          const count = counts[t.key as keyof typeof counted];
+          const count = counts[t.key as keyof typeof counts];
           return (
             <button
               key={t.key}
@@ -133,7 +146,7 @@ function LibraryPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {results.map((g) => <GameCard key={g.id} game={g} />)}
+          {results.map((g: any) => <GameCard key={g.id} game={g} />)}
         </div>
       )}
     </AppLayout>

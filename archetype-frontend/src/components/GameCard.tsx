@@ -1,12 +1,11 @@
 import { Link } from "@tanstack/react-router";
-import { Star } from "lucide-react";
+import { Star, Monitor, Apple, Terminal } from "lucide-react";
 import type { Game } from "@/lib/api";
-import { useLibrary } from "@/lib/library-store";
+import { useLibrary } from "@/hooks/useLibrary";
 import { StatusBadge } from "./StatusBadge";
 
 export function GameCard({ game }: { game: Game }) {
   const entries = useLibrary((s) => s.entries);
-  const entry = entries[game.id];
 
   const coverStyle = game.headerImageUrl
     ? { backgroundImage: `url(${game.headerImageUrl})`, backgroundSize: "cover", backgroundPosition: "center" }
@@ -24,7 +23,7 @@ export function GameCard({ game }: { game: Game }) {
           <h3 className="font-display text-base font-bold leading-tight text-white drop-shadow">
             {game.name}
           </h3>
-          {entry && <StatusBadge status={entry.status} />}
+          {entries[game.id] && <StatusBadge status={entries[game.id].status} />}
         </div>
         {game.rating != null && (
           <div className="absolute right-2 top-2 flex items-center gap-1 rounded-md bg-black/60 px-2 py-1 text-xs font-semibold text-white backdrop-blur">
