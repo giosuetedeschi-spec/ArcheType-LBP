@@ -16,4 +16,12 @@ public class UserRequest {
     @NotBlank(message = "Password is required")
     @Size(min = 8, message = "Password must be at least 8 characters")
     private String password;
+
+    private String avatarUrl;
+
+    @Pattern(regexp = "^(online|offline|busy|away)?$", message = "Status must be one of: online, offline, busy, away")
+    private String status;
+
+    @Size(max = 500, message = "Bio must be under 500 characters")
+    private String bio;
 }

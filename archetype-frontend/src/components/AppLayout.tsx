@@ -34,6 +34,12 @@ export function AppLayout({ children }: { children: ReactNode }) {
       <header className="sticky top-0 z-40 border-b border-border bg-background/80 backdrop-blur-lg">
         <div className="mx-auto flex max-w-7xl items-center gap-6 px-4 py-3 sm:px-6">
           <Link to="/" className="flex items-center gap-2 font-display text-lg font-bold">
+            <span className="grid h-9 w-9 place-items-center rounded-lg bg-[image:var(--gradient-brand)] text-brand-foreground">
+              <Gamepad2 className="h-5 w-5" />
+            </span>
+            <span>SteamStats</span>
+          </Link>
+          <nav className="hidden flex-1 items-center gap-1 md:flex">
             <NavLink to="/" icon={<LayoutGrid className="h-4 w-4" />}>Dashboard</NavLink>
             <NavLink to="/catalog" icon={<Search className="h-4 w-4" />}>Catalogo</NavLink>
             <NavLink to="/library" icon={<Library className="h-4 w-4" />}>Libreria</NavLink>
@@ -44,13 +50,13 @@ export function AppLayout({ children }: { children: ReactNode }) {
           <div className="ml-auto flex items-center gap-3">
             <LanguageToggle />
             <ColorblindToggle />
-            <div className="hidden text-right sm:block">
+            <Link to="/profile" className="hidden text-right sm:block hover:opacity-80">
               <div className="text-sm font-medium">Player_01</div>
               <div className="text-xs text-muted-foreground">Lvl 42</div>
-            </div>
-            <div className="grid h-9 w-9 place-items-center rounded-full bg-surface-2 font-semibold text-brand">
+            </Link>
+            <Link to="/profile" className="grid h-9 w-9 place-items-center rounded-full bg-surface-2 font-semibold text-brand hover:ring-2 hover:ring-brand">
               P
-            </div>
+            </Link>
           </div>
         </div>
         <nav className="flex items-center gap-1 overflow-x-auto border-t border-border px-4 py-2 md:hidden">

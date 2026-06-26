@@ -28,6 +28,9 @@ public class UserController {
             r.setId(u.getId());
             r.setUsername(u.getUsername());
             r.setEmail(u.getEmail());
+            r.setAvatarUrl(u.getAvatarUrl());
+            r.setStatus(u.getStatus());
+            r.setBio(u.getBio());
             r.setCreatedAt(u.getCreatedAt());
             return r;
         }).collect(Collectors.toList());
@@ -42,8 +45,33 @@ public class UserController {
                     r.setId(u.getId());
                     r.setUsername(u.getUsername());
                     r.setEmail(u.getEmail());
+                    r.setAvatarUrl(u.getAvatarUrl());
+                    r.setStatus(u.getStatus());
+                    r.setBio(u.getBio());
                     r.setCreatedAt(u.getCreatedAt());
                     return ResponseEntity.ok(ApiResponse.ok(r));
+                })
+                .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<ApiResponse<UserResponse>> update(@PathVariable Long id, @RequestBody UserRequest req) {
+        return userRepo.findById(id)
+                .map(u -> {
+                    if (req.getAvatarUrl() != null) u.setAvatarUrl(req.getAvatarUrl());
+                    if (req.getStatus() != null) u.setStatus(req.getStatus());
+                    if (req.getBio() != null) u.setBio(req.getBio());
+                    userRepo.save(u);
+
+                    UserResponse r = new UserResponse();
+                    r.setId(u.getId());
+                    r.setUsername(u.getUsername());
+                    r.setEmail(u.getEmail());
+                    r.setAvatarUrl(u.getAvatarUrl());
+                    r.setStatus(u.getStatus());
+                    r.setBio(u.getBio());
+                    r.setCreatedAt(u.getCreatedAt());
+                    return ResponseEntity.ok(ApiResponse.ok(r, "Profile updated"));
                 })
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", id));
     }
