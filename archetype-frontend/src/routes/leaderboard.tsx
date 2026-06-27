@@ -8,7 +8,7 @@ import { Trophy, Loader2 } from "lucide-react";
 export const Route = createFileRoute("/leaderboard")({
   head: () => ({
     meta: [
-      { title: "Classifica — ArcheType" },
+      { title: "Classifica — VirtualZ" },
       { name: "description", content: "Classifiche per genere, developer e anno." },
     ],
   }),

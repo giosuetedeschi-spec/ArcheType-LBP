@@ -9,7 +9,7 @@ import { useState } from "react";
 export const Route = createFileRoute("/friends")({
   head: () => ({
     meta: [
-      { title: "Amici — ArcheType" },
+      { title: "Amici — VirtualZ" },
       { name: "description", content: "Gestisci amici e richieste di amicizia." },
     ],
   }),

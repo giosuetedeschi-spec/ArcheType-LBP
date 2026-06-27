@@ -9,7 +9,7 @@ import { useState } from "react";
 export const Route = createFileRoute("/profile")({
   head: () => ({
     meta: [
-      { title: "Profilo — ArcheType" },
+      { title: "Profilo — VirtualZ" },
       { name: "description", content: "Il tuo profilo gamer, statistiche e preferenze." },
     ],
   }),

@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — ArcheType" },
+      { title: "VirtualZ — Dashboard" },
       { name: "description", content: "La tua dashboard per organizzare la libreria giochi." },
     ],
   }),
