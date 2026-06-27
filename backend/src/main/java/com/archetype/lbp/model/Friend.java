@@ -1,4 +1,4 @@
-package com.archetype.lbp;
+package com.archetype.lbp.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -10,8 +10,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "game_sessions")
-public class GameSession {
+@Table(name = "friends", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"user_id", "friend_id"})
+})
+public class Friend {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,17 +23,11 @@ public class GameSession {
     private User user;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "game_id", nullable = false)
-    private Game game;
+    @JoinColumn(name = "friend_id", nullable = false)
+    private User friend;
 
-    @Column(name = "session_start", nullable = false)
-    private LocalDateTime sessionStart;
-
-    @Column(name = "session_end")
-    private LocalDateTime sessionEnd;
-
-    @Column(name = "duration_min")
-    private Integer durationMin;
+    @Column(length = 20)
+    private String status = "pending";
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();

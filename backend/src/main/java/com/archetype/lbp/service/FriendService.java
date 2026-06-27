@@ -1,7 +1,8 @@
 package com.archetype.lbp.service;
 
-import com.archetype.lbp.Friend;
-import com.archetype.lbp.User;
+import com.archetype.lbp.model.Friend;
+import com.archetype.lbp.model.User;
+
 import com.archetype.lbp.dto.FriendResponse;
 import com.archetype.lbp.exception.ResourceNotFoundException;
 import com.archetype.lbp.repository.FriendRepository;
@@ -20,13 +21,13 @@ public class FriendService {
     private final UserRepository userRepo;
 
     public List<FriendResponse> getFriends(Long userId) {
-        return friendRepo.findByUserIdAndStatus(userId, "accepted").stream()
+        return friendRepo.findByUser_IdAndStatus(userId, "accepted").stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
 
     public List<FriendResponse> getPending(Long userId) {
-        return friendRepo.findByUserIdAndStatus(userId, "pending").stream()
+        return friendRepo.findByUser_IdAndStatus(userId, "pending").stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
     }
@@ -36,7 +37,7 @@ public class FriendService {
         if (userId.equals(friendId)) {
             throw new IllegalArgumentException("Cannot add yourself as friend");
         }
-        if (friendRepo.existsByUserIdAndFriendId(userId, friendId)) {
+        if (friendRepo.existsByUser_IdAndFriend_Id(userId, friendId)) {
             throw new IllegalArgumentException("Friend request already exists");
         }
         User user = userRepo.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
@@ -51,7 +52,7 @@ public class FriendService {
 
     @Transactional
     public void updateStatus(Long userId, Long friendId, String action) {
-        Friend friend = friendRepo.findByUserIdAndFriendId(userId, friendId)
+        Friend friend = friendRepo.findByUser_IdAndFriend_Id(userId, friendId)
                 .orElseThrow(() -> new ResourceNotFoundException("Friend", "id", friendId));
         if ("accept".equals(action)) {
             friend.setStatus("accepted");
@@ -70,12 +71,12 @@ public class FriendService {
 
     @Transactional
     public void removeFriend(Long userId, Long friendId) {
-        Friend friend = friendRepo.findByUserIdAndFriendId(userId, friendId)
+        Friend friend = friendRepo.findByUser_IdAndFriend_Id(userId, friendId)
                 .orElseThrow(() -> new ResourceNotFoundException("Friend", "id", friendId));
         friendRepo.delete(friend);
 
         // ponytail: remove reverse too
-        friendRepo.findByUserIdAndFriendId(friendId, userId).ifPresent(friendRepo::delete);
+        friendRepo.findByUser_IdAndFriend_Id(friendId, userId).ifPresent(friendRepo::delete);
     }
 
     private FriendResponse toResponse(Friend friend) {

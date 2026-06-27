@@ -1,4 +1,4 @@
-package com.archetype.lbp;
+package com.archetype.lbp.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;

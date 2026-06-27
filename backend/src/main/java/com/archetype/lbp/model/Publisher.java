@@ -1,4 +1,4 @@
-package com.archetype.lbp;
+package com.archetype.lbp.model;
 
 import jakarta.persistence.*;
 import jakarta.validation.constraints.*;
@@ -11,13 +11,13 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Entity
-@Table(name = "genres")
-public class Genre {
+@Table(name = "publishers")
+public class Publisher {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false, length = 100)
+    @Column(unique = true, nullable = false, length = 255)
     @NotBlank
     private String name;
 

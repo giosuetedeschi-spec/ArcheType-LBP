@@ -1,6 +1,7 @@
 package com.archetype.lbp.repository;
 
-import com.archetype.lbp.Category;
+import com.archetype.lbp.model.Category;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

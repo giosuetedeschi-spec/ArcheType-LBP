@@ -1,5 +1,9 @@
 package com.archetype.lbp.service;
 
+import com.archetype.lbp.model.Backlog;
+import com.archetype.lbp.model.Game;
+import com.archetype.lbp.model.User;
+
 import com.archetype.lbp.*;
 import com.archetype.lbp.dto.*;
 import com.archetype.lbp.exception.ResourceNotFoundException;
@@ -50,12 +54,15 @@ class BacklogServiceTest {
 
     @Test
     void getUserGames_returnsUserBacklog() {
+        // validateUser() chiama sempre existsById prima di leggere il backlog
+        when(userRepo.existsById(1L)).thenReturn(true);
+
         Backlog b = new Backlog();
         b.setId(1L);
         b.setUser(user);
         b.setGame(game);
         b.setStatus("playing");
-        when(backlogRepo.findByUserId(1L)).thenReturn(List.of(b));
+        when(backlogRepo.findByUser_Id(1L)).thenReturn(List.of(b));
 
         var result = backlogService.getUserGames(1L);
         assertThat(result).hasSize(1);
@@ -66,7 +73,10 @@ class BacklogServiceTest {
     void addGame_createsBacklogEntry() {
         when(userRepo.existsById(1L)).thenReturn(true);
         when(gameRepo.findById(1L)).thenReturn(Optional.of(game));
-        when(backlogRepo.existsByUserIdAndGameId(1L, 1L)).thenReturn(false);
+        // addGame() chiama userRepo.findById OLTRE a existsById (in validateUser) —
+        // sono due chiamate distinte, entrambe vanno mockate.
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(backlogRepo.existsByUser_IdAndGame_Id(1L, 1L)).thenReturn(false);
         when(backlogRepo.save(any(Backlog.class))).thenAnswer(inv -> inv.getArgument(0));
 
         var req = new BacklogRequest();
@@ -81,7 +91,12 @@ class BacklogServiceTest {
     @Test
     void addGame_throws_whenAlreadyExists() {
         when(userRepo.existsById(1L)).thenReturn(true);
-        when(backlogRepo.existsByUserIdAndGameId(1L, 1L)).thenReturn(true);
+        // Il codice controlla che il gioco esista PRIMA di controllare se è già
+        // nel backlog — senza questo mock arriva "Game not found" invece del
+        // duplicato che il test vuole verificare.
+        when(gameRepo.findById(1L)).thenReturn(Optional.of(game));
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(backlogRepo.existsByUser_IdAndGame_Id(1L, 1L)).thenReturn(true);
 
         var req = new BacklogRequest();
         req.setGameId(1L);
@@ -95,7 +110,10 @@ class BacklogServiceTest {
     @Test
     void addGame_throws_whenInvalidStatus() {
         when(userRepo.existsById(1L)).thenReturn(true);
-        when(backlogRepo.existsByUserIdAndGameId(1L, 1L)).thenReturn(false);
+        // Nota: niente stub su existsByUser_IdAndGame_Id qui — validateStatus()
+        // lancia l'eccezione PRIMA che il codice arrivi a quel controllo,
+        // quindi mockarlo sarebbe uno stub inutilizzato (causava
+        // UnnecessaryStubbingException).
 
         var req = new BacklogRequest();
         req.setGameId(1L);

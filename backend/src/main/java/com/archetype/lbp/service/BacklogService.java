@@ -1,5 +1,9 @@
 package com.archetype.lbp.service;
 
+import com.archetype.lbp.model.Backlog;
+import com.archetype.lbp.model.Game;
+import com.archetype.lbp.model.User;
+
 import com.archetype.lbp.*;
 import com.archetype.lbp.dto.*;
 import com.archetype.lbp.exception.ResourceNotFoundException;
@@ -23,14 +27,14 @@ public class BacklogService {
     @Transactional(readOnly = true)
     public List<BacklogResponse> getUserGames(Long userId) {
         validateUser(userId);
-        return backlogRepo.findByUserId(userId).stream().map(this::toResponse).collect(Collectors.toList());
+        return backlogRepo.findByUser_Id(userId).stream().map(this::toResponse).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<BacklogResponse> getUserGamesByStatus(Long userId, String status) {
         validateUser(userId);
         validateStatus(status);
-        return backlogRepo.findByUserIdAndStatus(userId, status).stream().map(this::toResponse).collect(Collectors.toList());
+        return backlogRepo.findByUser_IdAndStatus(userId, status).stream().map(this::toResponse).collect(Collectors.toList());
     }
 
     public BacklogResponse addGame(Long userId, BacklogRequest req) {
@@ -41,7 +45,7 @@ public class BacklogService {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        if (backlogRepo.existsByUserIdAndGameId(userId, req.getGameId())) {
+        if (backlogRepo.existsByUser_IdAndGame_Id(userId, req.getGameId())) {
             throw new IllegalArgumentException("Game already in user's backlog");
         }
 

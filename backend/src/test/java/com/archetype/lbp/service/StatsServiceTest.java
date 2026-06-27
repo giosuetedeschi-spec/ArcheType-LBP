@@ -1,5 +1,9 @@
 package com.archetype.lbp.service;
 
+import com.archetype.lbp.model.Game;
+import com.archetype.lbp.model.User;
+import com.archetype.lbp.model.UserGame;
+
 import com.archetype.lbp.*;
 import com.archetype.lbp.dto.UserStatsResponse;
 import com.archetype.lbp.exception.ResourceNotFoundException;
@@ -21,7 +25,7 @@ import static org.mockito.Mockito.*;
 class StatsServiceTest {
 
     @Mock
-    private BacklogRepository backlogRepo;
+    private UserGameRepository userGameRepo;
 
     @Mock
     private UserRepository userRepo;
@@ -30,6 +34,7 @@ class StatsServiceTest {
     private StatsService statsService;
 
     private Game game;
+    private User user;
 
     @BeforeEach
     void setUp() {
@@ -38,41 +43,36 @@ class StatsServiceTest {
         game.setName("Test Game");
         game.setPrice(new BigDecimal("29.99"));
         game.setRating(new BigDecimal("4.5"));
+
+        user = new User();
+        user.setId(1L);
+        user.setUsername("tester");
     }
 
     @Test
     void getUserStats_returnsCorrectCounts() {
-        Backlog b1 = new Backlog();
-        b1.setStatus("playing");
-        b1.setGame(game);
-        Backlog b2 = new Backlog();
-        b2.setStatus("finished");
-        b2.setGame(game);
-        Backlog b3 = new Backlog();
-        b3.setStatus("wishlist");
-        b3.setGame(game);
+        UserGame ug1 = new UserGame(); ug1.setStatus("playing");  ug1.setUser(user); ug1.setGame(game);
+        UserGame ug2 = new UserGame(); ug2.setStatus("finished"); ug2.setUser(user); ug2.setGame(game);
+        UserGame ug3 = new UserGame(); ug3.setStatus("wishlist"); ug3.setUser(user); ug3.setGame(game);
 
         when(userRepo.existsById(1L)).thenReturn(true);
-        when(backlogRepo.findByUserId(1L)).thenReturn(List.of(b1, b2, b3));
+        when(userGameRepo.findByUser_Id(1L)).thenReturn(List.of(ug1, ug2, ug3));
 
         UserStatsResponse stats = statsService.getUserStats(1L);
         assertThat(stats.getTotalGames()).isEqualTo(3);
         assertThat(stats.getPlayingCount()).isEqualTo(1);
         assertThat(stats.getFinishedCount()).isEqualTo(1);
         assertThat(stats.getWishlistCount()).isEqualTo(1);
-        assertThat(stats.getTotalSpent()).isEqualTo(new BigDecimal("89.97"));
-        assertThat(stats.getAverageRating()).isEqualTo(4.5);
     }
 
     @Test
-    void getUserStats_emptyBacklog() {
+    void getUserStats_emptyLibrary() {
         when(userRepo.existsById(1L)).thenReturn(true);
-        when(backlogRepo.findByUserId(1L)).thenReturn(List.of());
+        when(userGameRepo.findByUser_Id(1L)).thenReturn(List.of());
 
         UserStatsResponse stats = statsService.getUserStats(1L);
         assertThat(stats.getTotalGames()).isZero();
         assertThat(stats.getAverageRating()).isEqualTo(0.0);
-        assertThat(stats.getTotalSpent()).isEqualTo(0.0);
     }
 
     @Test

@@ -1,5 +1,7 @@
 package com.archetype.lbp.service;
 
+import com.archetype.lbp.model.Game;
+
 import com.archetype.lbp.*;
 import com.archetype.lbp.dto.*;
 import com.archetype.lbp.exception.ResourceNotFoundException;
@@ -47,9 +49,9 @@ class GameServiceTest {
     }
 
     @Test
-    void listAll_returnsAllGames() {
-        when(gameRepo.findAll()).thenReturn(List.of(game));
-        var result = gameService.listAll();
+    void search_returnsMatchingGames() {
+        when(gameRepo.findByNameContainingIgnoreCase("counter")).thenReturn(List.of(game));
+        var result = gameService.search("counter", 10);
         assertThat(result).hasSize(1);
         assertThat(result.get(0).getName()).isEqualTo("Counter-Strike 2");
     }

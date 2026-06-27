@@ -1,6 +1,7 @@
 package com.archetype.lbp.repository;
 
-import com.archetype.lbp.Game;
+import com.archetype.lbp.model.Game;
+
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;

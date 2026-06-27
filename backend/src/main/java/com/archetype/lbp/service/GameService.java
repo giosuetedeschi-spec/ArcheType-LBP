@@ -1,6 +1,7 @@
 package com.archetype.lbp.service;
 
-import com.archetype.lbp.Game;
+import com.archetype.lbp.model.Game;
+
 import com.archetype.lbp.dto.*;
 import com.archetype.lbp.exception.ResourceNotFoundException;
 import com.archetype.lbp.repository.GameRepository;
@@ -8,6 +9,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -15,18 +17,21 @@ import java.util.stream.Collectors;
 @RequiredArgsConstructor
 @Transactional
 public class GameService {
+
     private final GameRepository gameRepo;
 
     @Transactional(readOnly = true)
-    public List<GameResponse> listAll() {
-        return gameRepo.findAll().stream().map(this::toResponse).collect(Collectors.toList());
-    }
-
-    @Transactional(readOnly = true)
     public PagedResponse<GameResponse> filter(GameFilterRequest filter) {
-        Sort sort = Sort.by(filter.getSortDir().equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC,
-                filter.getSortBy());
-        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), sort);
+        Sort sort = Sort.by(
+                "desc".equalsIgnoreCase(filter.getSortDir())
+                        ? Sort.Direction.DESC : Sort.Direction.ASC,
+                filter.getSortBy() != null ? filter.getSortBy() : "name"
+        );
+        Pageable pageable = PageRequest.of(
+                filter.getPage() >= 0 ? filter.getPage() : 0,
+                filter.getSize() > 0  ? filter.getSize() : 20,
+                sort
+        );
 
         Page<Game> page = gameRepo.findAll(
                 GameRepository.withFilters(
@@ -53,7 +58,16 @@ public class GameService {
 
     @Transactional(readOnly = true)
     public GameResponse getById(Long id) {
-        return toResponse(findById(id));
+        return toResponse(findEntityById(id));
+    }
+
+    @Transactional(readOnly = true)
+    public GameResponse getBySteamAppId(Integer steamAppId) {
+        Game game = gameRepo.findBySteamAppId(steamAppId);
+        if (game == null) {
+            throw new ResourceNotFoundException("Game", "steamAppId", steamAppId);
+        }
+        return toResponse(game);
     }
 
     public GameResponse create(GameRequest req) {
@@ -63,7 +77,7 @@ public class GameService {
     }
 
     public GameResponse update(Long id, GameRequest req) {
-        Game existing = findById(id);
+        Game existing = findEntityById(id);
         fillEntity(existing, req);
         return toResponse(gameRepo.save(existing));
     }
@@ -76,17 +90,25 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<GameResponse> search(String q) {
-        return gameRepo.findByNameContainingIgnoreCase(q).stream().map(this::toResponse).collect(Collectors.toList());
+    public List<GameResponse> search(String q, int limit) {
+        return gameRepo.findByNameContainingIgnoreCase(q)
+                .stream()
+                .limit(limit)
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<GameResponse> byGenre(String genre) {
-        return gameRepo.findByGenresContainingIgnoreCase(genre).stream().map(this::toResponse).collect(Collectors.toList());
+        return gameRepo.findByGenresContainingIgnoreCase(genre)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
-    public Game findById(Long id) {
-        return gameRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Game", "id", id));
+    public Game findEntityById(Long id) {
+        return gameRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Game", "id", id));
     }
 
     private void fillEntity(Game game, GameRequest req) {
@@ -102,7 +124,7 @@ public class GameService {
         game.setHeaderImageUrl(req.getHeaderImageUrl());
     }
 
-    private GameResponse toResponse(Game game) {
+    public GameResponse toResponse(Game game) {
         GameResponse r = new GameResponse();
         r.setId(game.getId());
         r.setSteamAppId(game.getSteamAppId());

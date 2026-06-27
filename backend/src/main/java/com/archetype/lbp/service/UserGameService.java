@@ -1,8 +1,9 @@
 package com.archetype.lbp.service;
 
-import com.archetype.lbp.Game;
-import com.archetype.lbp.User;
-import com.archetype.lbp.UserGame;
+import com.archetype.lbp.model.Game;
+import com.archetype.lbp.model.User;
+import com.archetype.lbp.model.UserGame;
+
 import com.archetype.lbp.dto.UserGameRequest;
 import com.archetype.lbp.dto.UserGameResponse;
 import com.archetype.lbp.exception.ResourceNotFoundException;
@@ -28,14 +29,14 @@ public class UserGameService {
     @Transactional(readOnly = true)
     public List<UserGameResponse> getUserGames(Long userId) {
         validateUser(userId);
-        return userGameRepo.findByUserId(userId).stream().map(this::toResponse).collect(Collectors.toList());
+        return userGameRepo.findByUser_Id(userId).stream().map(this::toResponse).collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<UserGameResponse> getUserGamesByStatus(Long userId, String status) {
         validateUser(userId);
         validateStatus(status);
-        return userGameRepo.findByUserIdAndStatus(userId, status).stream().map(this::toResponse).collect(Collectors.toList());
+        return userGameRepo.findByUser_IdAndStatus(userId, status).stream().map(this::toResponse).collect(Collectors.toList());
     }
 
     public UserGameResponse addGame(Long userId, UserGameRequest req) {
@@ -46,7 +47,7 @@ public class UserGameService {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
 
-        if (userGameRepo.existsByUserIdAndGameId(userId, req.getGameId())) {
+        if (userGameRepo.existsByUser_IdAndGame_Id(userId, req.getGameId())) {
             throw new IllegalArgumentException("Game already in user's library");
         }
 

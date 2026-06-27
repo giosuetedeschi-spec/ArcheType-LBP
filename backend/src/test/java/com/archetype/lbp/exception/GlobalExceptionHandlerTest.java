@@ -1,5 +1,7 @@
 package com.archetype.lbp.exception;
 
+import com.archetype.lbp.model.Game;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

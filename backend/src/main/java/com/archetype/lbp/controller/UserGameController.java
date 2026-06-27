@@ -1,5 +1,7 @@
 package com.archetype.lbp.controller;
 
+import com.archetype.lbp.model.Game;
+
 import com.archetype.lbp.dto.ApiResponse;
 import com.archetype.lbp.dto.UserGameRequest;
 import com.archetype.lbp.dto.UserGameResponse;

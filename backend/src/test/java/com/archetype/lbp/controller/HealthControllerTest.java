@@ -1,5 +1,6 @@
 package com.archetype.lbp.controller;
 
+import com.archetype.lbp.dto.ApiResponse;
 import org.junit.jupiter.api.Test;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -21,10 +22,10 @@ class HealthControllerTest {
         when(ds.getConnection()).thenReturn(conn);
 
         HealthController controller = new HealthController(ds);
-        ResponseEntity<?> resp = controller.health();
+        ResponseEntity<ApiResponse<Map<String, Object>>> resp = controller.health();
 
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Map<String, Object> data = (Map<String, Object>) resp.getBody();
+        Map<String, Object> data = resp.getBody().getData();
         assertThat(data.get("status")).isEqualTo("UP");
         assertThat(data.get("database")).isEqualTo("UP");
     }
@@ -35,10 +36,10 @@ class HealthControllerTest {
         when(ds.getConnection()).thenThrow(new SQLException("connection refused"));
 
         HealthController controller = new HealthController(ds);
-        ResponseEntity<?> resp = controller.health();
+        ResponseEntity<ApiResponse<Map<String, Object>>> resp = controller.health();
 
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Map<String, Object> data = (Map<String, Object>) resp.getBody();
+        Map<String, Object> data = resp.getBody().getData();
         assertThat(data.get("status")).isEqualTo("UP");
         assertThat(data.get("database").toString()).startsWith("DOWN");
     }

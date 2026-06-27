@@ -5,6 +5,7 @@ import com.archetype.lbp.dto.FriendRequest;
 import com.archetype.lbp.dto.FriendResponse;
 import com.archetype.lbp.service.FriendService;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -14,6 +15,7 @@ import java.util.List;
 @RequestMapping("/api/users/{userId}/friends")
 @RequiredArgsConstructor
 public class FriendController {
+
     private final FriendService friendService;
 
     @GetMapping
@@ -27,23 +29,35 @@ public class FriendController {
     }
 
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> addFriend(@PathVariable Long userId, @RequestBody FriendRequest req) {
+    public ResponseEntity<ApiResponse<Void>> addFriend(
+            @PathVariable Long userId,
+            @RequestBody FriendRequest req) {
         friendService.addFriend(userId, req.getFriendId());
-return ResponseEntity.ok(ApiResponse.ok(null, "Friend request sent"));
+        return ResponseEntity.status(HttpStatus.CREATED)
+                .body(ApiResponse.ok(null, "Richiesta di amicizia inviata"));
     }
 
-    @PutMapping("/{friendId}")
-    public ResponseEntity<ApiResponse<String>> updateStatus(
+    @PutMapping("/{friendId}/accept")
+    public ResponseEntity<ApiResponse<Void>> accept(
             @PathVariable Long userId,
-            @PathVariable Long friendId,
-            @RequestBody FriendRequest req) {
-        friendService.updateStatus(userId, friendId, req.getAction());
-        return ResponseEntity.ok(ApiResponse.ok(null, "Request " + req.getAction() + "ed"));
+            @PathVariable Long friendId) {
+        friendService.updateStatus(userId, friendId, "accept");
+        return ResponseEntity.ok(ApiResponse.ok(null, "Richiesta di amicizia accettata"));
+    }
+
+    @PutMapping("/{friendId}/reject")
+    public ResponseEntity<ApiResponse<Void>> reject(
+            @PathVariable Long userId,
+            @PathVariable Long friendId) {
+        friendService.updateStatus(userId, friendId, "reject");
+        return ResponseEntity.ok(ApiResponse.ok(null, "Richiesta di amicizia rifiutata"));
     }
 
     @DeleteMapping("/{friendId}")
-    public ResponseEntity<ApiResponse<String>> remove(@PathVariable Long userId, @PathVariable Long friendId) {
+    public ResponseEntity<ApiResponse<Void>> remove(
+            @PathVariable Long userId,
+            @PathVariable Long friendId) {
         friendService.removeFriend(userId, friendId);
-        return ResponseEntity.ok(ApiResponse.ok(null, "Friend removed"));
+        return ResponseEntity.ok(ApiResponse.ok(null, "Amico rimosso"));
     }
 }
