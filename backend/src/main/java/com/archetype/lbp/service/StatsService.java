@@ -1,5 +1,6 @@
 package com.archetype.lbp.service;
 
+import com.archetype.lbp.model.Genre;
 import com.archetype.lbp.model.User;
 import com.archetype.lbp.model.UserGame;
 
@@ -54,16 +55,18 @@ public class StatsService {
     private Map<String, Long> groupByGenre(java.util.List<UserGame> userGames) {
         return userGames.stream()
                 .filter(ug -> ug.getGame().getGenres() != null)
-                .flatMap(ug -> java.util.Arrays.stream(ug.getGame().getGenres().split(",")))
-                .map(String::trim)
-                .filter(s -> !s.isEmpty())
+                .flatMap(ug -> ug.getGame().getGenres().stream())
+                .map(Genre::getName)
                 .collect(Collectors.groupingBy(g -> g, Collectors.counting()));
     }
 
     private Map<String, Long> groupByDeveloper(java.util.List<UserGame> userGames) {
         return userGames.stream()
                 .filter(ug -> ug.getGame().getDeveloper() != null)
-                .collect(Collectors.groupingBy(ug -> ug.getGame().getDeveloper(), Collectors.counting()));
+                .collect(Collectors.groupingBy(
+                        ug -> ug.getGame().getDeveloper().getName(),
+                        Collectors.counting()
+                ));
     }
 
     private Map<String, Long> groupByYear(java.util.List<UserGame> userGames) {

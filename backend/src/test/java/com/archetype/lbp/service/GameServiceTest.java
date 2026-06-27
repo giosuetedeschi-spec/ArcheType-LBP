@@ -1,6 +1,8 @@
 package com.archetype.lbp.service;
 
+import com.archetype.lbp.model.Developer;
 import com.archetype.lbp.model.Game;
+import com.archetype.lbp.model.Publisher;
 
 import com.archetype.lbp.*;
 import com.archetype.lbp.dto.*;
@@ -16,9 +18,8 @@ import org.springframework.data.domain.*;
 import org.springframework.data.jpa.domain.Specification;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
-import java.util.List;
 import java.util.Optional;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.*;
@@ -30,21 +31,35 @@ class GameServiceTest {
     @Mock
     private GameRepository gameRepo;
 
+    @Mock
+    private DeveloperRepository developerRepo;
+
+    @Mock
+    private PublisherRepository publisherRepo;
+
+    @Mock
+    private GenreRepository genreRepo;
+
     @InjectMocks
     private GameService gameService;
 
     private Game game;
+    private Developer valve;
+    private Publisher valvePublisher;
 
     @BeforeEach
     void setUp() {
+        valve = new Developer(1L, "Valve", null);
+        valvePublisher = new Publisher(1L, "Valve", null);
+
         game = new Game();
         game.setId(1L);
         game.setSteamAppId(730);
         game.setName("Counter-Strike 2");
         game.setPrice(BigDecimal.ZERO);
         game.setRating(new BigDecimal("4.5"));
-        game.setDeveloper("Valve");
-        game.setPublisher("Valve");
+        game.setDeveloper(valve);
+        game.setPublisher(valvePublisher);
         game.setDescription("FPS game");
     }
 
@@ -75,6 +90,7 @@ class GameServiceTest {
     @Test
     void create_savesAndReturns() {
         when(gameRepo.save(any(Game.class))).thenReturn(game);
+
         var req = new GameRequest();
         req.setSteamAppId(730);
         req.setName("Counter-Strike 2");
@@ -118,7 +134,10 @@ class GameServiceTest {
 
     @Test
     void create_responseHasExpectedFields() {
+        when(developerRepo.findByName("Valve")).thenReturn(Optional.of(valve));
+        when(publisherRepo.findByName("Valve")).thenReturn(Optional.of(valvePublisher));
         when(gameRepo.save(any(Game.class))).thenReturn(game);
+
         var req = new GameRequest();
         req.setSteamAppId(730);
         req.setName("Counter-Strike 2");

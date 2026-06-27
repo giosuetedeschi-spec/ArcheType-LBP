@@ -1,16 +1,24 @@
 package com.archetype.lbp.service;
 
+import com.archetype.lbp.model.Developer;
 import com.archetype.lbp.model.Game;
+import com.archetype.lbp.model.Genre;
+import com.archetype.lbp.model.Publisher;
 
 import com.archetype.lbp.dto.*;
 import com.archetype.lbp.exception.ResourceNotFoundException;
+import com.archetype.lbp.repository.DeveloperRepository;
 import com.archetype.lbp.repository.GameRepository;
+import com.archetype.lbp.repository.GenreRepository;
+import com.archetype.lbp.repository.PublisherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -19,6 +27,9 @@ import java.util.stream.Collectors;
 public class GameService {
 
     private final GameRepository gameRepo;
+    private final DeveloperRepository developerRepo;
+    private final PublisherRepository publisherRepo;
+    private final GenreRepository genreRepo;
 
     @Transactional(readOnly = true)
     public PagedResponse<GameResponse> filter(GameFilterRequest filter) {
@@ -100,7 +111,7 @@ public class GameService {
 
     @Transactional(readOnly = true)
     public List<GameResponse> byGenre(String genre) {
-        return gameRepo.findByGenresContainingIgnoreCase(genre)
+        return gameRepo.findByGenres_NameContainingIgnoreCase(genre)
                 .stream()
                 .map(this::toResponse)
                 .collect(Collectors.toList());
@@ -115,13 +126,50 @@ public class GameService {
         game.setSteamAppId(req.getSteamAppId());
         game.setName(req.getName());
         game.setReleaseDate(req.getReleaseDate());
-        game.setDeveloper(req.getDeveloper());
-        game.setPublisher(req.getPublisher());
+        game.setDeveloper(findOrCreateDeveloper(req.getDeveloper()));
+        game.setPublisher(findOrCreatePublisher(req.getPublisher()));
         game.setPrice(req.getPrice());
         game.setRating(req.getRating());
-        game.setGenres(req.getGenres());
+        game.setGenres(parseGenres(req.getGenres()));
         game.setDescription(req.getDescription());
         game.setHeaderImageUrl(req.getHeaderImageUrl());
+    }
+
+    /**
+     * Il client manda il nome dello sviluppatore come stringa semplice
+     * (es. "Valve"), come fa già per ogni altro campo del form. Qui lo
+     * traduciamo nella relazione vera: se esiste già un Developer con
+     * quel nome lo riusiamo, altrimenti lo creiamo al volo.
+     */
+    private Developer findOrCreateDeveloper(String name) {
+        if (name == null || name.isBlank()) return null;
+        return developerRepo.findByName(name)
+                .orElseGet(() -> developerRepo.save(new Developer(null, name, null)));
+    }
+
+    private Publisher findOrCreatePublisher(String name) {
+        if (name == null || name.isBlank()) return null;
+        return publisherRepo.findByName(name)
+                .orElseGet(() -> publisherRepo.save(new Publisher(null, name, null)));
+    }
+
+    /**
+     * Il client manda i generi come stringa comma-separated (es.
+     * "Action,RPG"), per restare compatibile con il contratto API
+     * esistente (GameRequest.genres è ancora una String). Qui splittiamo
+     * e troviamo/creiamo ogni Genre, popolando la relazione N:N vera.
+     */
+    private Set<Genre> parseGenres(String genresCsv) {
+        Set<Genre> result = new HashSet<>();
+        if (genresCsv == null || genresCsv.isBlank()) return result;
+        for (String raw : genresCsv.split(",")) {
+            String name = raw.trim();
+            if (name.isEmpty()) continue;
+            Genre genre = genreRepo.findByName(name)
+                    .orElseGet(() -> genreRepo.save(new Genre(null, name, null)));
+            result.add(genre);
+        }
+        return result;
     }
 
     public GameResponse toResponse(Game game) {
@@ -130,11 +178,13 @@ public class GameService {
         r.setSteamAppId(game.getSteamAppId());
         r.setName(game.getName());
         r.setReleaseDate(game.getReleaseDate());
-        r.setDeveloper(game.getDeveloper());
-        r.setPublisher(game.getPublisher());
+        r.setDeveloper(game.getDeveloper() != null ? game.getDeveloper().getName() : null);
+        r.setPublisher(game.getPublisher() != null ? game.getPublisher().getName() : null);
         r.setPrice(game.getPrice());
         r.setRating(game.getRating());
-        r.setGenres(game.getGenres());
+        r.setGenres(game.getGenres().stream()
+                .map(Genre::getName)
+                .collect(Collectors.joining(",")));
         r.setDescription(game.getDescription());
         r.setHeaderImageUrl(game.getHeaderImageUrl());
         r.setCreatedAt(game.getCreatedAt());

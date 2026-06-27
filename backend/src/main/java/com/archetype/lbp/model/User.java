@@ -27,7 +27,7 @@ public class User {
     @Email
     private String email;
 
-    @Column(name = "password_hash", nullable = false)
+    @Column(name = "password", nullable = false)
     @NotBlank
     private String passwordHash;
 

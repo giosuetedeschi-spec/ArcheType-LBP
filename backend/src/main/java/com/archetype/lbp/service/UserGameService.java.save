@@ -99,9 +99,7 @@ public class UserGameService {
         game.setId(ug.getGame().getId());
         game.setName(ug.getGame().getName());
         game.setHeaderImageUrl(ug.getGame().getHeaderImageUrl());
-        game.setGenres(ug.getGame().getGenres().stream().map(com.archetype.lbp.model.Genre::getName).collect(java.util.stream.Collectors.joining(",")));
+        game.setGenres(ug.getGame().getGenres());
         r.setGame(game);
 
         return r;
-    }
-}
