@@ -84,3 +84,13 @@ docker compose --profile init up populate
   Docker — solo la homepage è stata verificata fino in fondo dopo il
   fix del bug `PagedResponse`. Possibili bug simili in altre pagine
   che fanno la stessa chiamata API non ancora controllate.
+
+## Screenshot — prova che funziona davvero
+
+**Dashboard del frontend, funzionante con dati reali, multilingua e colorblind mode attivi:**
+
+![Dashboard funzionante](docs-screenshots/dashboard-funzionante.webp)
+
+**Docker Desktop con le immagini buildate (backend + frontend):**
+
+![Docker Desktop](docs-screenshots/docker-desktop-immagini.webp)
