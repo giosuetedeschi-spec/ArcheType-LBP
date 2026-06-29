@@ -1,0 +1,69 @@
+package com.archetype.lbp.repository;
+
+import com.archetype.lbp.model.Game;
+import com.archetype.lbp.model.Genre;
+
+import jakarta.persistence.criteria.Join;
+import jakarta.persistence.criteria.JoinType;
+import jakarta.persistence.criteria.Predicate;
+import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.stereotype.Repository;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Repository
+public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificationExecutor<Game> {
+    Game findBySteamAppId(Integer steamAppId);
+    List<Game> findByNameContainingIgnoreCase(String name);
+
+    // Sostituisce il vecchio findByGenresContainingIgnoreCase(String) che
+    // presupponeva "genres" come stringa: ora è una relazione N:N, quindi
+    // si naviga tramite la entity Genre.
+    List<Game> findByGenres_NameContainingIgnoreCase(String genreName);
+
+    static Specification<Game> withFilters(String name, String genre, String developer,
+                                            BigDecimal minPrice, BigDecimal maxPrice,
+                                            BigDecimal minRating, LocalDate releasedAfter,
+                                            LocalDate releasedBefore) {
+        return (root, query, cb) -> {
+            List<Predicate> predicates = new ArrayList<>();
+
+            if (name != null && !name.isBlank()) {
+                predicates.add(cb.like(cb.lower(root.get("name")), "%" + name.toLowerCase() + "%"));
+            }
+            if (genre != null && !genre.isBlank()) {
+                // genres è ora una relazione N:N -> serve un join esplicito
+                // sul nome del Genre, non più un LIKE su una colonna stringa.
+                query.distinct(true);
+                Join<Object, Object> genreJoin = root.join("genres", JoinType.LEFT);
+                predicates.add(cb.like(cb.lower(genreJoin.get("name")), "%" + genre.toLowerCase() + "%"));
+            }
+            if (developer != null && !developer.isBlank()) {
+                // developer è ora una relazione @ManyToOne -> filtriamo sul
+                // campo "name" dell'entity Developer collegata.
+                predicates.add(cb.like(cb.lower(root.get("developer").get("name")), "%" + developer.toLowerCase() + "%"));
+            }
+            if (minPrice != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("price"), minPrice));
+            }
+            if (maxPrice != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("price"), maxPrice));
+            }
+            if (minRating != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("rating"), minRating));
+            }
+            if (releasedAfter != null) {
+                predicates.add(cb.greaterThanOrEqualTo(root.get("releaseDate"), releasedAfter));
+            }
+            if (releasedBefore != null) {
+                predicates.add(cb.lessThanOrEqualTo(root.get("releaseDate"), releasedBefore));
+            }
+
+            return cb.and(predicates.toArray(new Predicate[0]));
+        };
+    }
+}

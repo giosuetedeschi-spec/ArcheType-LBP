@@ -1,11 +1,20 @@
 # Backend – Java Spring Boot
 FROM eclipse-temurin:21-jdk-alpine AS build
+
+# Install global Maven
+RUN apk add --no-cache maven
+
 WORKDIR /app
-COPY .mvn/ .mvn
-COPY mvnw pom.xml ./
-RUN ./mvnw dependency:go-offline -B
+
+# Copy only the project definition first (better Docker caching)
+COPY pom.xml ./
+
+# Download dependencies using global maven
+RUN mvn dependency:go-offline -B
+
+# Copy source code and build the application
 COPY src ./src
-RUN ./mvnw package -DskipTests -B
+RUN mvn package -DskipTests -B
 
 FROM eclipse-temurin:21-jre-alpine
 WORKDIR /app

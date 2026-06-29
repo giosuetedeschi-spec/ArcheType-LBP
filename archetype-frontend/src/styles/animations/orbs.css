@@ -1,0 +1,76 @@
+/*
+ * Float orbs — cerchi luminosi sullo sfondo
+ * Sfocati, opacity bassa, movimento lento.
+ * Solo nelle pagine con [data-float-orbs="true"] sul contenitore.
+ */
+
+[data-float-orbs="true"] {
+  position: relative;
+  overflow: hidden;
+}
+
+[data-float-orbs="true"] .orbs-layer {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  overflow: hidden;
+}
+
+[data-float-orbs="true"] .orb {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  opacity: 0.05;
+  will-change: transform;
+}
+
+[data-float-orbs="true"] .orb-brand {
+  background: var(--color-brand);
+  width: 300px;
+  height: 300px;
+  top: -50px;
+  right: -80px;
+  animation: orbDrift 28s ease-in-out infinite;
+}
+
+[data-float-orbs="true"] .orb-accent {
+  background: var(--color-accent);
+  width: 250px;
+  height: 250px;
+  bottom: -60px;
+  left: -70px;
+  animation: orbDrift 34s ease-in-out infinite reverse;
+}
+
+[data-float-orbs="true"] .orb-magenta {
+  background: var(--color-status-wishlist);
+  width: 200px;
+  height: 200px;
+  top: 50%;
+  left: 50%;
+  animation: orbDrift 22s ease-in-out infinite;
+  animation-delay: -8s;
+}
+
+@keyframes orbDrift {
+  0%, 100% {
+    transform: translate(0, 0) scale(1);
+  }
+  25% {
+    transform: translate(40px, -30px) scale(1.05);
+  }
+  50% {
+    transform: translate(20px, 25px) scale(0.95);
+  }
+  75% {
+    transform: translate(-30px, 10px) scale(1.02);
+  }
+}
+
+/* Respect reduced motion */
+@media (prefers-reduced-motion: reduce) {
+  [data-float-orbs="true"] .orb {
+    animation: none;
+  }
+}

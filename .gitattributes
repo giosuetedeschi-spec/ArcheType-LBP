@@ -1,0 +1,6 @@
+# Solo i dataset (pesanti) passano per Git LFS.
+# ATTENZIONE: NON usare "*.json" qui — romperebbe package.json,
+# tsconfig.json, i file di traduzione e qualsiasi config del repo
+# per chi clona senza Git LFS installato (problema reale riscontrato).
+data/*.csv filter=lfs diff=lfs merge=lfs -text
+data/*.json filter=lfs diff=lfs merge=lfs -text
