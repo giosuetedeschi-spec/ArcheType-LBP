@@ -4,7 +4,7 @@ import { AppLayout } from "@/components/AppLayout";
 import type { GameStatus } from "@/components/StatusBadge";
 import { GameCard } from "@/components/GameCard";
 import { STATUS_LABELS } from "@/components/StatusBadge";
-import { gameApi, userGameApi } from "@/lib/api";
+import { gameApi, userGameApi, type Game } from "@/lib/api";
 import { useQuery } from "@tanstack/react-query";
 import { Search, Heart, Loader2 } from "lucide-react";
 
@@ -12,13 +12,13 @@ export const Route = createFileRoute("/library")({
   head: () => ({
     meta: [
       { title: "Libreria — SteamStats" },
-      { name: "description", content: "Wishlist e backlog personale: in corso, finiti, abbandonati." },
+      { name: "description", content: "Wishlist e backlog personale." },
     ],
   }),
   component: LibraryPage,
 });
 
-const USER_ID = 1; // ponytail: single-user until auth lands
+const USER_ID = 1;
 
 const TABS: { key: GameStatus | "all"; label: string; color: string }[] = [
   { key: "all", label: "Tutti", color: "var(--brand)" },
@@ -32,10 +32,11 @@ function LibraryPage() {
   const [tab, setTab] = useState<GameStatus | "all">("all");
   const [search, setSearch] = useState("");
 
-  const { data: games } = useQuery({
+  const { data: gamesPage } = useQuery({
     queryKey: ["games"],
     queryFn: () => gameApi.list(),
   });
+  const games = useMemo(() => gamesPage?.content ?? [], [gamesPage]);
 
   const { data: libraryEntries } = useQuery({
     queryKey: ["userGames", USER_ID],
@@ -59,15 +60,9 @@ function LibraryPage() {
     };
   }, [entryMap]);
 
-  const gameMap = useMemo(() => {
-    const map: Record<number, (typeof games)> = {};
-    (games ?? []).forEach((g) => { map[g.id] = g as any; });
-    return map;
-  }, [games]);
-
   const results = useMemo(() => {
     const q = search.trim().toLowerCase();
-    return (games ?? []).filter((g) => {
+    return games.filter((g: Game) => {
       const status = entryMap[g.id];
       if (!status) return false;
       if (tab !== "all" && status !== tab) return false;
@@ -76,7 +71,7 @@ function LibraryPage() {
     });
   }, [entryMap, tab, search, games]);
 
-  const isLoading = !games || !libraryEntries;
+  const isLoading = !gamesPage || !libraryEntries;
 
   return (
     <AppLayout>
@@ -146,7 +141,7 @@ function LibraryPage() {
         </div>
       ) : (
         <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5">
-          {results.map((g: any) => <GameCard key={g.id} game={g} />)}
+          {results.map((g) => <GameCard key={g.id} game={g} />)}
         </div>
       )}
     </AppLayout>

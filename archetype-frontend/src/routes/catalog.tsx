@@ -17,7 +17,7 @@ import { Gamepad2 } from "lucide-react";
 export const Route = createFileRoute("/catalog")({
   head: () => ({
     meta: [
-      { title: "Catalog — ArcheType" },
+      { title: "Catalog — VirtualZ" },
       { name: "description", content: "Browse the Steam catalog with advanced filters." },
     ],
   }),

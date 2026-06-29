@@ -64,7 +64,11 @@ async function fetchJSON<T>(url: string, options?: RequestInit): Promise<T> {
     headers: { "Content-Type": "application/json", ...options?.headers },
   });
   if (!res.ok) throw new Error(`API error: ${res.status}`);
-  return res.json();
+  const body = await res.json();
+  if (body && typeof body === "object" && "success" in body && "data" in body) {
+    return body.data as T;
+  }
+  return body as T;
 }
 
 // Games API

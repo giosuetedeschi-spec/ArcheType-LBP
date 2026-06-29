@@ -1,5 +1,7 @@
 package com.archetype.lbp.dto;
 
+import com.archetype.lbp.model.Game;
+
 import jakarta.validation.constraints.*;
 import lombok.Data;
 import java.math.BigDecimal;

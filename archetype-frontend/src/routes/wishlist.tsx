@@ -9,24 +9,24 @@ import { Heart, ShoppingCart, Loader2 } from "lucide-react";
 export const Route = createFileRoute("/wishlist")({
   head: () => ({
     meta: [
-      { title: "Wishlist — ArcheType" },
+      { title: "Wishlist — VirtualZ" },
       { name: "description", content: "Your wishlist of games to buy." },
     ],
   }),
   component: WishlistPage,
 });
 
-// ponytail: single-user until auth lands
 const USER_ID = 1;
 
 function WishlistPage() {
   const { t } = useI18n();
   const queryClient = useQueryClient();
 
-  const { data: games } = useQuery({
+  const { data: gamesPage } = useQuery({
     queryKey: ["games"],
     queryFn: () => gameApi.list(),
   });
+  const games = useMemo(() => gamesPage?.content ?? [], [gamesPage]);
 
   const { data: libraryEntries } = useQuery({
     queryKey: ["userGames", USER_ID],
@@ -34,21 +34,26 @@ function WishlistPage() {
   });
 
   const removeMutation = useMutation({
-    mutationFn: (gameId: number) => userGameApi.remove(USER_ID, gameId),
+    mutationFn: (entryId: number) => userGameApi.remove(USER_ID, entryId),
     onSuccess: () => queryClient.invalidateQueries({ queryKey: ["userGames"] }),
   });
 
-  const wishlistGameIds = useMemo(
-    () => (libraryEntries ?? []).filter((e) => e.status === "wishlist").map((e) => e.gameId),
+  const wishlistEntries = useMemo(
+    () => (libraryEntries ?? []).filter((e) => e.status === "wishlist"),
     [libraryEntries],
   );
 
+  const wishlistGameIds = useMemo(
+    () => wishlistEntries.map((e) => e.gameId),
+    [wishlistEntries],
+  );
+
   const wishlistGames = useMemo(
-    () => (games ?? []).filter((g: any) => wishlistGameIds.includes(g.id)),
+    () => games.filter((g) => wishlistGameIds.includes(g.id)),
     [games, wishlistGameIds],
   );
 
-  const isLoading = !games || !libraryEntries;
+  const isLoading = !gamesPage || !libraryEntries;
 
   return (
     <AppLayout>
@@ -72,17 +77,19 @@ function WishlistPage() {
           </Link>
         </div>
       )}
-
       {!isLoading && wishlistGames.length > 0 && (
         <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
-          {wishlistGames.map((game: any) => (
-            <WishlistCard
-              key={game.id}
-              game={game}
-              onRemove={() => removeMutation.mutate(game.id)}
-              onBuy={() => window.open(`https://store.steampowered.com/app/${game.steamAppId}/`, "_blank")}
-            />
-          ))}
+          {wishlistGames.map((game) => {
+            const entry = wishlistEntries.find((e) => e.gameId === game.id);
+            return (
+              <WishlistCard
+                key={game.id}
+                game={game}
+                onRemove={() => entry && removeMutation.mutate(entry.id)}
+                onBuy={() => window.open(`https://store.steampowered.com/app/${game.steamAppId}/`, "_blank")}
+              />
+            );
+          })}
         </div>
       )}
     </AppLayout>
@@ -142,7 +149,8 @@ function WishlistCard({
             >
               <Heart className="h-3.5 w-3.5" />
             </button>
-            <a
+            
+              <a
               href={`https://store.steampowered.com/app/${game.steamAppId}/`}
               target="_blank"
               rel="noopener noreferrer"

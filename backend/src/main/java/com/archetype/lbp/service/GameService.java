@@ -1,32 +1,48 @@
 package com.archetype.lbp.service;
 
-import com.archetype.lbp.Game;
+import com.archetype.lbp.model.Developer;
+import com.archetype.lbp.model.Game;
+import com.archetype.lbp.model.Genre;
+import com.archetype.lbp.model.Publisher;
+
 import com.archetype.lbp.dto.*;
 import com.archetype.lbp.exception.ResourceNotFoundException;
+import com.archetype.lbp.repository.DeveloperRepository;
 import com.archetype.lbp.repository.GameRepository;
+import com.archetype.lbp.repository.GenreRepository;
+import com.archetype.lbp.repository.PublisherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 @Transactional
 public class GameService {
-    private final GameRepository gameRepo;
 
-    @Transactional(readOnly = true)
-    public List<GameResponse> listAll() {
-        return gameRepo.findAll().stream().map(this::toResponse).collect(Collectors.toList());
-    }
+    private final GameRepository gameRepo;
+    private final DeveloperRepository developerRepo;
+    private final PublisherRepository publisherRepo;
+    private final GenreRepository genreRepo;
 
     @Transactional(readOnly = true)
     public PagedResponse<GameResponse> filter(GameFilterRequest filter) {
-        Sort sort = Sort.by(filter.getSortDir().equalsIgnoreCase("desc") ? Sort.Direction.DESC : Sort.Direction.ASC,
-                filter.getSortBy());
-        Pageable pageable = PageRequest.of(filter.getPage(), filter.getSize(), sort);
+        Sort sort = Sort.by(
+                "desc".equalsIgnoreCase(filter.getSortDir())
+                        ? Sort.Direction.DESC : Sort.Direction.ASC,
+                filter.getSortBy() != null ? filter.getSortBy() : "name"
+        );
+        Pageable pageable = PageRequest.of(
+                filter.getPage() >= 0 ? filter.getPage() : 0,
+                filter.getSize() > 0  ? filter.getSize() : 20,
+                sort
+        );
 
         Page<Game> page = gameRepo.findAll(
                 GameRepository.withFilters(
@@ -53,7 +69,16 @@ public class GameService {
 
     @Transactional(readOnly = true)
     public GameResponse getById(Long id) {
-        return toResponse(findById(id));
+        return toResponse(findEntityById(id));
+    }
+
+    @Transactional(readOnly = true)
+    public GameResponse getBySteamAppId(Integer steamAppId) {
+        Game game = gameRepo.findBySteamAppId(steamAppId);
+        if (game == null) {
+            throw new ResourceNotFoundException("Game", "steamAppId", steamAppId);
+        }
+        return toResponse(game);
     }
 
     public GameResponse create(GameRequest req) {
@@ -63,7 +88,7 @@ public class GameService {
     }
 
     public GameResponse update(Long id, GameRequest req) {
-        Game existing = findById(id);
+        Game existing = findEntityById(id);
         fillEntity(existing, req);
         return toResponse(gameRepo.save(existing));
     }
@@ -76,43 +101,90 @@ public class GameService {
     }
 
     @Transactional(readOnly = true)
-    public List<GameResponse> search(String q) {
-        return gameRepo.findByNameContainingIgnoreCase(q).stream().map(this::toResponse).collect(Collectors.toList());
+    public List<GameResponse> search(String q, int limit) {
+        return gameRepo.findByNameContainingIgnoreCase(q)
+                .stream()
+                .limit(limit)
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
     @Transactional(readOnly = true)
     public List<GameResponse> byGenre(String genre) {
-        return gameRepo.findByGenresContainingIgnoreCase(genre).stream().map(this::toResponse).collect(Collectors.toList());
+        return gameRepo.findByGenres_NameContainingIgnoreCase(genre)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
     }
 
-    public Game findById(Long id) {
-        return gameRepo.findById(id).orElseThrow(() -> new ResourceNotFoundException("Game", "id", id));
+    public Game findEntityById(Long id) {
+        return gameRepo.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Game", "id", id));
     }
 
     private void fillEntity(Game game, GameRequest req) {
         game.setSteamAppId(req.getSteamAppId());
         game.setName(req.getName());
         game.setReleaseDate(req.getReleaseDate());
-        game.setDeveloper(req.getDeveloper());
-        game.setPublisher(req.getPublisher());
+        game.setDeveloper(findOrCreateDeveloper(req.getDeveloper()));
+        game.setPublisher(findOrCreatePublisher(req.getPublisher()));
         game.setPrice(req.getPrice());
         game.setRating(req.getRating());
-        game.setGenres(req.getGenres());
+        game.setGenres(parseGenres(req.getGenres()));
         game.setDescription(req.getDescription());
         game.setHeaderImageUrl(req.getHeaderImageUrl());
     }
 
-    private GameResponse toResponse(Game game) {
+    /**
+     * Il client manda il nome dello sviluppatore come stringa semplice
+     * (es. "Valve"), come fa già per ogni altro campo del form. Qui lo
+     * traduciamo nella relazione vera: se esiste già un Developer con
+     * quel nome lo riusiamo, altrimenti lo creiamo al volo.
+     */
+    private Developer findOrCreateDeveloper(String name) {
+        if (name == null || name.isBlank()) return null;
+        return developerRepo.findByName(name)
+                .orElseGet(() -> developerRepo.save(new Developer(null, name, null)));
+    }
+
+    private Publisher findOrCreatePublisher(String name) {
+        if (name == null || name.isBlank()) return null;
+        return publisherRepo.findByName(name)
+                .orElseGet(() -> publisherRepo.save(new Publisher(null, name, null)));
+    }
+
+    /**
+     * Il client manda i generi come stringa comma-separated (es.
+     * "Action,RPG"), per restare compatibile con il contratto API
+     * esistente (GameRequest.genres è ancora una String). Qui splittiamo
+     * e troviamo/creiamo ogni Genre, popolando la relazione N:N vera.
+     */
+    private Set<Genre> parseGenres(String genresCsv) {
+        Set<Genre> result = new HashSet<>();
+        if (genresCsv == null || genresCsv.isBlank()) return result;
+        for (String raw : genresCsv.split(",")) {
+            String name = raw.trim();
+            if (name.isEmpty()) continue;
+            Genre genre = genreRepo.findByName(name)
+                    .orElseGet(() -> genreRepo.save(new Genre(null, name, null)));
+            result.add(genre);
+        }
+        return result;
+    }
+
+    public GameResponse toResponse(Game game) {
         GameResponse r = new GameResponse();
         r.setId(game.getId());
         r.setSteamAppId(game.getSteamAppId());
         r.setName(game.getName());
         r.setReleaseDate(game.getReleaseDate());
-        r.setDeveloper(game.getDeveloper());
-        r.setPublisher(game.getPublisher());
+        r.setDeveloper(game.getDeveloper() != null ? game.getDeveloper().getName() : null);
+        r.setPublisher(game.getPublisher() != null ? game.getPublisher().getName() : null);
         r.setPrice(game.getPrice());
         r.setRating(game.getRating());
-        r.setGenres(game.getGenres());
+        r.setGenres(game.getGenres().stream()
+                .map(Genre::getName)
+                .collect(Collectors.joining(",")));
         r.setDescription(game.getDescription());
         r.setHeaderImageUrl(game.getHeaderImageUrl());
         r.setCreatedAt(game.getCreatedAt());

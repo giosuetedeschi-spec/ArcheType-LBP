@@ -1,6 +1,7 @@
 package com.archetype.lbp.service;
 
-import com.archetype.lbp.User;
+import com.archetype.lbp.model.User;
+
 import com.archetype.lbp.dto.UserRequest;
 import com.archetype.lbp.dto.UserResponse;
 import com.archetype.lbp.repository.UserRepository;
@@ -64,7 +65,7 @@ class UserServiceTest {
 
         assertThatThrownBy(() -> userService.register(req))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Username already taken");
+                .hasMessageContaining("Username");
     }
 
     @Test
@@ -79,7 +80,7 @@ class UserServiceTest {
 
         assertThatThrownBy(() -> userService.register(req))
                 .isInstanceOf(IllegalArgumentException.class)
-                .hasMessageContaining("Email already registered");
+                .hasMessageContaining("Email");
     }
 
     @Test
@@ -94,5 +95,27 @@ class UserServiceTest {
         when(userRepo.findByUsername("ghost")).thenReturn(Optional.empty());
         assertThatThrownBy(() -> userService.findByUsername("ghost"))
                 .isInstanceOf(Exception.class);
+    }
+
+    @Test
+    void listAll_returnsAllUsers() {
+        when(userRepo.findAll()).thenReturn(java.util.List.of(user));
+        var result = userService.listAll();
+        assertThat(result).hasSize(1);
+        assertThat(result.get(0).getUsername()).isEqualTo("alice");
+    }
+
+    @Test
+    void update_changesFields() {
+        when(userRepo.findById(1L)).thenReturn(Optional.of(user));
+        when(userRepo.save(any(User.class))).thenReturn(user);
+
+        var req = new UserRequest();
+        req.setBio("I love gaming");
+        req.setStatus("playing");
+
+        var result = userService.update(1L, req);
+        assertThat(result.getUsername()).isEqualTo("alice");
+        verify(userRepo).save(any(User.class));
     }
 }

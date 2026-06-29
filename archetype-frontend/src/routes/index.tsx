@@ -10,7 +10,7 @@ import type { ReactNode } from "react";
 export const Route = createFileRoute("/")({
   head: () => ({
     meta: [
-      { title: "Dashboard — ArcheType" },
+      { title: "VirtualZ — Dashboard" },
       { name: "description", content: "La tua dashboard per organizzare la libreria giochi." },
     ],
   }),
@@ -22,11 +22,12 @@ function Home() {
 
   const { data: games, isLoading, error } = useQuery({
     queryKey: ["games"],
-    queryFn: gameApi.list,
+    queryFn: () => gameApi.list(),
   });
 
-  const featured = (games ?? []).slice(0, 6);
-  const totalGames = games?.length ?? 0;
+  const gamesList = games?.content ?? [];
+  const featured = gamesList.slice(0, 6);
+  const totalGames = gamesList.length;
 
   return (
     <AppLayout>

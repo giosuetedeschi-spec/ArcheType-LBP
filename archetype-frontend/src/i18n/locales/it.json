@@ -1,3 +1,130 @@
-version https://git-lfs.github.com/spec/v1
-oid sha256:6fd3cdde2e0d7ba7c19327c7340acb0eb99dfb6161635cc900a4ded152e2acdc
-size 3613
+{
+  "app": {
+    "title": "ArcheType",
+    "loading": "Caricamento...",
+    "welcome": "Benvenuto"
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "catalog": "Catalogo",
+    "library": "Libreria",
+    "wishlist": "Wishlist",
+    "stats": "Statistiche",
+    "profile": "Profilo",
+    "leaderboard": "Classifica",
+    "friends": "Amici"
+  },
+  "home": {
+    "whatToPlay": "Cosa giocare?",
+    "heroSubtitle": "Esplora, organizza e traccia la tua collezione di giochi.",
+    "exploreCatalog": "Esplora Catalogo",
+    "openLibrary": "Apri Libreria",
+    "featured": "In Evidenza",
+    "totalGames": "Giochi Totali",
+    "playing": "In Corso",
+    "finished": "Finiti",
+    "wishlist": "Wishlist",
+    "seeAll": "Vedi tutto",
+    "noGames": "Nessun gioco nel catalogo.",
+    "abandonedCount": "Hai {count} giochi abbandonati nella libreria."
+  },
+  "catalog": {
+    "search": "Cerca giochi, sviluppatori o tag...",
+    "filters": "Filtri",
+    "sort": {
+      "popular": "Popolari",
+      "rating": "Miglior Voto",
+      "priceAsc": "Prezzo: Basso → Alto",
+      "priceDesc": "Prezzo: Alto → Basso",
+      "yearDesc": "Più Recenti"
+    },
+    "genres": "Generi",
+    "platforms": "Piattaforme",
+    "priceMax": "Prezzo Max",
+    "freeOnly": "Solo gratis",
+    "minRating": "Voto Min",
+    "tags": "Tag",
+    "clearAll": "Pulisci tutto",
+    "results": "{count} risultati",
+    "buyOnSteam": "Compra su Steam",
+    "freeOnSteam": "Gratis su Steam",
+    "confirmBuy": "Pronto a comprare?",
+    "confirmBuyDesc": "Sarai reindirizzato a Steam per completare l'acquisto.",
+    "cancel": "Annulla",
+    "continue": "Continua su Steam"
+  },
+  "game": {
+    "back": "Indietro",
+    "addToWishlist": "Aggiungi a Wishlist",
+    "removeFromWishlist": "Rimuovi da Wishlist",
+    "playedHours": "Ore Giocate",
+    "myLibrary": "La mia Libreria",
+    "status": {
+      "wishlist": "Wishlist",
+      "playing": "In Corso",
+      "finished": "Finito",
+      "abandoned": "Abbandonato"
+    },
+    "graphs": "Grafici Divertenti",
+    "remove": "Rimuovi dalla Libreria",
+    "steamBuy": "Apri su Steam"
+  },
+  "library": {
+    "title": "La mia Libreria",
+    "subtitle": "Organizza wishlist e backlog personale.",
+    "search": "Cerca nella libreria...",
+    "all": "Tutti",
+    "empty": "La tua libreria è vuota. Aggiungi giochi dal catalogo.",
+    "emptySection": "Nessun gioco in questa sezione.",
+    "exploreCatalog": "Esplora Catalogo"
+  },
+  "wishlist": {
+    "title": "Wishlist",
+    "yesMaster": "Sì, Master",
+    "added": "Aggiunto il",
+    "remove": "Rimuovi",
+    "steamLink": "Apri su Steam"
+  },
+  "profile": {
+    "status": {
+      "online": "Online",
+      "offline": "Offline",
+      "playing": "In Gioco",
+      "away": "Assente"
+    },
+    "wishlistPreview": "Wishlist",
+    "graphs": "Analitiche",
+    "friends": "Amici",
+    "settings": "Impostazioni"
+  },
+  "leaderboard": {
+    "title": "Classifica",
+    "highscore": "Highscore",
+    "boss": "Boss!",
+    "topFriends": "Top 1 Amici",
+    "score": "{score}%"
+  },
+  "auth": {
+    "login": "Accedi",
+    "loginSteam": "Accedi con Steam",
+    "loginGoogle": "Accedi con Google",
+    "logout": "Esci",
+    "error": "Accesso fallito. Riprova.",
+    "welcome": "Benvenuto"
+  },
+  "colorblind": {
+    "label": "Visione",
+    "normal": "Normale",
+    "protanopia": "Protanopia",
+    "deuteranopia": "Deuteranopia",
+    "tritanopia": "Tritanopia"
+  },
+  "common": {
+    "loading": "Caricamento...",
+    "error": "Qualcosa è andato storto. Riprova.",
+    "retry": "Riprova",
+    "goHome": "Torna alla home",
+    "free": "Gratis",
+    "price": "{price} €"
+  }
+}
