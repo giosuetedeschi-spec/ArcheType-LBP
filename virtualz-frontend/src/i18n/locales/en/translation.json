@@ -1,0 +1,120 @@
+{
+  "nav": {
+    "catalog": "Catalog",
+    "library": "Library",
+    "wishlist": "Wishlist",
+    "profile": "Profile",
+    "login": "Log in",
+    "register": "Sign up",
+    "logout": "Log out",
+    "home": "Home",
+    "leaderboard": "Leaderboard",
+    "friends": "Friends",
+    "tagline": "Your Gaming Pleasure"
+  },
+  "auth": {
+    "loginTitle": "Welcome back",
+    "registerTitle": "Create your account",
+    "username": "Username",
+    "usernameOrEmail": "Username or email",
+    "email": "Email",
+    "password": "Password",
+    "loginButton": "Log in",
+    "registerButton": "Sign up",
+    "noAccount": "Don't have an account?",
+    "haveAccount": "Already have an account?",
+    "loginError": "Invalid credentials",
+    "registerError": "Something went wrong while signing up"
+  },
+  "catalog": {
+    "title": "Game Catalog",
+    "searchPlaceholder": "Search a game...",
+    "filters": "Filters",
+    "genre": "Genre",
+    "minPrice": "Min price",
+    "maxPrice": "Max price",
+    "platforms": "Platforms",
+    "noResults": "No games found with these filters.",
+    "loadMore": "Load more"
+  },
+  "game": {
+    "addToWishlist": "Add to Wishlist",
+    "addToBacklog": "Mark as owned",
+    "viewOnSteam": "View on Steam",
+    "developers": "Developers",
+    "publishers": "Publishers",
+    "genres": "Genres",
+    "reviews": "Reviews"
+  },
+  "library": {
+    "title": "My Library",
+    "wishlistSection": "Wishlist",
+    "backlogSection": "Backlog",
+    "emptyWishlist": "Your wishlist is empty. Add some games from the catalog!",
+    "emptyBacklog": "No games in your backlog yet.",
+    "status": {
+      "WISHLIST": "Wishlisted",
+      "IN_CORSO": "In progress",
+      "FINITO": "Finished",
+      "ABBANDONATO": "Abandoned"
+    },
+    "statusFilter": "Filter by status",
+    "all": "All",
+    "moveToBacklog": "Move to Backlog",
+    "markAsFinished": "Mark as finished",
+    "markAsAbandoned": "Mark as abandoned",
+    "markAsInProgress": "Mark as in progress",
+    "remove": "Remove from library",
+    "searchInLibrary": "Search in your library...",
+    "inactivityWarning": "You haven't touched this game in a while. Mark it as abandoned?",
+    "confirmAbandon": "Yes, abandon it",
+    "dismissWarning": "No, still playing"
+  },
+  "stats": {
+    "title": "My stats",
+    "totalGames": "Total games",
+    "inProgress": "In progress",
+    "finished": "Finished",
+    "abandoned": "Abandoned",
+    "wishlistCount": "Wishlisted"
+  },
+  "common": {
+    "loading": "Loading...",
+    "error": "Something went wrong.",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "language": "Language",
+    "free": "Free"
+  },
+  "home": {
+    "badge": "VirtualZ — Your Gaming Pleasure",
+    "tagline": "Welcome back",
+    "subtitle": "Your Steam collection, always organized.",
+    "exploreCatalog": "Explore Catalog",
+    "getStarted": "Get started",
+    "features": {
+      "catalog": {
+        "title": "Full catalog",
+        "desc": "Browse thousands of Steam games with search and advanced filters."
+      },
+      "library": {
+        "title": "Personal library",
+        "desc": "Wishlist and backlog: track what you want to play and your progress."
+      },
+      "stats": {
+        "title": "Statistics",
+        "desc": "See your progress: finished games, in progress, and completion rate."
+      }
+    },
+    "featured": "Featured",
+    "seeAll": "See all",
+    "openLibrary": "Open Library"
+  },
+  "colorblind": {
+    "normal": "Normal",
+    "protanopia": "Protanopia",
+    "deuteranopia": "Deuteranopia",
+    "tritanopia": "Tritanopia"
+  }
+}
