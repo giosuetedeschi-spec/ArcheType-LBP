@@ -65,7 +65,7 @@ services:
       DB_NAME: archetype
       DB_USER: archetype
       DB_PASSWORD: archetype_secret
-      STEAM_DATASET_PATH: /data/steam_games.csv
+      STEAM_DATASET_PATH: /data/games.csv
     volumes:
       - ./data:/data:ro
     profiles:
