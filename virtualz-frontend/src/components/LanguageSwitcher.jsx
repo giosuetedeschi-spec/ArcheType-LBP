@@ -1,0 +1,24 @@
+import { useTranslation } from "react-i18next";
+import { SUPPORTED_LANGUAGES } from "../i18n";
+
+const FLAGS = { it: "🇮🇹", en: "🇬🇧", fr: "🇫🇷", es: "🇪🇸" };
+const LABELS = { it: "Italiano", en: "English", fr: "Français", es: "Español" };
+
+export default function LanguageSwitcher() {
+  const { i18n } = useTranslation();
+
+  return (
+    <select
+      value={i18n.language}
+      onChange={(e) => i18n.changeLanguage(e.target.value)}
+      aria-label="Lingua / Language"
+      className="bg-vz-charcoal text-sm text-zinc-200 rounded-full px-3 py-1.5 border border-zinc-700 focus:outline-none focus:ring-2 focus:ring-vz-lime cursor-pointer"
+    >
+      {SUPPORTED_LANGUAGES.map((lng) => (
+        <option key={lng} value={lng}>
+          {FLAGS[lng]} {LABELS[lng]}
+        </option>
+      ))}
+    </select>
+  );
+}
