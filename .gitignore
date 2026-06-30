@@ -36,7 +36,8 @@ dist/
 .idea/
 .vscode/
 *.iml
-
+docker compose down
+docker compose up --build -d
 # Environment
 .env
 .env.local

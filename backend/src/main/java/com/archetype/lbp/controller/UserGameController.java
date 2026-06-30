@@ -1,7 +1,5 @@
 package com.archetype.lbp.controller;
 
-import com.archetype.lbp.model.Game;
-
 import com.archetype.lbp.dto.ApiResponse;
 import com.archetype.lbp.dto.UserGameRequest;
 import com.archetype.lbp.dto.UserGameResponse;
@@ -20,8 +18,13 @@ public class UserGameController {
     private final UserGameService userGameService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<List<UserGameResponse>>> list(@PathVariable Long userId) {
-        return ResponseEntity.ok(ApiResponse.ok(userGameService.getUserGames(userId)));
+    public ResponseEntity<ApiResponse<List<UserGameResponse>>> list(
+            @PathVariable Long userId,
+            @RequestParam(required = false) String status) {
+        List<UserGameResponse> result = (status != null)
+                ? userGameService.getUserGamesByStatus(userId, status)
+                : userGameService.getUserGames(userId);
+        return ResponseEntity.ok(ApiResponse.ok(result));
     }
 
     @PostMapping
@@ -36,8 +39,8 @@ public class UserGameController {
     public ResponseEntity<ApiResponse<UserGameResponse>> update(
             @PathVariable Long userId,
             @PathVariable Long id,
-            @RequestBody UserGameRequest req) {
-        return ResponseEntity.ok(ApiResponse.ok(userGameService.updateStatus(userId, id, req.getStatus()), "Status updated"));
+            @Valid @RequestBody UserGameRequest req) {
+        return ResponseEntity.ok(ApiResponse.ok(userGameService.update(userId, id, req), "Status updated"));
     }
 
     @DeleteMapping("/{id}")

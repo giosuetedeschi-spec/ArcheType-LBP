@@ -41,7 +41,9 @@ public class UserGameService {
 
     public UserGameResponse addGame(Long userId, UserGameRequest req) {
         validateUser(userId);
-        validateStatus(req.getStatus());
+        if (req.getStatus() != null) {
+            validateStatus(req.getStatus());
+        }
         Game game = gameRepo.findById(req.getGameId())
                 .orElseThrow(() -> new ResourceNotFoundException("Game", "id", req.getGameId()));
         User user = userRepo.findById(userId)
@@ -55,23 +57,32 @@ public class UserGameService {
         ug.setUser(user);
         ug.setGame(game);
         ug.setStatus(req.getStatus() != null ? req.getStatus() : "wishlist");
+        ug.setPlayTimeMin(req.getPlayTimeMin() != null ? req.getPlayTimeMin() : 0);
+        ug.setNotes(req.getNotes());
         return toResponse(userGameRepo.save(ug));
     }
 
-    public UserGameResponse updateStatus(Long userId, Long id, String status) {
-        validateStatus(status);
-        UserGame ug = userGameRepo.findById(id)
+    public UserGameResponse update(Long userId, Long id, UserGameRequest req) {
+        UserGame ug = userGameRepo.findByIdAndUser_Id(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("UserGame", "id", id));
-        if (!ug.getUser().getId().equals(userId)) {
-            throw new IllegalArgumentException("UserGame does not belong to this user");
+
+        if (req.getStatus() != null) {
+            validateStatus(req.getStatus());
+            ug.setStatus(req.getStatus());
         }
-        ug.setStatus(status);
+        if (req.getPlayTimeMin() != null) {
+            ug.setPlayTimeMin(req.getPlayTimeMin());
+        }
+        if (req.getNotes() != null) {
+            ug.setNotes(req.getNotes());
+        }
         return toResponse(userGameRepo.save(ug));
     }
 
-    public void removeGame(Long userId, Long gameId) {
-        validateUser(userId);
-        userGameRepo.deleteByUserIdAndGameId(userId, gameId);
+    public void removeGame(Long userId, Long id) {
+        UserGame ug = userGameRepo.findByIdAndUser_Id(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("UserGame", "id", id));
+        userGameRepo.deleteByIdAndUserId(ug.getId(), userId);
     }
 
     private void validateUser(Long userId) {
@@ -92,6 +103,8 @@ public class UserGameService {
         r.setId(ug.getId());
         r.setUserId(ug.getUser().getId());
         r.setStatus(ug.getStatus());
+        r.setPlayTimeMin(ug.getPlayTimeMin());
+        r.setNotes(ug.getNotes());
         r.setAddedAt(ug.getAddedAt());
         r.setUpdatedAt(ug.getUpdatedAt());
 

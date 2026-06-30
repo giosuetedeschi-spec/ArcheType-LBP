@@ -9,6 +9,8 @@ public class UserGameResponse {
     private Long userId;
     private GameSummary game;
     private String status;
+    private Integer playTimeMin;
+    private String notes;
     private LocalDateTime addedAt;
     private LocalDateTime updatedAt;
 

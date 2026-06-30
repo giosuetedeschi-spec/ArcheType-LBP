@@ -33,6 +33,11 @@ public class UserGame {
     @Pattern(regexp = "wishlist|playing|finished|abandoned")
     private String status = "wishlist";
 
+    @Column(name = "play_time_min")
+    private Integer playTimeMin = 0;
+
+    private String notes;
+
     @Column(name = "added_at")
     private LocalDateTime addedAt = LocalDateTime.now();
 
