@@ -25,3 +25,23 @@ replay_pid*
 .DS_Store
 
 .env
+
+# Build output
+target/
+build/
+dist/
+*.egg-info/
+
+# IDE / editor
+.idea/
+.vscode/
+*.iml
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# OS
+Thumbs.db
+5caef7ae66f23c391a88bd48f64769f3be1f8b61
