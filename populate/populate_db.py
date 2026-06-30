@@ -34,44 +34,87 @@ def get_connection():
     return psycopg2.connect(**DB_CONFIG)
 
 
+# L'header dichiarato nel file CSV ha 39 nomi di colonna, ma OGNI riga dati ha
+# 40 campi. La causa: la colonna "DiscountDLC count" nell'header è in realtà
+# la fusione (per un bug nell'export originale del dataset) di due colonne
+# distinte: "Discount" e "DLC count". Una volta separate, righe e header
+# tornano ad avere lo stesso numero di campi (40) e tutti i valori successivi
+# (Developers, Publishers, Categories, Genres, ecc.) si allineano
+# correttamente. Senza questa correzione, pandas legge "Developers" al posto
+# di "Publishers", "Name" al posto del "Release date", ecc., causando lo
+# scarto del 91% delle righe durante il cleaning (campi numerici attesi
+# contenevano testo, e viceversa).
+_CORRECTED_CSV_HEADER = [
+    "AppID", "Name", "Release date", "Estimated owners", "Peak CCU", "Required age",
+    "Price", "Discount", "DLC count", "About the game", "Supported languages",
+    "Full audio languages", "Reviews", "Header image", "Website", "Support url",
+    "Support email", "Windows", "Mac", "Linux", "Metacritic score", "Metacritic url",
+    "User score", "Positive", "Negative", "Score rank", "Achievements", "Recommendations",
+    "Notes", "Average playtime forever", "Average playtime two weeks",
+    "Median playtime forever", "Median playtime two weeks", "Developers", "Publishers",
+    "Categories", "Genres", "Tags", "Screenshots", "Movies",
+]
+
+
 def load_dataset(path: str) -> pd.DataFrame:
-    """Carica il dataset Steam."""
+    """Carica il dataset Steam, correggendo l'header CSV malformato (vedi
+    _CORRECTED_CSV_HEADER) se il numero di campi nei dati combacia.
+    """
     p = Path(path)
     if not p.exists():
         log.error(f"Dataset non trovato: {path}")
         sys.exit(1)
 
-    # Carica come stringhe per evitare cast indesiderati. Il dataset Steam
-    # ha già una colonna AppID reale, quindi evitiamo di trattarla come indice.
     if p.suffix == ".csv":
-        df = pd.read_csv(path, dtype=str, keep_default_na=False)
+        df = _load_csv_with_corrected_header(path)
     elif p.suffix == ".json":
-        # pd.read_json does not support index_col; load then decide
         df = pd.read_json(path)
-        # Ensure all columns are strings to keep behavior consistent
-        try:
-            df = df.astype(str)
-        except Exception:
-            pass
+        df.columns = [str(col).strip().lower() for col in df.columns]
+        if "appid" in df.columns:
+            df = df.rename(columns={"appid": "steam_app_id"})
     else:
         log.error(f"Formato non supportato: {p.suffix}")
         sys.exit(1)
 
-    # Normalize column names before any AppID detection.
+    log.info(f"Dataset caricato: {len(df)} righe, colonne: {list(df.columns)[:10]}")
+    return df
+
+
+def _load_csv_with_corrected_header(path: str) -> pd.DataFrame:
+    import csv as csv_module
+
+    with open(path, newline="", encoding="utf-8") as f:
+        reader = csv_module.reader(f)
+        declared_header = next(reader)
+        rows = list(reader)
+
+    # Verifica empirica: se il numero di campi nelle righe dati combacia con
+    # l'header corretto (40), usalo. Altrimenti torna al fallback "best
+    # effort" col solo header dichiarato (e accetta possibili
+    # disallineamenti, loggando un avviso).
+    if rows and len(rows[0]) == len(_CORRECTED_CSV_HEADER):
+        header = _CORRECTED_CSV_HEADER
+        log.info(
+            "Rilevato header CSV malformato (39 colonne dichiarate vs 40 campi "
+            "dati). Applicata correzione: 'DiscountDLC count' -> 'Discount' + "
+            "'DLC count'."
+        )
+    else:
+        header = declared_header
+        log.warning(
+            "Numero di campi nelle righe non corrisponde all'header corretto "
+            "atteso; uso l'header originale del file (possibili disallineamenti)."
+        )
+
+    good_rows = [r for r in rows if len(r) == len(header)]
+    malformed = len(rows) - len(good_rows)
+    if malformed:
+        log.warning(f"Righe scartate per numero di campi anomalo: {malformed}")
+
+    df = pd.DataFrame(good_rows, columns=header)
     df.columns = [str(col).strip().lower() for col in df.columns]
-
-    # If the dataset has an unnamed first column that pandas exposed as
-    # a generic 'index' column, rename it to steam_app_id only when it looks
-    # like the real AppID column (numeric values).
-    if "index" in df.columns and df["index"].astype(str).str.match(r"^\d+$", na=False).mean() > 0.95:
-        df = df.rename(columns={"index": "steam_app_id"})
-
     if "appid" in df.columns:
         df = df.rename(columns={"appid": "steam_app_id"})
-    elif "app id" in df.columns:
-        df = df.rename(columns={"app id": "steam_app_id"})
-
-    log.info(f"Dataset caricato: {len(df)} righe, colonne: {list(df.columns)[:10]}")
     return df
 
 
@@ -79,18 +122,10 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     """Pulisce e normalizza i dati."""
     df.columns = [str(col).strip().lower() for col in df.columns]
 
-    # Normalizza possibili nomi di colonna per l'app id
-    if "appid" in df.columns:
-        df = df.rename(columns={"appid": "steam_app_id"})
-    elif "app id" in df.columns:
-        df = df.rename(columns={"app id": "steam_app_id"})
-    elif "steam_app_id" in df.columns:
-        df = df.rename(columns={"steam_app_id": "steam_app_id"})
-
-    # If we loaded the CSV with the default headers, the first column is still
-    # named 'appid' (lowercase) and should be treated as the real AppID.
     if "appid" in df.columns and "steam_app_id" not in df.columns:
         df = df.rename(columns={"appid": "steam_app_id"})
+    elif "app id" in df.columns and "steam_app_id" not in df.columns:
+        df = df.rename(columns={"app id": "steam_app_id"})
 
     column_map = {
         "name": "name",
@@ -123,53 +158,20 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     df["name"] = df["name"].astype(str).str.strip()
     df = df[df["name"] != ""]
 
-    # Detect AppID column automatically if present but non-numeric
-    def numeric_fraction(series: pd.Series) -> float:
-        s = series.dropna().astype(str)
-        if len(s) == 0:
-            return 0.0
-        return float(s.str.match(r"^\s*\d+\s*$").sum()) / len(s)
-
-    # If there is an explicit-looking column name, prefer it
-    name_candidates = [col for col in df.columns if re.search(r"app.*id|appid|app id|steam", col, re.I)]
-    if name_candidates:
-        pick = name_candidates[0]
-        if pick != "steam_app_id":
-            log.info(f"Rilevata colonna AppID da nome: '{pick}', rinomino in 'steam_app_id'.")
-            df = df.rename(columns={pick: "steam_app_id"})
-    else:
-        # If steam_app_id exists but is mostly non-numeric, try to find better column
-        candidate = "steam_app_id" if "steam_app_id" in df.columns else None
-
-        best_col = candidate
-        best_frac = numeric_fraction(df[candidate]) if candidate else 0.0
-
-        # Search all columns for the highest numeric fraction, but only switch
-        # when the current candidate is very non-numeric (low confidence).
-        for col in df.columns:
-            frac = numeric_fraction(df[col])
-            if candidate and best_frac < 0.2 and frac > best_frac + 0.5 and frac > 0.8:
-                best_col = col
-                best_frac = frac
-
-        if best_col and candidate and best_col != "steam_app_id":
-            log.info(f"Rilevata colonna AppID come '{best_col}' (numeric_fraction={best_frac:.2f}), rinomino in 'steam_app_id'.")
-            df = df.rename(columns={best_col: "steam_app_id"})
-
     log.info(f"Dati puliti: {len(df)} righe")
     return df
 
 
-def _clean_text(value) -> str | None:
+def _clean_text(value):
     if pd.isna(value):
         return None
     text = str(value).strip()
-    if text in {"", "nan", "none", "none"}:
+    if text in {"", "nan", "none"}:
         return None
     return text
 
 
-def _truncate_text(value: str | None, max_len: int) -> str | None:
+def _truncate_text(value, max_len: int):
     if value is None:
         return None
     text = str(value).strip()
@@ -178,17 +180,16 @@ def _truncate_text(value: str | None, max_len: int) -> str | None:
     return text[:max_len]
 
 
-def _parse_app_id(value) -> int | None:
+def _parse_app_id(value):
     if pd.isna(value):
         return None
     text = str(value).strip()
     if not text:
         return None
-    match = re.search(r"(\d+)", text)
+    match = re.match(r"^\d+$", text)
     if not match:
         return None
-
-    app_id = int(match.group(1))
+    app_id = int(text)
     if app_id < 0 or app_id > 2_147_483_647:
         return None
     return app_id
@@ -204,7 +205,7 @@ def _parse_price(value) -> float:
     return float(match.group(1)) if match else 0.0
 
 
-def _parse_rating(value) -> float | None:
+def _parse_rating(value):
     if pd.isna(value):
         return None
     text = str(value).strip()
@@ -217,7 +218,7 @@ def _parse_rating(value) -> float | None:
     return value_num if value_num <= 5 else round(value_num / 10, 2)
 
 
-def _parse_date(value) -> str | None:
+def _parse_date(value):
     if pd.isna(value):
         return None
     text = str(value).strip()
@@ -232,7 +233,7 @@ def _parse_date(value) -> str | None:
     return f"{match.group(1)}-01-01" if match else None
 
 
-def _ensure_lookup(cur, table_name: str, values: list[str]) -> dict[str, int]:
+def _ensure_lookup(cur, table_name: str, values: list) -> dict:
     if not values:
         return {}
 
@@ -268,27 +269,13 @@ def insert_games(df: pd.DataFrame):
     skipped = 0
 
     for _, row in df.iterrows():
-        raw_app = row.get("steam_app_id", "")
-        # If duplicate column names or pandas weirdness returned a Series,
-        # pick the first non-null scalar value
-        if isinstance(raw_app, pd.Series):
-            non_null = raw_app.dropna()
-            raw_app = non_null.iloc[0] if len(non_null) > 0 else raw_app.iloc[0]
-
-        app_id = _parse_app_id(raw_app)
+        app_id = _parse_app_id(row.get("steam_app_id"))
         if app_id is None:
             skipped += 1
             continue
 
-        raw_dev = row.get("developer")
-        if isinstance(raw_dev, pd.Series):
-            raw_dev = raw_dev.dropna().iloc[0] if len(raw_dev.dropna()) > 0 else raw_dev.iloc[0]
-        developer = _clean_text(raw_dev)
-
-        raw_pub = row.get("publisher")
-        if isinstance(raw_pub, pd.Series):
-            raw_pub = raw_pub.dropna().iloc[0] if len(raw_pub.dropna()) > 0 else raw_pub.iloc[0]
-        publisher = _clean_text(raw_pub)
+        developer = _clean_text(row.get("developer"))
+        publisher = _clean_text(row.get("publisher"))
         if developer:
             developer_names.append(developer)
         if publisher:
