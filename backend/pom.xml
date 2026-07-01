@@ -6,7 +6,7 @@
     <parent>
         <groupId>org.springframework.boot</groupId>
         <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.5.0</version>
+        <version>3.3.0</version>
         <relativePath/>
     </parent>
     <groupId>com.archetype</groupId>
@@ -15,7 +15,7 @@
     <name>ArcheType LBP</name>
     <description>Game library management backend</description>
     <properties>
-        <java.version>25</java.version>
+        <java.version>21</java.version>
         <lombok.version>1.18.38</lombok.version>
         <maven.compiler.proc>full</maven.compiler.proc>
         <jjwt.version>0.12.6</jjwt.version>
