@@ -1,12 +1,12 @@
 package com.archetype.lbp.service;
 
 import com.archetype.lbp.model.User;
-
 import com.archetype.lbp.dto.UserRequest;
 import com.archetype.lbp.dto.UserResponse;
 import com.archetype.lbp.exception.ResourceNotFoundException;
 import com.archetype.lbp.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -18,6 +18,7 @@ import java.util.stream.Collectors;
 @Transactional
 public class UserService {
     private final UserRepository userRepo;
+    private final PasswordEncoder passwordEncoder;
 
     public UserResponse register(UserRequest req) {
         if (userRepo.findByUsername(req.getUsername()).isPresent()) {
@@ -30,8 +31,8 @@ public class UserService {
         User user = new User();
         user.setUsername(req.getUsername());
         user.setEmail(req.getEmail());
-        // TODO: sostituire con BCryptPasswordEncoder quando si aggiunge Spring Security
-        user.setPasswordHash(req.getPassword());
+        // Password hashata con BCrypt
+        user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
 
         return toResponse(userRepo.save(user));
     }
