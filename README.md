@@ -30,7 +30,7 @@ ArcheType-LBP è un'applicazione web per organizzare, esplorare e gestire la tua
 | **Frontend** | React + Vite + TypeScript, shadcn/ui, Tailwind CSS |
 | **Backend** | Java Spring Boot |
 | **Database** | PostgreSQL 17 |
-| **API** | REST API auto-generate (JPA / Supabase) |
+| **API** | REST API
 | **Auth** | JWT + session management |
 | **Container** | Docker Compose (frontend + backend + DB + populate) |
 
@@ -40,7 +40,7 @@ ArcheType-LBP è un'applicazione web per organizzare, esplorare e gestire la tua
 
 ```
 ArcheType-LBP/
-├── archetype-frontend/      # React SPA (Vite + TypeScript)
+├── virtualz-frontend/      # React SPA (Vite + TypeScript)
 │   ├── src/
 │   │   ├── components/      # Componenti UI (shadcn/ui + custom)
 │   │   ├── routes/          # Pagine dell'app (catalog, library, ...)
@@ -57,7 +57,7 @@ ArcheType-LBP/
 ├── db/                      # Database schema (init.sql)
 ├── populate/                # Script per popolare il DB con dati di test
 ├── docker-compose.yml
-├── SUPABASE.md              # Documentazione migrazione Supabase
+├
 └── Palette colori proposta.md # Design system colori
 ```
 
@@ -97,10 +97,8 @@ cd backend
 mvn spring-boot:run
 
 # Frontend (terminale separato)
-cd archetype-frontend
-bun install
-bun run dev
-```
+cd virtualz-frontend
+
 
 ---
 
@@ -129,15 +127,7 @@ Legend: ✅ Completato | 🟠 In corso | ⏳ Pianificato
 5. **UX & Polish** → animazioni, colorblind mode, responsive, i18n
 6. **Deploy** → containerizzazione e messa in produzione
 
----
 
-## 🤝 Contribuire
-
-Il progetto è privato ma aperto a suggerimenti. Per contribuire:
-
-1. Crea un branch da `bobu-branch`
-2. Implementa la feature/bugfix
-3. Crea una Pull Request verso `bobu-branch`
 
 ---
 
