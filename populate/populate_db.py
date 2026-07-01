@@ -215,7 +215,8 @@ def _parse_rating(value):
     if not match:
         return None
     value_num = float(match.group(1))
-    return value_num if value_num <= 5 else round(value_num / 10, 2)
+    result = value_num if value_num <= 5 else round(value_num / 10, 2)
+    return min(result, 9.99)
 
 
 def _parse_date(value):

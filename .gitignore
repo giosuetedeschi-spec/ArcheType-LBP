@@ -46,3 +46,7 @@ docker compose up --build -d
 # OS
 Thumbs.db
 5caef7ae66f23c391a88bd48f64769f3be1f8b61
+node_modules/
+virtualz-frontend/node_modules/
+data/*.csv
+!data/.gitkeep
