@@ -23,22 +23,3 @@
 hs_err_pid*
 replay_pid*
 .DS_Store
-
-# Build output
-target/
-build/
-dist/
-*.egg-info/
-
-# IDE / editor
-.idea/
-.vscode/
-*.iml
-
-# Environment
-.env
-.env.local
-.env.*.local
-
-# OS
-Thumbs.db
