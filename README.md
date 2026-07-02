@@ -1,4 +1,4 @@
-# 🎮 ArcheType-LBP
+# 🎮 VirtualZ
 
 > Gestione intelligente della tua libreria di videogiochi.
 
