@@ -68,9 +68,16 @@ ArcheType-LBP/
 ### Prerequisiti
 
 - [Docker](https://docs.docker.com/get-docker/) & Docker Compose
-- [Bun](https://bun.sh/) (o Node.js 18+) per lo sviluppo frontend
+- [Node.js](https://nodejs.org/) 18+ (npm incluso) per lo sviluppo frontend
 - JDK 21+ per lo sviluppo backend
 - Maven 3.9+
+
+### Dataset (obbligatorio prima di popolare il database)
+
+Il dataset Steam (~389 MB) non è incluso nel repository — va scaricato a parte:
+
+1. Scarica da: https://drive.google.com/file/d/1jkWhz5HU8KaJmOZSfJPgKDvUg7uELaDf/view?usp=drive_link
+2. Copialo in `data/steam_games.csv` (nome esatto)
 
 ### Con Docker (consigliato)
 
