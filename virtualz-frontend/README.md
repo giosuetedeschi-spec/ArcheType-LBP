@@ -43,3 +43,7 @@ nella radice del repo). Variabile d'ambiente opzionale:
 Questa PR non sostituisce `archetype-frontend/` — propone un'alternativa
 da valutare. Il team decide se: tenere entrambi temporaneamente, fondere
 le parti migliori di ciascuno, o scegliere uno dei due come definitivo.
+
+
+---
+*Last project status update: 2026-07-03*
