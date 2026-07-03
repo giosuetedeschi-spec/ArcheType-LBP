@@ -32,3 +32,7 @@ Standalone script for color analysis demo/testing.
 |-----|---------|-------------|
 | `DATABASE_URL` | `postgresql://archetype:secret@localhost:5432/archetype` | PostgreSQL connection string |
 | `STEAM_API_KEY` | (not required) | Optional key for higher rate limits |
+
+
+---
+*Last project status update: 2026-07-03*
