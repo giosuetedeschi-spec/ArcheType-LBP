@@ -265,3 +265,7 @@ GameDetailPage → fetch single game + user-game status
 - Language selector
 - Colorblind mode toggle
 - Friends visibility toggle
+
+
+---
+*Last project status update: 2026-07-03*
