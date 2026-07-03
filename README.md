@@ -82,9 +82,7 @@ Il dataset Steam (~389 MB) non è incluso nel repository — va scaricato a part
 ### Con Docker (consigliato)
 
 ```bash
-# Clona il repository
-git clone https://github.com/giosuetedeschi-spec/ArcheType-LBP.git
-cd ArcheType-LBP
+# Assicurati di aver scaricato il dataset come descritto sopra
 
 # Avvia tutti i servizi
 docker compose up --build
