@@ -145,3 +145,7 @@ Vedi [LICENSE](./LICENSE).
 ## 📬 Contatto
 
 Giosue Tedeschi — giosuetedeschi-spec
+
+
+---
+*Last project status update: 2026-07-03*
