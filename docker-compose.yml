@@ -40,7 +40,7 @@ services:
 
   frontend:
     build:
-      context: ./archetype-frontend
+      context: ./virtualz-frontend
       dockerfile: Dockerfile
     container_name: archetype-frontend
     restart: unless-stopped
