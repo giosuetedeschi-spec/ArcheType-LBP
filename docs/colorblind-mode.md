@@ -111,3 +111,7 @@ CSS custom properties work in all modern browsers (IE11 excluded — not support
 - [ ] Status badges show colored dots in colorblind modes
 - [ ] Charts (Recharts) respect colorblind colors via CSS
 - [ ] No color-only information (icons/text always present alongside colors)
+
+
+---
+*Last project status update: 2026-07-03*
