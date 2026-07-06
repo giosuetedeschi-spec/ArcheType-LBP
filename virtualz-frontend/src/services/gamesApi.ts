@@ -11,7 +11,7 @@ import type { CatalogSearchParams, Game, PagedResponse } from "@/types/api";
 export async function searchCatalog(
   params: CatalogSearchParams = {}
 ): Promise<PagedResponse<Game>> {
-  const { data } = await api.get<PagedResponse<Game>>("/games", { params });
+  const { data } = await api.get<PagedResponse<Game>>("/games/filter", { params });
   return data;
 }
 

@@ -10,7 +10,7 @@
     "home": "Home",
     "leaderboard": "Classifiche",
     "friends": "Amici",
-    "tagline": "Your Gaming Pleasure"
+    "tagline": "Your data, Your hero's journey"
   },
   "auth": {
     "loginTitle": "Bentornato",
@@ -35,7 +35,22 @@
     "maxPrice": "Prezzo massimo",
     "platforms": "Piattaforme",
     "noResults": "Nessun gioco trovato con questi filtri.",
-    "loadMore": "Carica altri"
+    "loadMore": "Carica altri",
+    "sortBy": "Ordina per",
+    "sortRelevance": "Rilevanza",
+    "sortNameAsc": "Nome (A-Z)",
+    "sortNameDesc": "Nome (Z-A)",
+    "sortPriceAsc": "Prezzo crescente",
+    "sortPriceDesc": "Prezzo decrescente",
+    "sortRatingDesc": "Valutazione",
+    "sortNewest": "Più recenti",
+    "os": "Sistema operativo",
+    "comingSoon": "In arrivo",
+    "reset": "Azzera filtri",
+    "allGenres": "Tutti i generi",
+    "results_one": "{{count}} gioco",
+    "results_other": "{{count}} giochi",
+    "price": "Prezzo"
   },
   "game": {
     "addToWishlist": "Aggiungi alla Wishlist",
@@ -88,7 +103,6 @@
     "free": "Gratis"
   },
   "home": {
-    "badge": "VirtualZ — Your Gaming Pleasure",
     "tagline": "Bentornato",
     "subtitle": "La tua collezione Steam, sempre organizzata.",
     "exploreCatalog": "Explore Catalog",
@@ -116,5 +130,39 @@
     "protanopia": "Protanopia",
     "deuteranopia": "Deuteranopia",
     "tritanopia": "Tritanopia"
+  },
+  "footer": {
+    "community": {
+      "title": "Community",
+      "friends": "Amici",
+      "leaderboard": "Classifica",
+      "discord": "Discord"
+    },
+    "platform": {
+      "title": "Piattaforma",
+      "catalog": "Catalogo",
+      "library": "Libreria",
+      "analytics": "Statistiche"
+    },
+    "shop": {
+      "title": "Shop",
+      "offers": "Offerte",
+      "giftCards": "Carte regalo",
+      "redeem": "Riscatta codice"
+    },
+    "support": {
+      "title": "Supporto",
+      "help": "Centro assistenza",
+      "contact": "Contattaci",
+      "privacy": "Privacy policy"
+    }
+  },
+  "genres": {
+    "action": "Azione",
+    "adventure": "Avventura",
+    "rpg": "RPG",
+    "strategy": "Strategia",
+    "indie": "Indie",
+    "horror": "Horror"
   }
 }
