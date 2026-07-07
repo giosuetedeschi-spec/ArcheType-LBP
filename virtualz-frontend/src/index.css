@@ -1,31 +1,49 @@
+/**
+ * VirtualZ - Global Stylesheet
+ * Team: Archetype Analytics
+ * 
+ * Tailwind CSS v4 syntax:
+ * - @import "tailwindcss" replaces @tailwind directives
+ * - Custom colors/fonts/animations defined in @theme block
+ * - No tailwind.config.ts needed
+ */
+
 @import "tailwindcss";
 
-/*
-  Palette VirtualZ (da Analytics-3.pdf, deck cliente):
-  - Blu notte:    #2c346b  -> sfondo principale, superfici scure
-  - Grigio scuro: #272727  -> pannelli, card
-  - Lime intenso: #e1f16b  -> azioni primarie, evidenze, dati positivi
-  - Rosa:         #ff66c4  -> accenti secondari, wishlist/preferiti, alert
+/* ============================================================
+   THEME CONFIGURATION (Tailwind v4)
+   ============================================================
+   Colors, fonts, and animations are defined here using @theme.
+   This replaces the old tailwind.config.js/ts approach.
+   Variables prefixed with --color-, --font-, --animate- are
+   automatically available as Tailwind utility classes.
 */
 @theme {
+  /* Official Archetype Analytics / VirtualZ palette */
   --color-vz-navy: #2c346b;
   --color-vz-navy-deep: #232a57;
-  --color-vz-charcoal: #272727;
-  --color-vz-charcoal-soft: #2f2f2f;
   --color-vz-lime: #e1f16b;
   --color-vz-pink: #ff66c4;
+  --color-vz-charcoal: #272727;
 
-  --font-display: "Space Grotesk", "Inter", system-ui, sans-serif;
-  --font-body: "Inter", system-ui, sans-serif;
+  /* Typography */
+  --font-display: 'Inter', system-ui, sans-serif;
+  --font-body: 'Inter', system-ui, sans-serif;
+
+  /* Animations */
+  --animate-fade-in-up: fade-in-up 0.4s ease-out both;
+  --animate-shimmer: shimmer 1.4s ease-in-out infinite;
 }
 
-
+/* ============================================================
+   BASE RESET
+   ============================================================ */
 html, body, #root {
   height: 100%;
 }
 
 body {
-  /* Gradiente sottile invece del navy piatto: dà profondità senza cambiare palette */
+  /* Subtle radial gradient for depth (parallax-like fixed background) */
   background: radial-gradient(ellipse at top, #323a78 0%, var(--color-vz-navy) 45%, var(--color-vz-navy-deep) 100%);
   background-attachment: fixed;
   color: #f4f4f5;
@@ -33,10 +51,18 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-/* Animazioni riutilizzabili */
+/* ============================================================
+   KEYFRAMES (referenced by --animate-* in @theme)
+   ============================================================ */
 @keyframes fade-in-up {
-  from { opacity: 0; transform: translateY(12px); }
-  to   { opacity: 1; transform: translateY(0); }
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @keyframes shimmer {
@@ -44,23 +70,42 @@ body {
   100% { background-position: 400px 0; }
 }
 
-.animate-fade-in-up {
-  animation: fade-in-up 0.4s ease-out both;
-}
-
+/* ============================================================
+   CUSTOM UTILITY CLASSES
+   ============================================================ */
 .skeleton {
   background: linear-gradient(90deg, #2f2f2f 25%, #3a3a3a 37%, #2f2f2f 63%);
   background-size: 800px 100%;
   animation: shimmer 1.4s ease-in-out infinite;
 }
 
-/* Scrollbar discreta in tema */
-::-webkit-scrollbar { width: 10px; height: 10px; }
-::-webkit-scrollbar-track { background: var(--color-vz-navy-deep); }
-::-webkit-scrollbar-thumb { background: #3d4684; border-radius: 6px; }
-::-webkit-scrollbar-thumb:hover { background: #4a5499; }
+/* ============================================================
+   CUSTOM SCROLLBAR (Chrome/Edge/Safari)
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 10px;
+  height: 10px;
+}
 
-/* Modalità colorblind: sovrascrivono le variabili colore principali */
+::-webkit-scrollbar-track {
+  background: var(--color-vz-navy-deep);
+}
+
+::-webkit-scrollbar-thumb {
+  background: #3d4684;
+  border-radius: 6px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #4a5499;
+}
+
+/* ============================================================
+   COLORBLIND ACCESSIBILITY MODES
+   ============================================================
+   Overrides main accent colors based on data-colorblind attribute
+   set by ColorblindContext on the <html> element.
+*/
 html[data-colorblind="protanopia"] {
   --color-vz-lime: #d4d96b;
   --color-vz-pink: #4ea8de;

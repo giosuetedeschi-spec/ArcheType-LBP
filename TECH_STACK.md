@@ -173,3 +173,7 @@ DELETE /api/user-games/{id}    → Remove game from library
 | `SPRING_DATASOURCE_PASSWORD` | DB password | `veryStrongpassword!` |
 | `SERVER_PORT` | Backend port | `8080` |
 | `VITE_API_URL` | Frontend API base | `http://localhost:8080/api` |
+
+
+---
+*Last project status update: 2026-07-03*

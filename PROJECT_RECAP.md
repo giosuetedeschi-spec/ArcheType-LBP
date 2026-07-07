@@ -183,3 +183,7 @@ There's a detailed migration plan (`SUPABASE.md`) to replace the Spring Boot bac
 - 🟠 Authentication (planned, not implemented)
 - 🟠 i18n & accessibility (components exist, in progress)
 - ⏳ Frontend pages (some implemented, others planned)
+
+
+---
+*Last project status update: 2026-07-03*

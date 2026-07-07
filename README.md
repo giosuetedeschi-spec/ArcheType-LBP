@@ -107,7 +107,9 @@ mvn spring-boot:run
 
 # Frontend (terminale separato)
 cd virtualz-frontend
-
+npm install
+npm run dev
+```
 
 ---
 
@@ -121,7 +123,7 @@ Questo progetto è in **sviluppo attivo**. Le funzionalità sono implementate in
 | 🔧 Backend API | 🟠 In corso |
 | 🎨 Frontend Pagine | ⏳ Pianificato |
 | 🔐 Autenticazione | ⏳ Pianificato |
-| 🌐 i18n & Accessibilità | ⏳ Pianificato |
+| 🌐 i18n & Accessibilità | 🟠 In corso |
 
 Legend: ✅ Completato | 🟠 In corso | ⏳ Pianificato
 
@@ -149,3 +151,8 @@ Vedi [LICENSE](./LICENSE).
 ## 📬 Contatto
 
 Giosue Tedeschi — giosuetedeschi-spec
+Anna Digiglio — annadigiglio-lgtm
+Lorenzo Vurchio — 
+Joshua Gino Galarza — 
+Girelle Beni Benj — 
+Marguerite Deido El Bimbey — 

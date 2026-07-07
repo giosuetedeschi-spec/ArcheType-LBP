@@ -10,7 +10,7 @@
     "home": "Home",
     "leaderboard": "Leaderboard",
     "friends": "Friends",
-    "tagline": "Your Gaming Pleasure"
+    "tagline": "Your data, Your hero's journey"
   },
   "auth": {
     "loginTitle": "Welcome back",
@@ -35,7 +35,22 @@
     "maxPrice": "Max price",
     "platforms": "Platforms",
     "noResults": "No games found with these filters.",
-    "loadMore": "Load more"
+    "loadMore": "Load more",
+    "sortBy": "Sort by",
+    "sortRelevance": "Relevance",
+    "sortNameAsc": "Name (A-Z)",
+    "sortNameDesc": "Name (Z-A)",
+    "sortPriceAsc": "Price: low to high",
+    "sortPriceDesc": "Price: high to low",
+    "sortRatingDesc": "Rating",
+    "sortNewest": "Newest",
+    "os": "Operating system",
+    "comingSoon": "Coming soon",
+    "reset": "Reset filters",
+    "allGenres": "All genres",
+    "results_one": "{{count}} game",
+    "results_other": "{{count}} games",
+    "price": "Price"
   },
   "game": {
     "addToWishlist": "Add to Wishlist",
@@ -88,7 +103,6 @@
     "free": "Free"
   },
   "home": {
-    "badge": "VirtualZ — Your Gaming Pleasure",
     "tagline": "Welcome back",
     "subtitle": "Your Steam collection, always organized.",
     "exploreCatalog": "Explore Catalog",
@@ -116,5 +130,39 @@
     "protanopia": "Protanopia",
     "deuteranopia": "Deuteranopia",
     "tritanopia": "Tritanopia"
+  },
+  "footer": {
+    "community": {
+      "title": "Community",
+      "friends": "Friends",
+      "leaderboard": "Leaderboard",
+      "discord": "Discord"
+    },
+    "platform": {
+      "title": "Platform",
+      "catalog": "Catalog",
+      "library": "Library",
+      "analytics": "Analytics"
+    },
+    "shop": {
+      "title": "Shop",
+      "offers": "Offers",
+      "giftCards": "Gift cards",
+      "redeem": "Redeem code"
+    },
+    "support": {
+      "title": "Support",
+      "help": "Help center",
+      "contact": "Contact us",
+      "privacy": "Privacy policy"
+    }
+  },
+  "genres": {
+    "action": "Action",
+    "adventure": "Adventure",
+    "rpg": "RPG",
+    "strategy": "Strategy",
+    "indie": "Indie",
+    "horror": "Horror"
   }
 }
