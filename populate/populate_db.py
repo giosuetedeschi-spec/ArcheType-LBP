@@ -180,6 +180,23 @@ def _truncate_text(value, max_len: int):
     return text[:max_len]
 
 
+def _split_multi(value) -> list:
+    """Splitta un campo multi-valore comma-separated del dataset Steam
+    (es. "Action,Adventure,RPG" per Genres/Categories) in una lista di
+    nomi puliti, senza duplicati né valori vuoti."""
+    if pd.isna(value):
+        return []
+    text = str(value).strip()
+    if not text or text.lower() in {"nan", "none"}:
+        return []
+    seen = []
+    for part in text.split(","):
+        name = part.strip()
+        if name and name not in seen:
+            seen.append(name)
+    return seen
+
+
 def _parse_app_id(value):
     if pd.isna(value):
         return None
@@ -267,6 +284,8 @@ def insert_games(df: pd.DataFrame):
     parsed_rows = []
     developer_names = []
     publisher_names = []
+    genre_names = []
+    category_names = []
     skipped = 0
 
     for _, row in df.iterrows():
@@ -282,6 +301,11 @@ def insert_games(df: pd.DataFrame):
         if publisher:
             publisher_names.append(publisher)
 
+        genres = _split_multi(row.get("genres"))
+        categories = _split_multi(row.get("categories"))
+        genre_names.extend(genres)
+        category_names.extend(categories)
+
         parsed_rows.append({
             "appid": app_id,
             "name": _clean_text(row.get("name")) or "",
@@ -292,6 +316,8 @@ def insert_games(df: pd.DataFrame):
             "rating": _parse_rating(row.get("rating")),
             "description": _clean_text(row.get("description")),
             "header_image_url": _clean_text(row.get("header_image_url")),
+            "genres": genres,
+            "categories": categories,
         })
 
     if skipped:
@@ -299,6 +325,8 @@ def insert_games(df: pd.DataFrame):
 
     developer_map = _ensure_lookup(cur, "developers", developer_names)
     publisher_map = _ensure_lookup(cur, "publishers", publisher_names)
+    genre_map = _ensure_lookup(cur, "genres", genre_names)
+    category_map = _ensure_lookup(cur, "categories", category_names)
 
     game_records = []
     for item in parsed_rows:
@@ -330,8 +358,63 @@ def insert_games(df: pd.DataFrame):
     total = cur.fetchone()[0]
     log.info(f"Insert completati. Totale giochi: {total}")
 
+    insert_game_genres_categories(cur, conn, parsed_rows, genre_map, category_map)
+
     cur.close()
     conn.close()
+
+
+def insert_game_genres_categories(cur, conn, parsed_rows: list, genre_map: dict, category_map: dict):
+    """Popola le tabelle di giunzione game_genres/game_categories.
+
+    Va eseguita dopo l'insert dei giochi: recupera l'id reale di ogni gioco
+    tramite il suo appid (l'insert precedente usa ON CONFLICT DO NOTHING,
+    quindi non possiamo affidarci a RETURNING per i giochi già esistenti).
+    """
+    appids = [item["appid"] for item in parsed_rows]
+    if not appids:
+        return
+
+    game_id_by_appid = {}
+    for i in range(0, len(appids), BATCH_SIZE):
+        batch = appids[i:i + BATCH_SIZE]
+        cur.execute("SELECT id, appid FROM games WHERE appid = ANY(%s)", [batch])
+        game_id_by_appid.update({appid: game_id for game_id, appid in cur.fetchall()})
+
+    genre_records = []
+    category_records = []
+    for item in parsed_rows:
+        game_id = game_id_by_appid.get(item["appid"])
+        if game_id is None:
+            continue
+        for name in item["genres"]:
+            genre_id = genre_map.get(_truncate_text(name, 255))
+            if genre_id is not None:
+                genre_records.append((game_id, genre_id))
+        for name in item["categories"]:
+            category_id = category_map.get(_truncate_text(name, 255))
+            if category_id is not None:
+                category_records.append((game_id, category_id))
+
+    if genre_records:
+        sql = """
+            INSERT INTO game_genres (game_id, genre_id) VALUES %s
+            ON CONFLICT DO NOTHING
+        """
+        for i in tqdm(range(0, len(genre_records), BATCH_SIZE), desc="Linking genres"):
+            execute_values(cur, sql, genre_records[i:i + BATCH_SIZE], page_size=BATCH_SIZE)
+            conn.commit()
+        log.info(f"Relazioni gioco-genere inserite: {len(genre_records)}")
+
+    if category_records:
+        sql = """
+            INSERT INTO game_categories (game_id, category_id) VALUES %s
+            ON CONFLICT DO NOTHING
+        """
+        for i in tqdm(range(0, len(category_records), BATCH_SIZE), desc="Linking categories"):
+            execute_values(cur, sql, category_records[i:i + BATCH_SIZE], page_size=BATCH_SIZE)
+            conn.commit()
+        log.info(f"Relazioni gioco-categoria inserite: {len(category_records)}")
 
 
 def main():
