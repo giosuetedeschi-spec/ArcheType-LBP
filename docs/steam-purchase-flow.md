@@ -309,3 +309,7 @@ const steamCartUrl = `https://store.steampowered.com/cart/?snr=1_5_9__403&appid=
 | Steam API is down | Graceful fallback: "Unable to verify ownership. Try again later." |
 | Regional restrictions | Show "Not available in your region" if Steam returns error |
 | User refunds on Steam | Next sync removes from backlog (configurable) |
+
+
+---
+*Last project status update: 2026-07-03*
