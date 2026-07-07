@@ -17,4 +17,4 @@ jobs:
       - name: Run a fake test that passes
         run: |
           echo "Running tests..."
-          exit 0
+          exit 0docker 
