@@ -9,7 +9,7 @@ export default function LoginPage() {
   const { login } = useAuth();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ usernameOrEmail: "", password: "" });
+  const [form, setForm] = useState({ username: "", password: "" });
   const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -20,8 +20,8 @@ export default function LoginPage() {
     try {
       await login(form);
       navigate({ to: "/" });
-    } catch {
-      setError(t("auth.loginError"));
+    } catch (err) {
+      setError(err.response?.data?.message || t("auth.loginError"));
     } finally {
       setLoading(false);
     }
@@ -39,8 +39,8 @@ export default function LoginPage() {
         <input
           type="text"
           placeholder={t("auth.usernameOrEmail")}
-          value={form.usernameOrEmail}
-          onChange={(e) => setForm({ ...form, usernameOrEmail: e.target.value })}
+          value={form.username}
+          onChange={(e) => setForm({ ...form, username: e.target.value })}
           required
           className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
         />

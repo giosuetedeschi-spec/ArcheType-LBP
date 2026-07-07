@@ -12,7 +12,13 @@
       "Bash(node -e ' *)",
       "PowerShell(Start-Process \"http://localhost:3000/\")",
       "PowerShell(Start-Process \"http://localhost:5173/\")",
-      "Bash(curl -s -i -H \"Origin: http://localhost:5173\" http://localhost:8080/api/health)"
+      "Bash(curl -s -i -H \"Origin: http://localhost:5173\" http://localhost:8080/api/health)",
+      "Bash(find ~/.m2/repository/org/springframework/security/spring-security-crypto -iname \"*.jar\" 2>/dev/null)",
+      "Read(//c/Users/anna.digiglio/.m2/repository/org/springframework/security/spring-security-crypto/**)",
+      "Bash(docker compose exec -T db psql -U archetype -d archetype -c ' *)",
+      "Bash(curl -s -X POST http://localhost:8080/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"gamer_alice\",\"password\":\"password123\"}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/auth/login -H \"Content-Type: application/json\" -d '{\"username\":\"gamer_bob\",\"password\":\"password123\"}')",
+      "Bash(curl -s -X POST http://localhost:8080/api/auth/login -H \"Content-Type: application/json\" -d '{\"usernameOrEmail\":\"gamer_alice\",\"password\":\"password123\"}')"
     ]
   }
 }

@@ -139,9 +139,11 @@ CREATE INDEX idx_backlog_user_status ON backlog(user_id, status);
 CREATE INDEX idx_game_sessions_user ON game_sessions(user_id);
 CREATE INDEX idx_friends_user ON friends(user_id);
 
+-- Password per entrambi gli utenti demo: "password123"
+-- (hash bcrypt generato con lo stesso BCryptPasswordEncoder usato dal backend)
 INSERT INTO users (username, email, password) VALUES
-    ('gamer_alice', 'alice@example.com', 'password123'),
-    ('gamer_bob', 'bob@example.com', 'password123')
+    ('gamer_alice', 'alice@example.com', '$2a$10$T5SEaBOczJnj0xwJoBAh2O.90waCnYLX7UFScIpiFUZQZUjpv1Upe'),
+    ('gamer_bob', 'bob@example.com', '$2a$10$T5SEaBOczJnj0xwJoBAh2O.90waCnYLX7UFScIpiFUZQZUjpv1Upe')
 ON CONFLICT (username) DO NOTHING;
 
 INSERT INTO developers (name) VALUES
