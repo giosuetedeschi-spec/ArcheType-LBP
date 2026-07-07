@@ -18,5 +18,8 @@ public class GameResponse {
     private String genres;
     private String description;
     private String headerImageUrl;
+    private Boolean windows;
+    private Boolean mac;
+    private Boolean linux;
     private LocalDateTime createdAt;
 }

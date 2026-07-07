@@ -34,4 +34,8 @@ public class GameRequest {
     private String genres;
     private String description;
     private String headerImageUrl;
+
+    private Boolean windows = false;
+    private Boolean mac = false;
+    private Boolean linux = false;
 }

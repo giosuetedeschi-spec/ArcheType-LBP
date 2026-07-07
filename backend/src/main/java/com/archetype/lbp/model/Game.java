@@ -68,6 +68,18 @@ public class Game {
     @Size(max = 1000)
     private String headerImageUrl;
 
+    // Piattaforme supportate (colonne "Windows"/"Mac"/"Linux" del dataset
+    // Steam, un booleano per gioco ciascuna — non una relazione N:N come
+    // generi/categorie, dato che non sono valori arbitrari ma un set fisso.
+    @Column(nullable = false)
+    private Boolean windows = false;
+
+    @Column(nullable = false)
+    private Boolean mac = false;
+
+    @Column(nullable = false)
+    private Boolean linux = false;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 

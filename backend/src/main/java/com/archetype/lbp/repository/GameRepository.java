@@ -28,7 +28,7 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
     static Specification<Game> withFilters(String name, String genre, String developer,
                                             BigDecimal minPrice, BigDecimal maxPrice,
                                             BigDecimal minRating, LocalDate releasedAfter,
-                                            LocalDate releasedBefore) {
+                                            LocalDate releasedBefore, List<String> os) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -61,6 +61,23 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
             }
             if (releasedBefore != null) {
                 predicates.add(cb.lessThanOrEqualTo(root.get("releaseDate"), releasedBefore));
+            }
+            if (os != null && !os.isEmpty()) {
+                // OR tra le piattaforme selezionate: un gioco compatibile con
+                // almeno una di quelle richieste deve comparire nel risultato.
+                List<Predicate> osPredicates = new ArrayList<>();
+                for (String value : os) {
+                    if (value == null) continue;
+                    switch (value.trim().toLowerCase()) {
+                        case "windows" -> osPredicates.add(cb.isTrue(root.get("windows")));
+                        case "mac" -> osPredicates.add(cb.isTrue(root.get("mac")));
+                        case "linux" -> osPredicates.add(cb.isTrue(root.get("linux")));
+                        default -> { }
+                    }
+                }
+                if (!osPredicates.isEmpty()) {
+                    predicates.add(cb.or(osPredicates.toArray(new Predicate[0])));
+                }
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
