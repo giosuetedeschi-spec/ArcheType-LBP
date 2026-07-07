@@ -1,4 +1,3 @@
-version: "3.9"
 
 services:
   db:
@@ -42,14 +41,17 @@ services:
     build:
       context: ./virtualz-frontend
       dockerfile: Dockerfile
-    container_name: archetype-frontend
+<<<<<<< Updated upstream
+      args:
+        VITE_API_BASE_URL: http://localhost:8080
+=======
+>>>>>>> Stashed changes
+    container_name: virtualz-frontend
     restart: unless-stopped
     depends_on:
       - backend
     ports:
       - "3000:80"
-    environment:
-      - VITE_API_URL=http://localhost:8080/api
 
   populate:
     build:

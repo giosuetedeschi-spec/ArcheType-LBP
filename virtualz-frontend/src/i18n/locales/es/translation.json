@@ -10,7 +10,7 @@
     "home": "Inicio",
     "leaderboard": "Clasificación",
     "friends": "Amigos",
-    "tagline": "Your Gaming Pleasure"
+    "tagline": "Your data, Your hero's journey"
   },
   "auth": {
     "loginTitle": "Bienvenido de nuevo",
@@ -35,7 +35,22 @@
     "maxPrice": "Precio máximo",
     "platforms": "Plataformas",
     "noResults": "No se encontraron juegos con estos filtros.",
-    "loadMore": "Cargar más"
+    "loadMore": "Cargar más",
+    "sortBy": "Ordenar por",
+    "sortRelevance": "Relevancia",
+    "sortNameAsc": "Nombre (A-Z)",
+    "sortNameDesc": "Nombre (Z-A)",
+    "sortPriceAsc": "Precio: de menor a mayor",
+    "sortPriceDesc": "Precio: de mayor a menor",
+    "sortRatingDesc": "Valoración",
+    "sortNewest": "Más recientes",
+    "os": "Sistema operativo",
+    "comingSoon": "Próximamente",
+    "reset": "Restablecer filtros",
+    "allGenres": "Todos los géneros",
+    "results_one": "{{count}} juego",
+    "results_other": "{{count}} juegos",
+    "price": "Precio"
   },
   "game": {
     "addToWishlist": "Añadir a la lista de deseos",
@@ -88,7 +103,6 @@
     "free": "Gratis"
   },
   "home": {
-    "badge": "VirtualZ — Your Gaming Pleasure",
     "tagline": "Bienvenido de nuevo",
     "subtitle": "Tu colección de Steam, siempre organizada.",
     "exploreCatalog": "Explorar catálogo",
@@ -116,5 +130,39 @@
     "protanopia": "Protanopia",
     "deuteranopia": "Deuteranopia",
     "tritanopia": "Tritanopia"
+  },
+  "footer": {
+    "community": {
+      "title": "Comunidad",
+      "friends": "Amigos",
+      "leaderboard": "Clasificación",
+      "discord": "Discord"
+    },
+    "platform": {
+      "title": "Plataforma",
+      "catalog": "Catálogo",
+      "library": "Biblioteca",
+      "analytics": "Estadísticas"
+    },
+    "shop": {
+      "title": "Tienda",
+      "offers": "Ofertas",
+      "giftCards": "Tarjetas regalo",
+      "redeem": "Canjear código"
+    },
+    "support": {
+      "title": "Soporte",
+      "help": "Centro de ayuda",
+      "contact": "Contáctanos",
+      "privacy": "Política de privacidad"
+    }
+  },
+  "genres": {
+    "action": "Acción",
+    "adventure": "Aventura",
+    "rpg": "RPG",
+    "strategy": "Estrategia",
+    "indie": "Indie",
+    "horror": "Terror"
   }
 }
