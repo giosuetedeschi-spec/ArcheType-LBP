@@ -619,12 +619,19 @@ def insert_games(df: pd.DataFrame) -> None:
             item["linux"],
         ))
 
+    # Su conflitto (gioco già esistente) si aggiornano solo windows/mac/linux:
+    # permette di rilanciare lo script per fare il backfill di questi campi su
+    # un database già popolato (es. dopo l'aggiunta delle colonne via ALTER
+    # TABLE) senza toccare gli altri campi né duplicare righe.
     sql = """
         INSERT INTO games (appid, name, release_date, developer_id, publisher_id,
                           price, rating, description, header_image_url,
                           windows, mac, linux)
         VALUES %s
-        ON CONFLICT (appid) DO NOTHING
+        ON CONFLICT (appid) DO UPDATE SET
+            windows = EXCLUDED.windows,
+            mac = EXCLUDED.mac,
+            linux = EXCLUDED.linux
     """
 
     for i in tqdm(range(0, len(game_records), BATCH_SIZE), desc="Inserting"):
