@@ -117,7 +117,7 @@ com.archetype.lbp/
 - `games` — Game catalog (Steam data)
 - `user_games` — User-game relationship (status, timestamps)
 
-**Location:** `db/init.sql` (schema), `populate/` (test data)
+**Location:** `db/init.sql` (schema), `scripts/populate_db.py` (test data)
 
 ---
 
