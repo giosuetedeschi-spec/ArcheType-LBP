@@ -222,3 +222,7 @@ CREATE INDEX idx_user_games_composite ON user_games(user_id, status);
 CREATE INDEX idx_friends_user_id ON friends(user_id);
 CREATE INDEX idx_wishlist_user_id ON wishlist(user_id);
 ```
+
+
+---
+*Last project status update: 2026-07-03*
