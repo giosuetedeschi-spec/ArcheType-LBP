@@ -94,3 +94,7 @@ docker compose --profile init up populate
 **Docker Desktop con le immagini buildate (backend + frontend):**
 
 ![Docker Desktop](docs-screenshots/docker-desktop-immagini.webp)
+
+
+---
+*Last project status update: 2026-07-03*

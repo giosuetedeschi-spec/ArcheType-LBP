@@ -408,3 +408,7 @@ export function ProtectedRoute({ children }: { children: ReactNode }) {
 - [ ] Test full flow: Google login → callback → JWT → Home
 - [ ] Test token refresh
 - [ ] Test logout (token invalidation)
+
+
+---
+*Last project status update: 2026-07-03*
