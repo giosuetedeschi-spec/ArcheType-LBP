@@ -49,7 +49,8 @@ Thumbs.db
 node_modules/
 virtualz-frontend/node_modules/
 data/*.csv
+data/*.json
 !data/.gitkeep
 
-# Claude Code local settings (per-developer, not shared)
-.claude/settings.local.json
+# Claude Code local folder (per-developer, not shared: settings, skills, notes)
+.claude/
