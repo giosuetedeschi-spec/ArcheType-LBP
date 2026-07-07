@@ -26,6 +26,9 @@ export interface Game {
   genres: string | null;
   description: string | null;
   headerImageUrl: string | null;
+  windows: boolean;
+  mac: boolean;
+  linux: boolean;
   createdAt: string;
 }
 
@@ -38,6 +41,8 @@ export interface CatalogSearchParams {
   minPrice?: number;
   maxPrice?: number;
   minRating?: number;
+  /** Valori: "windows" | "mac" | "linux". Più valori = OR lato backend. */
+  os?: string[];
   sortBy?: string;
   sortDir?: "asc" | "desc";
 }

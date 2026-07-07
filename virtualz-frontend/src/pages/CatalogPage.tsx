@@ -11,9 +11,9 @@
  *                  traduzione, altrimenti nome grezzo. Se la fetch fallisce, resta solo
  *                  la lista curata.
  *  - Prezzo      → funzionante (minPrice / maxPrice).
- *  - Sistema op. → DISABILITATO + badge "in arrivo". Il backend non espone ancora
- *                  un campo piattaforma/OS sull'oggetto Game, quindi non è filtrabile.
- *                  Da riattivare quando il backend aggiungerà il dato.
+ *  - Sistema op. → funzionante (checkbox multiple, OR lato backend). Valori:
+ *                  "windows" | "mac" | "linux", dai campi booleani reali
+ *                  sull'oggetto Game (colonne Windows/Mac/Linux del dataset Steam).
  *  - Ordinamento → funzionante (sortBy + sortDir, già previsti da CatalogSearchParams).
  *
  * NOTA ricerca: il parametro inviato è `name` (come documentato in CatalogSearchParams),
@@ -47,14 +47,19 @@ const SORT_OPTIONS = [
   { value: "releaseDate:desc", labelKey: "catalog.sortNewest" },
 ] as const;
 
-// Sistema operativo: solo visivo/disabilitato finché il backend non espone il campo.
-const OS_OPTIONS = ["Windows", "Linux", "SteamDeck"] as const;
+// Sistema operativo: label mostrata -> valore inviato al backend (GameFilterRequest.os).
+const OS_OPTIONS = [
+  { label: "Windows", value: "windows" },
+  { label: "Mac", value: "mac" },
+  { label: "Linux", value: "linux" },
+] as const;
 
 interface FilterState {
   search: string;
   genre: string;
   minPrice: string;
   maxPrice: string;
+  os: string[];
   sort: string; // "campo:direzione" oppure ""
 }
 
@@ -63,6 +68,7 @@ const EMPTY_FILTERS: FilterState = {
   genre: "",
   minPrice: "",
   maxPrice: "",
+  os: [],
   sort: "rating:desc",
 };
 
@@ -101,6 +107,7 @@ export default function CatalogPage() {
       if (filters.genre) params.genre = filters.genre;
       if (filters.minPrice) params.minPrice = Number(filters.minPrice);
       if (filters.maxPrice) params.maxPrice = Number(filters.maxPrice);
+      if (filters.os.length) params.os = filters.os;
       if (filters.sort) {
         const [sortBy, sortDir] = filters.sort.split(":");
         params.sortBy = sortBy;
@@ -134,6 +141,15 @@ export default function CatalogPage() {
     handleFilterChange("genre", filters.genre === value ? "" : value);
   }
 
+  // Toggle sistema operativo: multi-selezione (OR lato backend)
+  function toggleOs(value: string) {
+    setPage(0);
+    setFilters((f) => ({
+      ...f,
+      os: f.os.includes(value) ? f.os.filter((v) => v !== value) : [...f.os, value],
+    }));
+  }
+
   function resetFilters() {
     setPage(0);
     setFilters(EMPTY_FILTERS);
@@ -144,6 +160,7 @@ export default function CatalogPage() {
     filters.genre !== "" ||
     filters.minPrice !== "" ||
     filters.maxPrice !== "" ||
+    filters.os.length > 0 ||
     filters.sort !== "";
 
   const inputClass =
@@ -203,26 +220,24 @@ export default function CatalogPage() {
               </ul>
             </div>
 
-            {/* --- Sistema operativo (disabilitato: in arrivo) --- */}
+            {/* --- Sistema operativo --- */}
             <div>
-              <div className="flex items-center gap-2 mb-3">
-                <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400">
-                  {t("catalog.os")}
-                </h3>
-                <span className="text-[10px] font-semibold px-1.5 py-0.5 rounded-full bg-vz-pink/15 text-vz-pink">
-                  {t("catalog.comingSoon")}
-                </span>
-              </div>
-              <ul className="space-y-2 opacity-50 pointer-events-none select-none">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">
+                {t("catalog.os")}
+              </h3>
+              <ul className="space-y-2">
                 {OS_OPTIONS.map((os) => (
-                  <li key={os} className="flex items-center gap-2">
+                  <li key={os.value} className="flex items-center gap-2">
                     <input
                       type="checkbox"
-                      disabled
-                      aria-disabled="true"
-                      className="h-4 w-4 rounded border-zinc-600 bg-vz-charcoal"
+                      id={`os-${os.value}`}
+                      checked={filters.os.includes(os.value)}
+                      onChange={() => toggleOs(os.value)}
+                      className="h-4 w-4 rounded border-zinc-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
                     />
-                    <span className="text-sm text-zinc-400">{os}</span>
+                    <label htmlFor={`os-${os.value}`} className="text-sm text-zinc-300 cursor-pointer">
+                      {os.label}
+                    </label>
                   </li>
                 ))}
               </ul>
