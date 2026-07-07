@@ -47,6 +47,5 @@ Loading → Login (Steam/Google OAuth) → Home ("What to play?") → Game Page 
 - Never force push to main branches
 - Sign commits as giosuetedeschi-spec <giosue.tedeschi@edu-its.it>
 
-
 ---
 *Last project status update: 2026-07-03*
