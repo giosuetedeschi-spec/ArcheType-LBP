@@ -2,7 +2,7 @@ import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
-import { useColorblind } from "../context/ColorblindContext";
+import { useColorblind, type ColorblindMode } from "../context/ColorblindContext";
 import Logo from "./Logo";
 
 // Navbar — barra di navigazione fissa in alto, presente su tutte le pagine
@@ -59,7 +59,7 @@ export default function Navbar() {
           {/* Selettore colorblind — cambia data-colorblind su <html>, letto da index.css */}
           <select
             value={mode}
-            onChange={(e) => setMode(e.target.value)}
+            onChange={(e) => setMode(e.target.value as ColorblindMode)}
             className="bg-vz-charcoal border border-zinc-700 rounded-lg px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-vz-lime"
           >
             {MODES.map((m) => (
@@ -73,7 +73,7 @@ export default function Navbar() {
           {isAuthenticated ? (
             <div className="flex items-center gap-3">
               <Link to="/profile" className="text-sm text-zinc-400 hover:text-vz-lime hidden sm:inline transition-colors">
-                {user.username}
+                {user?.username}
               </Link>
               <button
                 onClick={handleLogout}

@@ -1,20 +1,40 @@
 import { useEffect, useState } from "react";
 import { useParams } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { isAxiosError } from "axios";
 import { getGameById } from "../services/gamesApi";
 import { addToLibrary } from "../services/libraryApi";
 import { useAuth } from "../context/AuthContext";
+import type { Game, LibraryStatus } from "@/types/api";
 
+/**
+ * GameDetailPage — pagina di dettaglio di un singolo gioco (route
+ * /games/$id). Mostra copertina, prezzo, generi, dati editoriali e
+ * descrizione; se l'utente è autenticato, offre le azioni "aggiungi a
+ * wishlist" / "aggiungi al backlog" e un link diretto alla pagina Steam.
+ *
+ * NOTA sul fix applicato durante la migrazione: i pulsanti di azione
+ * chiamavano handleAdd("WISHLIST") / handleAdd("IN_CORSO") — valori
+ * maiuscoli/italiani che NON corrispondono al vocabolario reale validato
+ * dal backend (vedi LibraryStatus in @/types/api: "wishlist" | "playing" |
+ * "finished" | "abandoned", minuscoli). È lo stesso identico bug già
+ * trovato e corretto in ProfilePage durante questa migrazione: cliccando
+ * questi pulsanti, la richiesta al backend molto probabilmente falliva
+ * (o veniva rifiutata dalla validazione @Pattern lato server) in modo
+ * silenzioso. Corretto qui usando i valori reali "wishlist" / "playing".
+ */
 export default function GameDetailPage() {
   const { id } = useParams({ from: "/games/$id" });
   const { t } = useTranslation();
   const { user, isAuthenticated } = useAuth();
 
-  const [game, setGame] = useState(null);
+  const [game, setGame] = useState<Game | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [actionMessage, setActionMessage] = useState(null);
+  const [error, setError] = useState<string | null>(null);
+  const [actionMessage, setActionMessage] = useState<string | null>(null);
 
+  // Ricarica il gioco ogni volta che cambia l'id nella route (navigazione
+  // tra un dettaglio gioco e l'altro senza smontare il componente).
   useEffect(() => {
     setLoading(true);
     getGameById(Number(id))
@@ -23,19 +43,35 @@ export default function GameDetailPage() {
       .finally(() => setLoading(false));
   }, [id, t]);
 
-  async function handleAdd(status) {
-    if (!isAuthenticated) return;
+  /**
+   * Aggiunge il gioco corrente al backlog dell'utente con lo stato
+   * indicato (es. wishlist o playing), mostrando un messaggio di
+   * conferma o di errore.
+   *
+   * @param status - stato iniziale della voce di backlog da creare
+   *   (valore reale validato dal backend, vedi nota del componente).
+   */
+  async function handleAdd(status: LibraryStatus) {
+    if (!isAuthenticated || !user || !game) return;
     try {
       await addToLibrary(user.id, { gameId: game.id, status });
       setActionMessage(t(`library.status.${status}`));
     } catch (err) {
-      setActionMessage(err.response?.data?.message || t("common.error"));
+      // isAxiosError() stringe il tipo di `err` (unknown in un blocco
+      // catch) in modo sicuro, invece di un cast/any — stesso pattern
+      // usato in RegisterPage.tsx.
+      const message = isAxiosError<{ message?: string }>(err)
+        ? err.response?.data?.message
+        : undefined;
+      setActionMessage(message || t("common.error"));
     }
   }
 
   if (loading) return <p className="text-zinc-400 text-center mt-16">{t("common.loading")}</p>;
   if (error || !game) return <p className="text-vz-pink text-center mt-16">{error || t("common.error")}</p>;
 
+  // Il campo genres arriva dal backend come stringa CSV (es. "Action,RPG"),
+  // non come array — va spacchettato qui per il render dei badge sotto.
   const genres = (game.genres || "")
     .split(",")
     .map((g) => g.trim())

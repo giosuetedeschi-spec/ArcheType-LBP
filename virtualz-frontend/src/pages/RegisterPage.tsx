@@ -1,19 +1,21 @@
-import { useState } from "react";
+import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { isAxiosError } from "axios";
 import { useAuth } from "../context/AuthContext";
 import Logo from "../components/Logo";
+import type { RegisterPayload } from "@/types/api";
 
 export default function RegisterPage() {
   const { t } = useTranslation();
   const { register } = useAuth();
   const navigate = useNavigate();
 
-  const [form, setForm] = useState({ username: "", email: "", password: "" });
-  const [error, setError] = useState(null);
+  const [form, setForm] = useState<RegisterPayload>({ username: "", email: "", password: "" });
+  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
-  async function handleSubmit(e) {
+  async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
     setLoading(true);
@@ -21,7 +23,13 @@ export default function RegisterPage() {
       await register(form);
       navigate({ to: "/" });
     } catch (err) {
-      setError(err.response?.data?.message || t("auth.registerError"));
+      // `err` è tipizzato `unknown` in un blocco catch (comportamento TS
+      // standard): isAxiosError() è un type guard che stringe il tipo in modo
+      // sicuro, invece di un cast/any che aggirerebbe il controllo.
+      const message = isAxiosError<{ message?: string }>(err)
+        ? err.response?.data?.message
+        : undefined;
+      setError(message || t("auth.registerError"));
     } finally {
       setLoading(false);
     }

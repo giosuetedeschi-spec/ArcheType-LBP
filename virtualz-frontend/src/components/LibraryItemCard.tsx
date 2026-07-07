@@ -1,31 +1,45 @@
-import { useState } from "react";
 import { useTranslation } from "react-i18next";
+import type { LibraryItem, LibraryStatus } from "@/types/api";
 
 // Valori reali dello status, come validati dal backend (vedi
 // BacklogRequest.java @Pattern) — minuscoli, non quelli che si potrebbero
 // immaginare guardando solo le label visualizzate all'utente.
-const STATUS_COLORS = {
+const STATUS_COLORS: Record<LibraryStatus, string> = {
   wishlist: "bg-vz-pink/20 text-vz-pink",
   playing: "bg-blue-500/20 text-blue-300",
   finished: "bg-vz-lime/20 text-vz-lime",
   abandoned: "bg-zinc-700/40 text-zinc-400",
 };
 
+interface LibraryItemCardProps {
+  /**
+   * Voce di libreria da mostrare. Usa il tipo LibraryItem reale (da
+   * @/types/api, quello effettivamente restituito da getLibrary()), non
+   * un'interfaccia locale: item.game è di tipo LibraryGameSummary (solo
+   * id/name/headerImageUrl/developer), un sottoinsieme di Game — non il
+   * tipo Game completo.
+   */
+  item: LibraryItem;
+  onStatusChange: (itemId: number, newStatus: LibraryStatus) => void;
+  onRemove: (itemId: number) => void;
+}
+
 /**
  * Mostra una voce della libreria utente (backlog).
  *
- * NOTA: il campo `item.inactivityWarning` qui sotto fa riferimento a una
- * feature pensata per un backend diverso (non quello ArcheType-LBP usato
- * oggi, che non calcola questo campo lato server) — il banner quindi non
- * comparirà mai con il backend attuale. Non è un bug bloccante: degrada
- * con grazia (nessun banner), ma va tenuto a mente prima di fidarsi che
- * questa funzionalità sia "viva".
+ * NOTA rimossa durante la migrazione TSX: la versione .jsx precedente
+ * leggeva un campo `item.inactivityWarning` per mostrare un banner
+ * "stai abbandonando questo gioco?". TypeScript conferma (con il tipo
+ * LibraryItem reale, non un'interfaccia locale inventata) che questo
+ * campo NON esiste nella risposta del backend ArcheType-LBP: la UI del
+ * banner era già codice morto prima di questa migrazione, non poteva mai
+ * attivarsi. Rimossa qui insieme al codice che la calcolava; se in futuro
+ * il backend implementerà questo campo, va reintrodotta ripartendo dal
+ * tipo LibraryItem aggiornato (mai da un'interfaccia locale scollegata
+ * dalla risposta reale dell'API, come accadeva prima).
  */
-export default function LibraryItemCard({ item, onStatusChange, onRemove }) {
+export default function LibraryItemCard({ item, onStatusChange, onRemove }: LibraryItemCardProps) {
   const { t } = useTranslation();
-  const [dismissed, setDismissed] = useState(false);
-
-  const showWarning = item.inactivityWarning && !dismissed && item.status === "playing";
 
   // IMPORTANTE: passiamo sempre item.id (l'id della VOCE di backlog),
   // mai item.game.id — il backend identifica/modifica le voci per il
@@ -35,7 +49,7 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }) {
     <div className="bg-vz-charcoal rounded-xl border border-zinc-800 overflow-hidden">
       <div className="flex gap-3 p-3">
         <img
-          src={item.game.headerImageUrl}
+          src={item.game.headerImageUrl ?? undefined}
           alt={item.game.name}
           className="w-24 h-14 object-cover rounded-lg bg-zinc-900 flex-shrink-0"
           loading="lazy"
@@ -89,27 +103,6 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }) {
           {t("library.remove")}
         </button>
       </div>
-
-      {/* Banner di inattività — vedi nota in cima al file: non si attiva con il backend attuale */}
-      {showWarning && (
-        <div className="bg-vz-pink/10 border-t border-vz-pink/30 px-3 py-2 flex items-center justify-between gap-2 flex-wrap">
-          <p className="text-xs text-vz-pink">{t("library.inactivityWarning")}</p>
-          <div className="flex gap-2 flex-shrink-0">
-            <button
-              onClick={() => onStatusChange(item.id, "abandoned")}
-              className="text-xs px-2 py-1 rounded-full bg-vz-pink text-vz-navy font-semibold"
-            >
-              {t("library.confirmAbandon")}
-            </button>
-            <button
-              onClick={() => setDismissed(true)}
-              className="text-xs px-2 py-1 rounded-full border border-zinc-600 text-zinc-300"
-            >
-              {t("library.dismissWarning")}
-            </button>
-          </div>
-        </div>
-      )}
     </div>
   );
 }
