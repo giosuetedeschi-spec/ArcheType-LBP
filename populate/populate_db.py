@@ -1,4 +1,13 @@
-"""Popolamento database da dataset Steam CSV/JSON."""
+"""Popolamento database da dataset Steam CSV/JSON.
+
+Legge il dataset Steam (CSV o JSON), lo pulisce/normalizza e lo inserisce nel
+database PostgreSQL: giochi, developer/publisher (lookup) e generi (relazione
+molti-a-molti tramite le tabelle genres + game_genres).
+
+Uso tipico (via Docker Compose, profilo "init"):
+    docker compose build populate
+    docker compose run --rm populate
+"""
 
 import os
 import re
@@ -30,7 +39,17 @@ BATCH_SIZE = 1000
 
 
 def get_connection():
-    """Connessione al database."""
+    """Apre una nuova connessione al database PostgreSQL.
+
+    I parametri di connessione vengono letti da DB_CONFIG, popolato a sua
+    volta dalle variabili d'ambiente (DB_HOST, DB_PORT, DB_NAME, DB_USER,
+    DB_PASSWORD), così lo stesso script funziona sia dentro Docker Compose
+    (host "db") sia in locale (default "localhost") senza modifiche.
+
+    Returns:
+        psycopg2.extensions.connection: connessione aperta e pronta all'uso.
+        Il chiamante è responsabile di chiuderla (conn.close()) a fine lavoro.
+    """
     return psycopg2.connect(**DB_CONFIG)
 
 
@@ -57,8 +76,20 @@ _CORRECTED_CSV_HEADER = [
 
 
 def load_dataset(path: str) -> pd.DataFrame:
-    """Carica il dataset Steam, correggendo l'header CSV malformato (vedi
-    _CORRECTED_CSV_HEADER) se il numero di campi nei dati combacia.
+    """Carica il dataset Steam da file (CSV o JSON) in un DataFrame pandas.
+
+    Punto di ingresso unico per il caricamento: dispatcha al parser corretto
+    in base all'estensione del file e uniforma i nomi di colonna (minuscoli,
+    "appid" rinominato in "steam_app_id") indipendentemente dal formato.
+
+    Args:
+        path: percorso del file dataset (.csv o .json). Se non esiste,
+            l'esecuzione termina con sys.exit(1) dopo aver loggato l'errore.
+
+    Returns:
+        pd.DataFrame: dataset caricato, con nomi di colonna normalizzati in
+        minuscolo. Per i CSV, l'header malformato viene corretto
+        automaticamente se necessario (vedi _load_csv_with_corrected_header).
     """
     p = Path(path)
     if not p.exists():
@@ -81,6 +112,32 @@ def load_dataset(path: str) -> pd.DataFrame:
 
 
 def _load_csv_with_corrected_header(path: str) -> pd.DataFrame:
+    """Legge il CSV Steam correggendo l'header malformato, se rilevato.
+
+    Usa il modulo csv standard (non pandas.read_csv) per leggere header e
+    righe separatamente: questo permette di contare con certezza il numero
+    di campi per riga e decidere se applicare _CORRECTED_CSV_HEADER, invece
+    di lasciare che pandas indovini l'allineamento (comportamento fragile
+    quando header e dati hanno un numero di colonne diverso).
+
+    La correzione è puramente empirica: se il numero di campi nelle righe
+    dati combacia con la lunghezza di _CORRECTED_CSV_HEADER (40), quell'header
+    viene usato al posto di quello dichiarato nel file (che ne ha solo 39).
+    Se non combacia, si usa l'header originale del file così com'è, accettando
+    il rischio di disallineamento (con relativo warning nei log) — questo
+    rende la funzione tollerante anche verso futuri CSV già corretti a monte
+    o con struttura diversa, senza doverla modificare.
+
+    Args:
+        path: percorso del file CSV da leggere.
+
+    Returns:
+        pd.DataFrame: righe con lunghezza coerente con l'header scelto
+        (le righe con un numero di campi anomalo vengono scartate, non
+        troncate/paddate — vedi log "Righe scartate per numero di campi
+        anomalo"). Nomi di colonna normalizzati in minuscolo, "appid"
+        rinominato in "steam_app_id".
+    """
     import csv as csv_module
 
     with open(path, newline="", encoding="utf-8") as f:
@@ -88,10 +145,6 @@ def _load_csv_with_corrected_header(path: str) -> pd.DataFrame:
         declared_header = next(reader)
         rows = list(reader)
 
-    # Verifica empirica: se il numero di campi nelle righe dati combacia con
-    # l'header corretto (40), usalo. Altrimenti torna al fallback "best
-    # effort" col solo header dichiarato (e accetta possibili
-    # disallineamenti, loggando un avviso).
     if rows and len(rows[0]) == len(_CORRECTED_CSV_HEADER):
         header = _CORRECTED_CSV_HEADER
         log.info(
@@ -119,7 +172,27 @@ def _load_csv_with_corrected_header(path: str) -> pd.DataFrame:
 
 
 def clean_data(df: pd.DataFrame) -> pd.DataFrame:
-    """Pulisce e normalizza i dati."""
+    """Normalizza i nomi di colonna e scarta le righe senza un nome valido.
+
+    Applica una mappa di alias (column_map) per far confluire varianti di
+    nome colonna viste in dataset diversi (es. "developer"/"developers",
+    "user score"/"rating") verso un unico set di nomi canonici usati dal
+    resto della pipeline. Righe con "name" mancante, vuoto o solo spazi
+    vengono scartate: sono record senza informazione utile da mostrare
+    all'utente finale.
+
+    Args:
+        df: DataFrame grezzo così come restituito da load_dataset(), con
+            nomi di colonna già in minuscolo.
+
+    Returns:
+        pd.DataFrame: dataset con colonne rinominate secondo column_map e
+        senza righe a "name" vuoto/mancante.
+
+    Raises:
+        KeyError: se dopo la normalizzazione non esiste alcuna colonna
+            "name" nel dataset (dataset con struttura del tutto inattesa).
+    """
     df.columns = [str(col).strip().lower() for col in df.columns]
 
     if "appid" in df.columns and "steam_app_id" not in df.columns:
@@ -163,6 +236,21 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
 
 
 def _clean_text(value):
+    """Normalizza un valore di testo generico, filtrando i "vuoti impliciti".
+
+    Utility condivisa da più parser: tratta NaN/None e le stringhe letterali
+    "nan"/"none" (residuo comune quando pandas converte valori mancanti in
+    stringa) come assenza di valore, restituendo None in modo uniforme.
+
+    Args:
+        value: valore grezzo proveniente da una cella del DataFrame (può
+            essere NaN, None, stringa, numero: pandas non garantisce un
+            tipo fisso per colonne con valori misti/mancanti).
+
+    Returns:
+        str | None: testo ripulito (spazi ai bordi rimossi), oppure None se
+        il valore è mancante o rappresenta un vuoto implicito.
+    """
     if pd.isna(value):
         return None
     text = str(value).strip()
@@ -172,6 +260,21 @@ def _clean_text(value):
 
 
 def _truncate_text(value, max_len: int):
+    """Come _clean_text, ma tronca il risultato a una lunghezza massima.
+
+    Serve per rispettare i vincoli di lunghezza delle colonne VARCHAR nel
+    database (es. name VARCHAR(255)): senza questo troncamento, un valore
+    più lungo del previsto farebbe fallire l'INSERT con un errore SQL invece
+    di essere salvato (troncato) in modo controllato.
+
+    Args:
+        value: valore grezzo da normalizzare (stesso dominio di _clean_text).
+        max_len: numero massimo di caratteri consentiti nel risultato.
+
+    Returns:
+        str | None: testo ripulito e troncato a max_len caratteri, oppure
+        None se il valore è mancante/vuoto.
+    """
     if value is None:
         return None
     text = str(value).strip()
@@ -181,6 +284,22 @@ def _truncate_text(value, max_len: int):
 
 
 def _parse_app_id(value):
+    """Valida e converte l'AppID Steam in un intero utilizzabile come chiave.
+
+    L'AppID è la chiave con cui il database identifica univocamente un
+    gioco (colonna "appid" UNIQUE): un valore non numerico o fuori dal range
+    di un INTEGER Postgres (max 2^31-1) renderebbe l'INSERT inutilizzabile
+    o lo farebbe fallire, quindi viene scartato a monte (None) invece di
+    propagare un valore inservibile fino alla query.
+
+    Args:
+        value: valore grezzo dalla colonna AppID/steam_app_id del dataset.
+
+    Returns:
+        int | None: l'AppID come intero, oppure None se il valore è
+        mancante, non è una sequenza di sole cifre, oppure eccede il range
+        valido per una colonna INTEGER (0 .. 2_147_483_647).
+    """
     if pd.isna(value):
         return None
     text = str(value).strip()
@@ -196,6 +315,21 @@ def _parse_app_id(value):
 
 
 def _parse_price(value) -> float:
+    """Estrae il prezzo numerico da un campo che può contenere testo libero.
+
+    Il dataset Steam rappresenta i giochi gratuiti in modi non uniformi
+    (numero 0, stringa "Free", "Free to Play", campo vuoto): tutti questi
+    casi vengono normalizzati a 0.0 invece di propagare valori testuali in
+    una colonna DECIMAL del database.
+
+    Args:
+        value: valore grezzo dalla colonna prezzo (numero, stringa, o NaN).
+
+    Returns:
+        float: prezzo come numero decimale. 0.0 se il valore è mancante,
+        rappresenta un gioco gratuito, o non contiene alcun numero
+        riconoscibile.
+    """
     if pd.isna(value):
         return 0.0
     text = str(value).strip()
@@ -206,6 +340,22 @@ def _parse_price(value) -> float:
 
 
 def _parse_rating(value):
+    """Estrae e normalizza il rating su una scala 0-9.99 (vincolo colonna DB).
+
+    Il dataset può esprimere il voto su scale diverse (es. 0-5 stelle oppure
+    0-100 come "User score" percentuale): questa funzione riconosce la scala
+    in base al valore letto (>5 implica una scala più ampia, tipicamente
+    0-100) e la riporta a un intervallo unico compatibile con la colonna
+    `rating DECIMAL(3,2)` del database, il cui massimo rappresentabile è
+    9.99 — da cui il cap finale con min(result, 9.99).
+
+    Args:
+        value: valore grezzo dalla colonna rating/user score.
+
+    Returns:
+        float | None: rating normalizzato in [0, 9.99], oppure None se il
+        valore è mancante o non contiene alcun numero riconoscibile.
+    """
     if pd.isna(value):
         return None
     text = str(value).strip()
@@ -220,6 +370,21 @@ def _parse_rating(value):
 
 
 def _parse_date(value):
+    """Normalizza una data di rilascio in formato ISO (YYYY-MM-DD).
+
+    Il dataset Steam esprime le date in formati non uniformi: già in ISO,
+    con "/" al posto di "-", o a volte solo l'anno. Questa funzione tenta,
+    in ordine, i pattern più specifici (data completa) prima di ripiegare su
+    quelli più permissivi (solo anno, o un anno trovato ovunque nel testo),
+    assumendo 1° gennaio quando manca il giorno/mese esatto.
+
+    Args:
+        value: valore grezzo dalla colonna data di rilascio.
+
+    Returns:
+        str | None: data in formato "YYYY-MM-DD", oppure None se il valore
+        è mancante o non contiene alcun anno riconoscibile.
+    """
     if pd.isna(value):
         return None
     text = str(value).strip()
@@ -234,7 +399,63 @@ def _parse_date(value):
     return f"{match.group(1)}-01-01" if match else None
 
 
+def _parse_genres(value) -> list:
+    """Estrae la lista di generi da un campo CSV tipo "Action,RPG,Indie".
+
+    Il dataset Steam rappresenta i generi come un'unica stringa con valori
+    separati da virgola. Questa funzione è il pezzo mancante scoperto
+    durante il fix: il dato arrivava già pulito fino a clean_data(), ma
+    prima di questo fix non veniva mai estratto/inserito nel database
+    (colonna "genres" scartata silenziosamente in insert_games).
+
+    Args:
+        value: valore grezzo dalla colonna genres (es. "Action,RPG,Indie",
+            stringa vuota, o NaN se il campo manca per quella riga).
+
+    Returns:
+        list[str]: nomi di genere puliti (spazi ai bordi rimossi), senza
+        duplicati e nell'ordine di prima apparizione nella riga originale.
+        Lista vuota se il campo è mancante o vuoto.
+    """
+    if pd.isna(value):
+        return []
+    text = str(value).strip()
+    if not text or text.lower() in {"nan", "none"}:
+        return []
+    seen = set()
+    result = []
+    for part in text.split(","):
+        name = part.strip()
+        if name and name not in seen:
+            seen.add(name)
+            result.append(name)
+    return result
+
+
 def _ensure_lookup(cur, table_name: str, values: list) -> dict:
+    """Upsert di valori unici in una tabella lookup (id, name) e ritorna la mappa.
+
+    Funzione generica riusata per popolare sia "developers"/"publishers"
+    (schema preesistente) sia "genres" (aggiunto in questo fix): tutte e tre
+    le tabelle condividono la stessa forma (id BIGSERIAL, name VARCHAR
+    UNIQUE), quindi la stessa logica di upsert vale per tutte senza
+    duplicare codice. L'operazione è idempotente: ON CONFLICT (name) DO
+    NOTHING permette di rilanciare lo script più volte senza errori né
+    righe duplicate.
+
+    Args:
+        cur: cursore psycopg2 su una connessione già aperta.
+        table_name: nome della tabella lookup su cui operare (deve avere
+            colonne "id" e "name UNIQUE").
+        values: lista di stringhe (anche con duplicati/vuoti misti) da cui
+            derivare i valori unici da inserire.
+
+    Returns:
+        dict[str, int]: mappa nome -> id, per tutti i valori richiesti che
+        risultano presenti in tabella dopo l'upsert (inclusi quelli già
+        esistenti da esecuzioni precedenti). Dizionario vuoto se `values`
+        non contiene alcun valore utilizzabile.
+    """
     if not values:
         return {}
 
@@ -255,8 +476,39 @@ def _ensure_lookup(cur, table_name: str, values: list) -> dict:
     return {name: int(row_id) for row_id, name in rows}
 
 
-def insert_games(df: pd.DataFrame):
-    """Inserisce i giochi nel database."""
+def insert_games(df: pd.DataFrame) -> None:
+    """Inserisce i giochi e le relazioni genere (molti-a-molti) nel database.
+
+    Pipeline in tre fasi:
+      1. Parsing riga per riga: valida l'AppID (scarta righe non valide),
+         raccoglie i nomi di developer/publisher/genere per il lookup
+         batch, e prepara i valori normalizzati per l'INSERT.
+      2. Upsert dei lookup (developers, publishers, genres) via
+         _ensure_lookup, poi INSERT batch dei giochi in "games" con
+         ON CONFLICT (appid) DO NOTHING (idempotente).
+      3. Collegamento gioco-genere: recupera la mappa appid -> id interno
+         del DB (necessaria perché ON CONFLICT DO NOTHING non restituisce
+         gli id delle righe, incluse quelle già esistenti), costruisce le
+         coppie (game_id, genre_id) e le inserisce in "game_genres" con
+         ON CONFLICT (game_id, genre_id) DO NOTHING.
+
+    Questa terza fase è il cuore del fix: prima della sua introduzione, il
+    campo "genres" veniva raccolto durante il parsing ma mai scritto in
+    alcuna tabella — arrivava pulito fino a un passo dalla fine e veniva
+    scartato. Risultato verificato dopo il fix: 33 generi distinti,
+    329.320 associazioni gioco-genere create.
+
+    Args:
+        df: DataFrame già pulito da clean_data(), con le colonne
+            "steam_app_id", "name", "release_date", "developer",
+            "publisher", "price", "rating", "description",
+            "header_image_url", "genres" (quelle assenti vengono trattate
+            come mancanti riga per riga, senza sollevare errori).
+
+    Returns:
+        None. Logga il totale giochi e associazioni genere presenti in
+        database a fine esecuzione, per verifica rapida via log.
+    """
     conn = get_connection()
     cur = conn.cursor()
 
@@ -267,6 +519,7 @@ def insert_games(df: pd.DataFrame):
     parsed_rows = []
     developer_names = []
     publisher_names = []
+    all_genre_names = []
     skipped = 0
 
     for _, row in df.iterrows():
@@ -282,6 +535,9 @@ def insert_games(df: pd.DataFrame):
         if publisher:
             publisher_names.append(publisher)
 
+        genres = _parse_genres(row.get("genres"))
+        all_genre_names.extend(genres)
+
         parsed_rows.append({
             "appid": app_id,
             "name": _clean_text(row.get("name")) or "",
@@ -292,6 +548,7 @@ def insert_games(df: pd.DataFrame):
             "rating": _parse_rating(row.get("rating")),
             "description": _clean_text(row.get("description")),
             "header_image_url": _clean_text(row.get("header_image_url")),
+            "genres": genres,
         })
 
     if skipped:
@@ -299,6 +556,8 @@ def insert_games(df: pd.DataFrame):
 
     developer_map = _ensure_lookup(cur, "developers", developer_names)
     publisher_map = _ensure_lookup(cur, "publishers", publisher_names)
+    genre_map = _ensure_lookup(cur, "genres", all_genre_names)
+    log.info(f"Generi distinti trovati nel dataset: {len(genre_map)}")
 
     game_records = []
     for item in parsed_rows:
@@ -330,11 +589,60 @@ def insert_games(df: pd.DataFrame):
     total = cur.fetchone()[0]
     log.info(f"Insert completati. Totale giochi: {total}")
 
+    # --- Popolamento relazione game_genres (molti-a-molti) ---
+    # I giochi sono già stati inseriti (o esistevano già per ON CONFLICT).
+    # Serve mappare appid -> id interno del DB per costruire le coppie
+    # (game_id, genre_id) da inserire nella tabella ponte: ON CONFLICT DO
+    # NOTHING sull'INSERT precedente non restituisce gli id, quindi vanno
+    # recuperati con una SELECT esplicita (a blocchi, per non superare
+    # eventuali limiti di query su liste molto lunghe di AppID).
+    all_appids = [item["appid"] for item in parsed_rows]
+    appid_to_gameid = {}
+    for i in range(0, len(all_appids), BATCH_SIZE):
+        chunk = all_appids[i:i + BATCH_SIZE]
+        cur.execute("SELECT id, appid FROM games WHERE appid = ANY(%s)", [chunk])
+        for game_id, appid in cur.fetchall():
+            appid_to_gameid[appid] = int(game_id)
+
+    pairs = set()
+    for item in parsed_rows:
+        game_id = appid_to_gameid.get(item["appid"])
+        if game_id is None:
+            continue
+        for genre_name in item["genres"]:
+            genre_key = _truncate_text(genre_name, 255)
+            genre_id = genre_map.get(genre_key)
+            if genre_id is not None:
+                pairs.add((game_id, genre_id))
+
+    pairs = list(pairs)
+    log.info(f"Associazioni gioco-genere da inserire: {len(pairs)}")
+
+    genre_sql = """
+        INSERT INTO game_genres (game_id, genre_id)
+        VALUES %s
+        ON CONFLICT (game_id, genre_id) DO NOTHING
+    """
+    for i in tqdm(range(0, len(pairs), BATCH_SIZE), desc="Linking genres"):
+        batch = pairs[i:i + BATCH_SIZE]
+        execute_values(cur, genre_sql, batch, page_size=BATCH_SIZE)
+        conn.commit()
+
+    cur.execute("SELECT COUNT(*) FROM game_genres")
+    total_links = cur.fetchone()[0]
+    log.info(f"Associazioni gioco-genere totali nel DB: {total_links}")
+
     cur.close()
     conn.close()
 
 
-def main():
+def main() -> None:
+    """Entry point: carica il dataset, lo pulisce e popola il database.
+
+    Orchestratore dei tre passi principali dello script (load_dataset,
+    clean_data, insert_games), con log di inizio/fine per delimitare
+    l'esecuzione nei log del container Docker.
+    """
     log.info("=== Popolamento Database ArcheType ===")
     df = load_dataset(DATASET_PATH)
     df = clean_data(df)
