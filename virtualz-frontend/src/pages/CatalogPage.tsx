@@ -4,10 +4,11 @@
  * Layout: sidebar sinistra (filtri) + area risultati (ricerca, ordinamento, griglia).
  *
  * Filtri:
- *  - Genere      → funzionante. Valore inviato al backend = nome inglese canonico
- *                  (es. "Action"), etichetta mostrata = localizzata via i18n `genres`.
- *                  Prima usava getGenres() su /genres, endpoint che risponde 404:
- *                  ora la lista è statica (fix del filtro genere che era vuoto).
+ *  - Genere      → funzionante. Lista caricata dinamicamente da GET /genres (ora che il
+ *                  backend espone l'endpoint). Etichetta mostrata = localizzata via i18n
+ *                  `genres.<nome>` quando esiste una traduzione, altrimenti nome grezzo
+ *                  (il catalogo ha molti più generi dei pochi tradotti a mano).
+ *                  Se la fetch fallisce, si ricade su una lista statica minima.
  *  - Prezzo      → funzionante (minPrice / maxPrice).
  *  - Sistema op. → DISABILITATO + badge "in arrivo". Il backend non espone ancora
  *                  un campo piattaforma/OS sull'oggetto Game, quindi non è filtrabile.
@@ -23,21 +24,13 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { searchCatalog } from "../services/gamesApi";
+import { searchCatalog, getGenres } from "../services/gamesApi";
 import GameCard from "../components/GameCard";
 import GameCardSkeleton from "../components/GameCardSkeleton";
 import type { CatalogSearchParams, Game } from "@/types/api";
 
-// Generi: value = stringa inglese che combacia col campo CSV Game.genres nel
-// dataset Steam; labelKey = chiave i18n del blocco `genres` per l'etichetta.
-const GENRE_OPTIONS = [
-  { value: "Action", labelKey: "genres.action" },
-  { value: "Adventure", labelKey: "genres.adventure" },
-  { value: "RPG", labelKey: "genres.rpg" },
-  { value: "Strategy", labelKey: "genres.strategy" },
-  { value: "Indie", labelKey: "genres.indie" },
-  { value: "Horror", labelKey: "genres.horror" },
-] as const;
+// Fallback usato solo se GET /genres fallisce (es. backend momentaneamente giù).
+const FALLBACK_GENRES = ["Action", "Adventure", "RPG", "Strategy", "Indie", "Horror"];
 
 // Ordinamento: value = "campo:direzione" (vuoto = nessun ordinamento / rilevanza).
 const SORT_OPTIONS = [
@@ -78,6 +71,18 @@ export default function CatalogPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
+  const [genres, setGenres] = useState<string[]>(FALLBACK_GENRES);
+
+  // Carica l'elenco generi una sola volta all'ingresso nella pagina
+  useEffect(() => {
+    getGenres()
+      .then((result) => {
+        if (result?.length) setGenres(result);
+      })
+      .catch(() => {
+        // GET /genres non raggiungibile: resta il fallback statico già impostato
+      });
+  }, []);
 
   // Carica i giochi in base ai filtri correnti e alla pagina
   const fetchGames = useCallback(async () => {
@@ -170,12 +175,12 @@ export default function CatalogPage() {
                 {t("catalog.genre")}
               </h3>
               <ul className="space-y-1">
-                {GENRE_OPTIONS.map((g) => {
-                  const active = filters.genre === g.value;
+                {genres.map((g) => {
+                  const active = filters.genre === g;
                   return (
-                    <li key={g.value}>
+                    <li key={g}>
                       <button
-                        onClick={() => toggleGenre(g.value)}
+                        onClick={() => toggleGenre(g)}
                         aria-pressed={active}
                         className={`w-full text-left px-3 py-1.5 rounded-lg text-sm transition-colors ${
                           active
@@ -183,7 +188,7 @@ export default function CatalogPage() {
                             : "text-zinc-300 hover:text-white hover:bg-vz-charcoal/60"
                         }`}
                       >
-                        {t(g.labelKey)}
+                        {t(`genres.${g.toLowerCase()}`, { defaultValue: g })}
                       </button>
                     </li>
                   );
