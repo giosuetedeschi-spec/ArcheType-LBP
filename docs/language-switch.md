@@ -119,3 +119,7 @@ Add when: user feedback requests auto-detection.
 - [ ] Variable interpolation works (`{count}`, `{price}`)
 - [ ] HTML `lang` attribute updates on switch
 - [ ] No layout overflow from longer translations (French is ~20% longer)
+
+
+---
+*Last project status update: 2026-07-03*
