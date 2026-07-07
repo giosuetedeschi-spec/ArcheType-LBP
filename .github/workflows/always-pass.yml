@@ -1,0 +1,20 @@
+name: Always Passing CI Demo
+
+on: 
+  push:
+  pull_request:
+
+jobs:
+  always-pass:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      - name: Print a friendly message
+        run: echo "Hello! This step will always succeed."
+
+      - name: Run a fake test that passes
+        run: |
+          echo "Running tests..."
+          exit 0
