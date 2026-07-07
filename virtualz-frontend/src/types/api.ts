@@ -76,8 +76,10 @@ export interface AuthResponse {
   username: string;
 }
 
+// Il backend (AuthRequest.java) accetta solo "username" (nessun lookup
+// per email) — il nome del campo qui deve combaciare esattamente.
 export interface LoginPayload {
-  usernameOrEmail: string;
+  username: string;
   password: string;
 }
 
