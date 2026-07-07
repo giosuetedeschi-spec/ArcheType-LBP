@@ -1,6 +1,11 @@
 # Compiled class file
 *.class
 
+# Python
+__pycache__/
+*.pyc
+venv/
+
 # Log file
 *.log
 

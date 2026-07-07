@@ -55,7 +55,7 @@ ArcheType-LBP/
 │       ├── repository/     # JPA repositories
 │       └── model/          # Entità JPA
 ├── db/                      # Database schema (init.sql)
-├── populate/                # Script per popolare il DB con dati di test
+├── scripts/                 # Popolamento DB, test Steam API, analisi colori
 ├── docker-compose.yml
 ├
 └── Palette colori proposta.md # Design system colori
@@ -77,7 +77,42 @@ ArcheType-LBP/
 Il dataset Steam (~389 MB) non è incluso nel repository — va scaricato a parte:
 
 1. Scarica da: https://drive.google.com/file/d/1jkWhz5HU8KaJmOZSfJPgKDvUg7uELaDf/view?usp=drive_link
-2. Copialo in `data/steam_games.csv` (nome esatto)
+2. Copialo in `data/games.csv` (nome esatto)
+
+### Reset di Docker e della cache (consigliato prima del primo avvio o in caso di problemi)
+
+Docker può servire immagini "stantie" (build cachate da versioni precedenti del codice), causando comportamenti strani come un frontend che non riesce a parlare col backend pur avendo il codice corretto. Prima del primo `docker compose up`, o ogni volta che qualcosa non torna, conviene ripulire tutto:
+
+```bash
+# Ferma tutti i container del progetto e rimuove anche i volumi (dati DB inclusi)
+docker compose down -v
+
+# Rimuove le immagini già costruite del progetto, per forzare una rebuild completa
+docker compose rm -f
+docker image rm archetype-lbp-frontend archetype-lbp-backend 2>/dev/null || true
+
+# Svuota la cache di build di Docker (BuildKit) — elimina i layer cachati
+docker builder prune -af
+```
+
+Poi ricostruisci tutto da zero, senza cache:
+
+```bash
+docker compose build --no-cache
+docker compose up -d
+```
+
+**Windows (PowerShell o Git Bash):**
+- I comandi sopra sono identici sia in Git Bash che in PowerShell (Docker Desktop con backend WSL2 gestisce la compatibilità).
+- Verifica che Docker Desktop sia avviato e il daemon raggiungibile prima di lanciare i comandi: `docker info`. Se fallisce, avvia Docker Desktop e attendi che l'icona nella system tray indichi "Running".
+- Dopo un reset pesante della cache, a volte serve un riavvio completo di Docker Desktop (system tray → tasto destro sull'icona → **Restart**) prima che la build torni ad essere veloce e affidabile.
+
+**macOS:**
+- Stessi comandi, nessuna differenza di sintassi (bash/zsh nativi).
+- Se il reset da terminale non risolve, apri Docker Desktop → **Troubleshoot** (icona a forma di insetto, in alto) → **Clean / Purge data** per un reset più aggressivo (rimuove tutte le immagini/cache locali di Docker, non solo quelle di questo progetto — usalo con cautela se hai altri progetti Docker attivi).
+- Su Apple Silicon (M1/M2/M3): se un'immagine era stata costruita in precedenza per `linux/amd64` (es. scaricata o buildata su una macchina Intel), la rebuild potrebbe risultare lenta per via dell'emulazione. In tal caso rimuovi esplicitamente l'immagine (`docker image rm ...`) e lascia che `docker compose build --no-cache` la ricostruisca nativamente per `linux/arm64`.
+
+> Nota: `docker compose down -v` elimina anche il volume Postgres (`pgdata`), quindi dopo il reset dovrai ripopolare il database (vedi sezione Dataset sopra e il servizio `populate` più sotto).
 
 ### Con Docker (consigliato)
 
@@ -88,7 +123,7 @@ cd ArcheType-LBP
 
 # Assicurati di aver scaricato il dataset come descritto sopra
 
-# Avvia tutti i servizi (frontend su http://localhost:3000)
+# Avvia tutti i servizi (frontend su http://localhost:5173)
 docker compose up --build
 ```
 

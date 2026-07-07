@@ -43,7 +43,7 @@ ArcheType-LBP/
 │       ├── exception/      # GlobalExceptionHandler, ResourceNotFoundException
 │       └── config/         # CorsConfig
 ├── db/init.sql             # Full DDL + test seed data
-├── populate/               # Python script to seed DB from Steam CSV/JSON dataset
+├── scripts/                # Popolamento DB da dataset Steam, test Steam API, analisi colori
 ├── Marguerite_Datasets/    # Original dataset exploration (games.csv ~390MB, games.json, steam_games.db)
 ├── docs/                   # Feature-specific docs (auth, colorblind, wishlist, steam purchase, game detail)
 ├── SUPABASE.md             # Migration guide: Spring Boot → Supabase BaaS
@@ -138,7 +138,7 @@ PostgreSQL 17
 
 ### Populate Pipeline
 
-The `populate/` directory contains a Python script (`populate_db.py`) that:
+The `scripts/populate_db.py` script:
 1. Reads the Steam dataset (CSV ~390MB or JSON)
 2. Cleans data (dedup by steam_app_id, normalizes column names)
 3. Batch-inserts games into the `games` table using `psycopg2.extras.execute_values`

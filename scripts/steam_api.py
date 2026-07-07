@@ -1,11 +1,15 @@
 """
 scripts/steam_api.py
-Utility functions for fetching and processing Steam game data from the free Web API.
+Fetch and inspect Steam game data from the free Web API — no DB involved.
 
 API docs (unofficial): https://wiki.steamgriddb.com/wiki/Steam_Web_API
 Endpoint: https://store.steampowered.com/api/appdetails?appids=<id>
+
+Usage (smoke-tests the API against a real app id):
+    python scripts/steam_api.py [app_id]   # default: 570 (Dota 2)
 """
 import re
+import sys
 import requests
 
 STEAM_API_BASE = "https://store.steampowered.com/api"
@@ -22,27 +26,10 @@ def fetch_app_details(app_id: int, lang: str = "en") -> dict | None:
     return data["data"]
 
 
-def app_to_db_row(data: dict) -> dict:
-    """Map Steam app details to our DB columns."""
-    return {
-        "steam_appid": data.get("steam_appid"),
-        "name": data.get("name", ""),
-        "short_description": data.get("short_description", ""),
-        "header_image": data.get("header_image", ""),
-        "background_image": data.get("background", ""),
-        "price": data.get("price_overview", {}).get("final_formatted", "Free"),
-        "release_date": data.get("release_date", {}).get("date", None),
-        "genres": ", ".join(g["description"] for g in data.get("genres", [])),
-        "developer": ", ".join(data.get("developers", [])),
-        "publisher": ", ".join(data.get("publishers", [])),
-        "rating": data.get("metacritic", {}).get("score"),
-        "recommendations": data.get("recommendations", {}).get("total", 0),
-        "platforms_windows": data.get("platforms", {}).get("windows", False),
-        "platforms_mac": data.get("platforms", {}).get("mac", False),
-        "platforms_linux": data.get("platforms", {}).get("linux", False),
-    }
-
-
+# BROKEN: regex no longer matches store.steampowered.com/search/ HTML (returns 0
+# results as of 2026-07-07, confirmed via steam_api.py's own CLI smoke test). Steam
+# changed the search page's embedded JSON structure; needs a new scraping strategy
+# or a real API endpoint before this is usable again.
 def search_games(query: str, limit: int = 10) -> list[dict]:
     """
     Use Steam search page to find games by name.
@@ -59,6 +46,7 @@ def search_games(query: str, limit: int = 10) -> list[dict]:
     return [{"app_id": int(a), "name": n} for a, n in matches[:limit]]
 
 
+# BROKEN: same cause as search_games() above — 0 results as of 2026-07-07.
 def fetch_top_free_games(count: int = 50) -> list[dict]:
     """Fetch top free-to-play games from Steam search."""
     resp = requests.get(
@@ -69,3 +57,19 @@ def fetch_top_free_games(count: int = 50) -> list[dict]:
     resp.raise_for_status()
     matches = re.findall(r'"appid":(\d+),"name":"([^"]+)"', resp.text)
     return [{"app_id": int(a), "name": n} for a, n in matches[:count]]
+
+
+if __name__ == "__main__":
+    app_id = int(sys.argv[1]) if len(sys.argv) > 1 else 570  # Dota 2
+
+    details = fetch_app_details(app_id)
+    if not details:
+        print(f"fetch_app_details({app_id}): FAILED — no data returned")
+        sys.exit(1)
+    print(f"fetch_app_details({app_id}): OK — {details.get('name')!r}, header_image={details.get('header_image')}")
+
+    results = search_games("portal")
+    print(f"search_games('portal'): OK — {len(results)} results" if results else "search_games('portal'): FAILED — no results")
+
+    top = fetch_top_free_games(count=5)
+    print(f"fetch_top_free_games(5): OK — {len(top)} games" if top else "fetch_top_free_games(5): FAILED — no results")

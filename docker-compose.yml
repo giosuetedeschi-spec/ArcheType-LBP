@@ -50,7 +50,7 @@ services:
 
   populate:
     build:
-      context: ./populate
+      context: ./scripts
       dockerfile: Dockerfile
     container_name: archetype-populate
     depends_on:
