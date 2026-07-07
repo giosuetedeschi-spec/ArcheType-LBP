@@ -187,7 +187,7 @@ Vedi [LICENSE](./LICENSE).
 
 Giosue Tedeschi — giosuetedeschi-spec
 Anna Digiglio — annadigiglio-lgtm
-Lorenzo Vurchio — 
-Joshua Gino Galarza — 
+Lorenzo Vurchio — LorVur
+Joshua Gino Galarza — Joshua BID
 Girelle Beni Benj — 
-Marguerite Deido El Bimbey — 
+Marguerite Deido III El Mbimbey — MDL CNAKE
