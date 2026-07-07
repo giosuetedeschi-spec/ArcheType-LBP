@@ -31,7 +31,10 @@ import GameCardSkeleton from "../components/GameCardSkeleton";
 import type { CatalogSearchParams, Game } from "@/types/api";
 
 // Lista curata mostrata sempre come base (traduzione garantita in tutte le lingue).
-const CURATED_GENRES = ["Action", "Adventure", "RPG", "Strategy", "Indie", "Horror"];
+// "Horror" non esiste come genere ufficiale nella tassonomia Steam (è un tag, non un
+// genere), quindi non è mai stato incluso: qualunque gioco reale non lo avrebbe mai
+// avuto tra i suoi generi.
+const CURATED_GENRES = ["Action", "Adventure", "RPG", "Strategy", "Indie"];
 
 // Ordinamento: value = "campo:direzione" (vuoto = nessun ordinamento / rilevanza).
 const SORT_OPTIONS = [
