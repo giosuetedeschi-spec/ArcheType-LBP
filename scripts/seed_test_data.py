@@ -4,6 +4,7 @@ import os
 import random
 import logging
 
+import bcrypt
 import psycopg2
 from psycopg2.extras import execute_values
 from dotenv import load_dotenv
@@ -21,6 +22,14 @@ DB_CONFIG = {
     "password": os.getenv("DB_PASSWORD", "archetype_secret"),
 }
 
+# Cost factor 10, per combaciare con l'hash bcrypt già usato per gli utenti
+# seed di init.sql (vedi commento lì: "hash bcrypt generato con lo stesso
+# BCryptPasswordEncoder usato dal backend"). Un cost factor diverso non
+# romperebbe la verifica (bcrypt lo legge dall'hash stesso), ma tenerlo
+# identico evita differenze di costo computazionale ingiustificate tra
+# utenti seed creati da fonti diverse.
+BCRYPT_COST_FACTOR = 10
+
 # Stati ammessi dal CHECK constraint su backlog.status
 BACKLOG_STATUSES = ["playing", "finished", "abandoned"]
 NUM_USERS = 5
@@ -29,11 +38,59 @@ WISHLIST_GAMES_PER_USER = (2, 8)
 
 
 def get_connection():
+    """Apre una connessione al database, con gli stessi parametri
+    (letti da variabili d'ambiente) usati dal resto degli script del
+    progetto, per funzionare sia dentro Docker Compose sia in locale.
+
+    Returns:
+        psycopg2.extensions.connection: connessione aperta.
+    """
     return psycopg2.connect(**DB_CONFIG)
 
 
+def hash_password(plain_password: str) -> str:
+    """Genera un hash bcrypt della password, compatibile con
+    BCryptPasswordEncoder di Spring Security (stesso backend usato per
+    verificare le password al login).
+
+    NOTA IMPORTANTE (bug corretto qui): prima di questo fix, lo script
+    scriveva la password in chiaro direttamente nella colonna `password`,
+    senza alcun hashing. BCryptPasswordEncoder, trovando un valore che non
+    è un hash bcrypt valido, rifiuta SEMPRE il login per quell'utente
+    (log: "Encoded password does not look like BCrypt" -> BadCredentialsException),
+    indipendentemente dalla password realmente digitata. Gli utenti creati
+    da questo script erano quindi utilizzabili per popolare dati (backlog,
+    wishlist) ma non per testare il login reale end-to-end.
+
+    Args:
+        plain_password: password in chiaro da hashare.
+
+    Returns:
+        str: hash bcrypt (formato "$2b$10$...", 60 caratteri), pronto per
+        essere salvato nella colonna `password` e verificato dal backend.
+    """
+    hashed = bcrypt.hashpw(plain_password.encode("utf-8"), bcrypt.gensalt(rounds=BCRYPT_COST_FACTOR))
+    return hashed.decode("utf-8")
+
+
 def seed_users(conn):
-    """Crea utenti di test se non esistono già."""
+    """Crea utenti di test se non esistono già (ON CONFLICT DO NOTHING:
+    se un utente con questo username esiste già, es. da init.sql, questo
+    insert non lo tocca).
+
+    Le password vengono hashate con bcrypt prima dell'insert (vedi
+    hash_password): la password in chiaro "password123" resta identica
+    per tutti gli utenti di test, così da poterla usare per login manuali
+    durante lo sviluppo, ma il valore salvato nel database è sempre un
+    hash valido, mai testo in chiaro.
+
+    Args:
+        conn: connessione al database.
+
+    Returns:
+        list[tuple[int, str]]: coppie (id, username) di tutti gli utenti
+        presenti nel database dopo l'insert (inclusi quelli preesistenti).
+    """
     cur = conn.cursor()
 
     test_users = [
@@ -49,7 +106,7 @@ def seed_users(conn):
         VALUES %s
         ON CONFLICT (username) DO NOTHING
     """
-    records = [(u, e, p) for u, e, p in test_users]
+    records = [(u, e, hash_password(p)) for u, e, p in test_users]
     execute_values(cur, sql, records)
     conn.commit()
 
@@ -61,7 +118,15 @@ def seed_users(conn):
 
 
 def seed_backlog(conn, users, game_ids):
-    """Assegna giochi casuali al backlog di ciascun utente."""
+    """Assegna giochi casuali al backlog di ciascun utente, con stato e
+    tempo di gioco casuali (tempo più basso per lo stato "abandoned",
+    per coerenza narrativa dei dati demo).
+
+    Args:
+        conn: connessione al database.
+        users: coppie (id, username) per cui generare voci di backlog.
+        game_ids: id dei giochi disponibili tra cui scegliere casualmente.
+    """
     cur = conn.cursor()
 
     total = 0
@@ -94,6 +159,13 @@ def seed_wishlist(conn, users, game_ids, exclude_per_user):
 
     Evita di duplicare giochi già presenti nel backlog dello stesso utente
     (non obbligatorio a livello di DB, ma più realistico).
+
+    Args:
+        conn: connessione al database.
+        users: coppie (id, username) per cui generare voci di wishlist.
+        game_ids: id dei giochi disponibili tra cui scegliere casualmente.
+        exclude_per_user: mappa user_id -> set di game_id già nel backlog
+            di quell'utente, da escludere dalla selezione per la wishlist.
     """
     cur = conn.cursor()
 
@@ -125,7 +197,17 @@ def seed_wishlist(conn, users, game_ids, exclude_per_user):
 
 
 def get_backlog_by_user(conn, users):
-    """Ritorna {user_id: set(game_id)} per i giochi già nel backlog di ciascun utente."""
+    """Ritorna, per ciascun utente, l'insieme dei game_id già presenti
+    nel suo backlog — usato da seed_wishlist per evitare sovrapposizioni.
+
+    Args:
+        conn: connessione al database.
+        users: coppie (id, username) di cui recuperare il backlog.
+
+    Returns:
+        dict[int, set[int]]: mappa user_id -> insieme di game_id nel
+        backlog di quell'utente.
+    """
     cur = conn.cursor()
     result = {}
     for user_id, _ in users:
@@ -136,6 +218,11 @@ def get_backlog_by_user(conn, users):
 
 
 def main():
+    """Entry point: crea utenti di test (con password correttamente
+    hashate), poi popola backlog e wishlist con giochi casuali per
+    ciascuno. Richiede che games.py sia già stato popolato (populate_db.py),
+    altrimenti esce senza fare nulla oltre alla creazione utenti.
+    """
     log.info("=== Seed Test Data ===")
     conn = get_connection()
 
