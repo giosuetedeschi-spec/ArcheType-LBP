@@ -68,10 +68,10 @@
     "emptyWishlist": "La tua wishlist è vuota. Aggiungi qualche gioco dal catalogo!",
     "emptyBacklog": "Non hai ancora giochi nel backlog.",
     "status": {
-      "WISHLIST": "In wishlist",
-      "IN_CORSO": "In corso",
-      "FINITO": "Finito",
-      "ABBANDONATO": "Abbandonato"
+      "wishlist": "In wishlist",
+      "playing": "In corso",
+      "finished": "Finito",
+      "abandoned": "Abbandonato"
     },
     "statusFilter": "Filtra per stato",
     "all": "Tutti",
