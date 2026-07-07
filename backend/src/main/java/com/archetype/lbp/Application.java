@@ -6,8 +6,20 @@ import com.archetype.lbp.dto.PagedResponse;
 import com.archetype.lbp.repository.GameRepository;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.cache.annotation.EnableCaching;
 
+/**
+ * Punto di ingresso dell'applicazione Spring Boot.
+ *
+ * {@code @EnableCaching} attiva il supporto di Spring per
+ * {@code @Cacheable}/{@code @CacheEvict}, usati da
+ * {@link com.archetype.lbp.service.StatsService} e
+ * {@link com.archetype.lbp.service.UserGameService} per cacheare le
+ * statistiche utente (vedi {@link com.archetype.lbp.config.CacheConfig}
+ * per il provider Caffeine e la sua configurazione).
+ */
 @SpringBootApplication
+@EnableCaching
 public class Application {
     public static void main(String[] args) {
         SpringApplication.run(Application.class, args);
