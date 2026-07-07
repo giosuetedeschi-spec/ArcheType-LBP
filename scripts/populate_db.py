@@ -433,6 +433,29 @@ def _parse_genres(value) -> list:
     return result
 
 
+def _parse_bool(value) -> bool:
+    """Normalizza un valore di colonna booleana (es. Windows/Mac/Linux) in bool.
+
+    Il dataset CSV viene letto con il modulo csv standard (non pandas), quindi
+    ogni valore arriva come stringa letterale ("True"/"False"), mai come bool
+    Python; il dataset JSON invece può già contenere veri booleani. Questa
+    funzione gestisce entrambi i casi in modo uniforme.
+
+    Args:
+        value: valore grezzo dalla cella (bool, stringa, o NaN/None).
+
+    Returns:
+        bool: True solo se il valore rappresenta esplicitamente vero
+        ("true"/"1"/"yes", case-insensitive, o il bool True); False in ogni
+        altro caso, incluso mancante.
+    """
+    if pd.isna(value):
+        return False
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"true", "1", "yes"}
+
+
 def _ensure_lookup(cur, table_name: str, values: list) -> dict:
     """Upsert di valori unici in una tabella lookup (id, name) e ritorna la mappa.
 
@@ -508,7 +531,8 @@ def insert_games(df: pd.DataFrame) -> None:
         df: DataFrame già pulito da clean_data(), con le colonne
             "steam_app_id", "name", "release_date", "developer",
             "publisher", "price", "rating", "description",
-            "header_image_url", "genres", "categories" (quelle assenti
+            "header_image_url", "genres", "categories", "windows", "mac",
+            "linux" (quelle assenti
             vengono trattate come mancanti riga per riga, senza sollevare
             errori).
 
@@ -563,6 +587,9 @@ def insert_games(df: pd.DataFrame) -> None:
             "header_image_url": _clean_text(row.get("header_image_url")),
             "genres": genres,
             "categories": categories,
+            "windows": _parse_bool(row.get("windows")),
+            "mac": _parse_bool(row.get("mac")),
+            "linux": _parse_bool(row.get("linux")),
         })
 
     if skipped:
@@ -587,11 +614,15 @@ def insert_games(df: pd.DataFrame) -> None:
             item["rating"],
             _truncate_text(item["description"], 5000),
             _truncate_text(item["header_image_url"], 500),
+            item["windows"],
+            item["mac"],
+            item["linux"],
         ))
 
     sql = """
         INSERT INTO games (appid, name, release_date, developer_id, publisher_id,
-                          price, rating, description, header_image_url)
+                          price, rating, description, header_image_url,
+                          windows, mac, linux)
         VALUES %s
         ON CONFLICT (appid) DO NOTHING
     """
