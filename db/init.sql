@@ -158,8 +158,11 @@ INSERT INTO genres (name) VALUES
     ('Action'), ('RPG'), ('Strategy')
 ON CONFLICT (name) DO NOTHING;
 
+-- Nomi allineati alla dicitura reale del dataset Steam ("Single-player",
+-- "Multi-player" con trattino) per evitare doppioni quando lo stesso valore
+-- viene reimportato dal CSV tramite populate_db.py (findOrCreate per nome).
 INSERT INTO categories (name) VALUES
-    ('Singleplayer'), ('Multiplayer'), ('Co-op'), ('Open World')
+    ('Single-player'), ('Multi-player'), ('Co-op'), ('Open World')
 ON CONFLICT (name) DO NOTHING;
 
 INSERT INTO games (appid, name, price, release_date, developer_id, publisher_id, rating, description) VALUES
