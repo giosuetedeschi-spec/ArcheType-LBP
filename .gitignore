@@ -50,3 +50,6 @@ node_modules/
 virtualz-frontend/node_modules/
 data/*.csv
 !data/.gitkeep
+
+# Claude Code local settings (per-developer, not shared)
+.claude/settings.local.json
