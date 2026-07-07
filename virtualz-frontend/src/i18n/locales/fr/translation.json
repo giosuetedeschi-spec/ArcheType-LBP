@@ -10,7 +10,7 @@
     "home": "Accueil",
     "leaderboard": "Classements",
     "friends": "Amis",
-    "tagline": "Your Gaming Pleasure"
+    "tagline": "Your data, Your hero's journey"
   },
   "auth": {
     "loginTitle": "Bon retour",
@@ -35,7 +35,22 @@
     "maxPrice": "Prix maximum",
     "platforms": "Plateformes",
     "noResults": "Aucun jeu trouvé avec ces filtres.",
-    "loadMore": "Charger plus"
+    "loadMore": "Charger plus",
+    "sortBy": "Trier par",
+    "sortRelevance": "Pertinence",
+    "sortNameAsc": "Nom (A-Z)",
+    "sortNameDesc": "Nom (Z-A)",
+    "sortPriceAsc": "Prix croissant",
+    "sortPriceDesc": "Prix décroissant",
+    "sortRatingDesc": "Note",
+    "sortNewest": "Plus récents",
+    "os": "Système d'exploitation",
+    "comingSoon": "Bientôt disponible",
+    "reset": "Réinitialiser",
+    "allGenres": "Tous les genres",
+    "results_one": "{{count}} jeu",
+    "results_other": "{{count}} jeux",
+    "price": "Prix"
   },
   "game": {
     "addToWishlist": "Ajouter à la liste de souhaits",
@@ -88,7 +103,6 @@
     "free": "Gratuit"
   },
   "home": {
-    "badge": "VirtualZ — Your Gaming Pleasure",
     "tagline": "Bon retour",
     "subtitle": "Votre collection Steam, toujours organisée.",
     "exploreCatalog": "Explorer le catalogue",
@@ -116,5 +130,39 @@
     "protanopia": "Protanopie",
     "deuteranopia": "Deutéranopie",
     "tritanopia": "Tritanopie"
+  },
+  "footer": {
+    "community": {
+      "title": "Communauté",
+      "friends": "Amis",
+      "leaderboard": "Classement",
+      "discord": "Discord"
+    },
+    "platform": {
+      "title": "Plateforme",
+      "catalog": "Catalogue",
+      "library": "Bibliothèque",
+      "analytics": "Statistiques"
+    },
+    "shop": {
+      "title": "Boutique",
+      "offers": "Offres",
+      "giftCards": "Cartes cadeau",
+      "redeem": "Utiliser un code"
+    },
+    "support": {
+      "title": "Support",
+      "help": "Centre d'aide",
+      "contact": "Contactez-nous",
+      "privacy": "Politique de confidentialité"
+    }
+  },
+  "genres": {
+    "action": "Action",
+    "adventure": "Aventure",
+    "rpg": "RPG",
+    "strategy": "Stratégie",
+    "indie": "Indé",
+    "horror": "Horreur"
   }
 }

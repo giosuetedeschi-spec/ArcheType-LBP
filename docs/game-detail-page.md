@@ -110,3 +110,7 @@ Styled to match Steam's brand colors (`#1b2838` dark, `#2a475e` hover).
 - **Library tracking** → All status changes from this page
 - **Wishlist integration** → Heart toggle feeds wishlist page
 - **Play time tracking** → Feeds stats/charts
+
+
+---
+*Last project status update: 2026-07-03*

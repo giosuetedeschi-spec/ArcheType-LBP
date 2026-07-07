@@ -1,8 +1,6 @@
-version: "3.9"
-
 services:
   db:
-    image: postgres:17-alpine
+    image: postgres:18-alpine
     container_name: archetype-db
     restart: unless-stopped
     environment:
@@ -12,14 +10,13 @@ services:
     ports:
       - "5432:5432"
     volumes:
-      - pgdata:/var/lib/postgresql/data
+      - pgdata:/var/lib/postgresql
       - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -U archetype -d archetype"]
       interval: 10s
       timeout: 5s
       retries: 5
-
   backend:
     build:
       context: ./backend
@@ -42,7 +39,7 @@ services:
     build:
       context: ./virtualz-frontend
       dockerfile: Dockerfile
-    container_name: archetype-frontend
+    container_name: virtualz-frontend
     restart: unless-stopped
     depends_on:
       - backend
