@@ -20,7 +20,7 @@ export default function LoginPage() {
     setLoading(true);
     try {
       await login(form);
-      navigate({ to: "/" });;
+      navigate({ to: "/" });
     } catch (err: any) {
       setError(err.response?.data?.message || t("auth.loginError"));
     } finally {
