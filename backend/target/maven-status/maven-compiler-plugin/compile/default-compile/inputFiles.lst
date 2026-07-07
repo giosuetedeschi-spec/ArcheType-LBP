@@ -1,9 +1,11 @@
 C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\Application.java
 C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\config\SecurityConfig.java
 C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\controller\AuthController.java
+C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\controller\CategoryController.java
 C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\controller\FriendController.java
 C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\controller\GameController.java
 C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\controller\GameSessionController.java
+C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\controller\GenreController.java
 C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\controller\HealthController.java
 C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\controller\StatsController.java
 C:\Users\anna.digiglio\Desktop\Progetto Archetype\ArcheType-LBP\backend\src\main\java\com\archetype\lbp\controller\UserController.java
