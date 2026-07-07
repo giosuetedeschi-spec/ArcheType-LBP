@@ -9,7 +9,10 @@
       "Bash(curl -s http://localhost:3000/)",
       "Bash(curl -s http://localhost:3000/assets/index-Bsz4mrvw.js)",
       "Bash(python3 -c ' *)",
-      "Bash(node -e ' *)"
+      "Bash(node -e ' *)",
+      "PowerShell(Start-Process \"http://localhost:3000/\")",
+      "PowerShell(Start-Process \"http://localhost:5173/\")",
+      "Bash(curl -s -i -H \"Origin: http://localhost:5173\" http://localhost:8080/api/health)"
     ]
   }
 }
