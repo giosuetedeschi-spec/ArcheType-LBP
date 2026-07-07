@@ -433,6 +433,29 @@ def _parse_genres(value) -> list:
     return result
 
 
+def _parse_bool(value) -> bool:
+    """Normalizza un valore di colonna booleana (es. Windows/Mac/Linux) in bool.
+
+    Il dataset CSV viene letto con il modulo csv standard (non pandas), quindi
+    ogni valore arriva come stringa letterale ("True"/"False"), mai come bool
+    Python; il dataset JSON invece può già contenere veri booleani. Questa
+    funzione gestisce entrambi i casi in modo uniforme.
+
+    Args:
+        value: valore grezzo dalla cella (bool, stringa, o NaN/None).
+
+    Returns:
+        bool: True solo se il valore rappresenta esplicitamente vero
+        ("true"/"1"/"yes", case-insensitive, o il bool True); False in ogni
+        altro caso, incluso mancante.
+    """
+    if pd.isna(value):
+        return False
+    if isinstance(value, bool):
+        return value
+    return str(value).strip().lower() in {"true", "1", "yes"}
+
+
 def _ensure_lookup(cur, table_name: str, values: list) -> dict:
     """Upsert di valori unici in una tabella lookup (id, name) e ritorna la mappa.
 
@@ -477,6 +500,31 @@ def _ensure_lookup(cur, table_name: str, values: list) -> dict:
     return {name: int(row_id) for row_id, name in rows}
 
 
+def _ensure_os_columns(cur) -> None:
+    """Aggiunge le colonne windows/mac/linux a "games" se non esistono già.
+
+    init.sql viene eseguito da Postgres solo alla creazione del volume dati:
+    su un database già esistente (creato prima dell'introduzione di queste
+    colonne) lo schema non si aggiorna da solo. Questo ALTER TABLE
+    idempotente (IF NOT EXISTS) permette di rilanciare semplicemente questo
+    script per portare lo schema a livello, senza comandi SQL manuali. Se le
+    colonne esistono già (database creato dopo l'introduzione di init.sql
+    aggiornato, o script già rilanciato in precedenza), non ha alcun effetto.
+
+    Args:
+        cur: cursore psycopg2 su una connessione già aperta.
+
+    Returns:
+        None.
+    """
+    cur.execute("""
+        ALTER TABLE games
+          ADD COLUMN IF NOT EXISTS windows BOOLEAN NOT NULL DEFAULT FALSE,
+          ADD COLUMN IF NOT EXISTS mac BOOLEAN NOT NULL DEFAULT FALSE,
+          ADD COLUMN IF NOT EXISTS linux BOOLEAN NOT NULL DEFAULT FALSE
+    """)
+
+
 def insert_games(df: pd.DataFrame) -> None:
     """Inserisce i giochi e le relazioni genere/categoria (molti-a-molti) nel database.
 
@@ -508,7 +556,8 @@ def insert_games(df: pd.DataFrame) -> None:
         df: DataFrame già pulito da clean_data(), con le colonne
             "steam_app_id", "name", "release_date", "developer",
             "publisher", "price", "rating", "description",
-            "header_image_url", "genres", "categories" (quelle assenti
+            "header_image_url", "genres", "categories", "windows", "mac",
+            "linux" (quelle assenti
             vengono trattate come mancanti riga per riga, senza sollevare
             errori).
 
@@ -518,6 +567,9 @@ def insert_games(df: pd.DataFrame) -> None:
     """
     conn = get_connection()
     cur = conn.cursor()
+
+    _ensure_os_columns(cur)
+    conn.commit()
 
     cur.execute("SELECT COUNT(*) FROM games")
     existing = cur.fetchone()[0]
@@ -563,6 +615,9 @@ def insert_games(df: pd.DataFrame) -> None:
             "header_image_url": _clean_text(row.get("header_image_url")),
             "genres": genres,
             "categories": categories,
+            "windows": _parse_bool(row.get("windows")),
+            "mac": _parse_bool(row.get("mac")),
+            "linux": _parse_bool(row.get("linux")),
         })
 
     if skipped:
@@ -587,13 +642,24 @@ def insert_games(df: pd.DataFrame) -> None:
             item["rating"],
             _truncate_text(item["description"], 5000),
             _truncate_text(item["header_image_url"], 500),
+            item["windows"],
+            item["mac"],
+            item["linux"],
         ))
 
+    # Su conflitto (gioco già esistente) si aggiornano solo windows/mac/linux:
+    # permette di rilanciare lo script per fare il backfill di questi campi su
+    # un database già popolato (es. dopo l'aggiunta delle colonne via ALTER
+    # TABLE) senza toccare gli altri campi né duplicare righe.
     sql = """
         INSERT INTO games (appid, name, release_date, developer_id, publisher_id,
-                          price, rating, description, header_image_url)
+                          price, rating, description, header_image_url,
+                          windows, mac, linux)
         VALUES %s
-        ON CONFLICT (appid) DO NOTHING
+        ON CONFLICT (appid) DO UPDATE SET
+            windows = EXCLUDED.windows,
+            mac = EXCLUDED.mac,
+            linux = EXCLUDED.linux
     """
 
     for i in tqdm(range(0, len(game_records), BATCH_SIZE), desc="Inserting"):

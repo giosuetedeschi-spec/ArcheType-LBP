@@ -50,6 +50,9 @@ CREATE TABLE IF NOT EXISTS games (
     description TEXT,
     header_image_url VARCHAR(500),
     multiplayer BOOLEAN DEFAULT FALSE,
+    windows BOOLEAN NOT NULL DEFAULT FALSE,
+    mac BOOLEAN NOT NULL DEFAULT FALSE,
+    linux BOOLEAN NOT NULL DEFAULT FALSE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -165,12 +168,12 @@ INSERT INTO categories (name) VALUES
     ('Single-player'), ('Multi-player'), ('Co-op'), ('Open World')
 ON CONFLICT (name) DO NOTHING;
 
-INSERT INTO games (appid, name, price, release_date, developer_id, publisher_id, rating, description) VALUES
-    (730, 'Counter-Strike 2', 0.00, '2012-08-21', 1, 1, 4.50, 'Counter-Strike 2 is the next chapter of the world''s favorite competitive FPS.'),
-    (1086940, 'Baldur''s Gate 3', 59.99, '2023-08-03', 2, 2, 4.80, 'An epic RPG from the creators of Divinity: Original Sin 2.'),
-    (1245620, 'ELDEN RING', 39.99, '2022-02-25', 3, 3, 4.70, 'A vast fantasy world crafted by Hidetaka Miyazaki and George R. R. Martin.'),
-    (271590, 'Grand Theft Auto V', 29.99, '2013-09-17', 4, 4, 4.60, 'When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld...'),
-    (570, 'Dota 2', 0.00, '2013-07-09', 1, 1, 4.20, 'Every day, millions of players worldwide enter battle as one of over a hundred Dota heroes.')
+INSERT INTO games (appid, name, price, release_date, developer_id, publisher_id, rating, description, windows, mac, linux) VALUES
+    (730, 'Counter-Strike 2', 0.00, '2012-08-21', 1, 1, 4.50, 'Counter-Strike 2 is the next chapter of the world''s favorite competitive FPS.', TRUE, TRUE, TRUE),
+    (1086940, 'Baldur''s Gate 3', 59.99, '2023-08-03', 2, 2, 4.80, 'An epic RPG from the creators of Divinity: Original Sin 2.', TRUE, TRUE, FALSE),
+    (1245620, 'ELDEN RING', 39.99, '2022-02-25', 3, 3, 4.70, 'A vast fantasy world crafted by Hidetaka Miyazaki and George R. R. Martin.', TRUE, FALSE, FALSE),
+    (271590, 'Grand Theft Auto V', 29.99, '2013-09-17', 4, 4, 4.60, 'When a young street hustler, a retired bank robber and a terrifying psychopath find themselves entangled with some of the most frightening and deranged elements of the criminal underworld...', TRUE, FALSE, FALSE),
+    (570, 'Dota 2', 0.00, '2013-07-09', 1, 1, 4.20, 'Every day, millions of players worldwide enter battle as one of over a hundred Dota heroes.', TRUE, TRUE, TRUE)
 ON CONFLICT (appid) DO NOTHING;
 
 INSERT INTO game_genres (game_id, genre_id) VALUES

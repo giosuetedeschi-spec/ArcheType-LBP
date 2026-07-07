@@ -53,7 +53,8 @@ public class GameService {
                         filter.getMaxPrice(),
                         filter.getMinRating(),
                         filter.getReleasedAfter(),
-                        filter.getReleasedBefore()
+                        filter.getReleasedBefore(),
+                        filter.getOs()
                 ),
                 pageable
         );
@@ -133,6 +134,9 @@ public class GameService {
         game.setGenres(parseGenres(req.getGenres()));
         game.setDescription(req.getDescription());
         game.setHeaderImageUrl(req.getHeaderImageUrl());
+        game.setWindows(req.getWindows() != null ? req.getWindows() : false);
+        game.setMac(req.getMac() != null ? req.getMac() : false);
+        game.setLinux(req.getLinux() != null ? req.getLinux() : false);
     }
 
     /**
@@ -187,6 +191,9 @@ public class GameService {
                 .collect(Collectors.joining(",")));
         r.setDescription(game.getDescription());
         r.setHeaderImageUrl(game.getHeaderImageUrl());
+        r.setWindows(game.getWindows());
+        r.setMac(game.getMac());
+        r.setLinux(game.getLinux());
         r.setCreatedAt(game.getCreatedAt());
         return r;
     }
