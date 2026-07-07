@@ -10,14 +10,16 @@ import com.archetype.lbp.security.JwtUtils;
 import com.archetype.lbp.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
-import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.annotation.*;
 
+@Slf4j
 @RestController
 @RequestMapping("/api/auth")
 @RequiredArgsConstructor
@@ -39,7 +41,8 @@ public class AuthController {
             return ResponseEntity.ok(ApiResponse.ok(
                     new AuthResponse(token, user.getId(), user.getUsername(), user.getEmail()),
                     "Login effettuato"));
-        } catch (BadCredentialsException e) {
+        } catch (AuthenticationException e) {
+            log.warn("Login fallito per username '{}': {}", req.getUsername(), e.getMessage(), e);
             return ResponseEntity.status(HttpStatus.UNAUTHORIZED)
                     .body(ApiResponse.error("Credenziali non valide"));
         }

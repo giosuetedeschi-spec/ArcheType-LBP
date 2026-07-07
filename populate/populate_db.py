@@ -1,8 +1,9 @@
 """Popolamento database da dataset Steam CSV/JSON.
 
 Legge il dataset Steam (CSV o JSON), lo pulisce/normalizza e lo inserisce nel
-database PostgreSQL: giochi, developer/publisher (lookup) e generi (relazione
-molti-a-molti tramite le tabelle genres + game_genres).
+database PostgreSQL: giochi, developer/publisher (lookup), generi e categorie
+(entrambe relazioni molti-a-molti, tramite genres + game_genres e
+categories + game_categories rispettivamente).
 
 Uso tipico (via Docker Compose, profilo "init"):
     docker compose build populate
@@ -477,37 +478,43 @@ def _ensure_lookup(cur, table_name: str, values: list) -> dict:
 
 
 def insert_games(df: pd.DataFrame) -> None:
-    """Inserisce i giochi e le relazioni genere (molti-a-molti) nel database.
+    """Inserisce i giochi e le relazioni genere/categoria (molti-a-molti) nel database.
 
     Pipeline in tre fasi:
       1. Parsing riga per riga: valida l'AppID (scarta righe non valide),
-         raccoglie i nomi di developer/publisher/genere per il lookup
-         batch, e prepara i valori normalizzati per l'INSERT.
-      2. Upsert dei lookup (developers, publishers, genres) via
+         raccoglie i nomi di developer/publisher/genere/categoria per il
+         lookup batch, e prepara i valori normalizzati per l'INSERT.
+      2. Upsert dei lookup (developers, publishers, genres, categories) via
          _ensure_lookup, poi INSERT batch dei giochi in "games" con
          ON CONFLICT (appid) DO NOTHING (idempotente).
-      3. Collegamento gioco-genere: recupera la mappa appid -> id interno
-         del DB (necessaria perché ON CONFLICT DO NOTHING non restituisce
-         gli id delle righe, incluse quelle già esistenti), costruisce le
-         coppie (game_id, genre_id) e le inserisce in "game_genres" con
-         ON CONFLICT (game_id, genre_id) DO NOTHING.
+      3. Collegamento gioco-genere e gioco-categoria: recupera la mappa
+         appid -> id interno del DB (necessaria perché ON CONFLICT DO
+         NOTHING non restituisce gli id delle righe, incluse quelle già
+         esistenti), costruisce le coppie (game_id, genre_id) e
+         (game_id, category_id) e le inserisce rispettivamente in
+         "game_genres" e "game_categories" con ON CONFLICT DO NOTHING.
 
-    Questa terza fase è il cuore del fix: prima della sua introduzione, il
-    campo "genres" veniva raccolto durante il parsing ma mai scritto in
-    alcuna tabella — arrivava pulito fino a un passo dalla fine e veniva
-    scartato. Risultato verificato dopo il fix: 33 generi distinti,
-    329.320 associazioni gioco-genere create.
+    Questa terza fase è il cuore del fix: prima della sua introduzione, i
+    campi "genres"/"categories" venivano raccolti durante il parsing ma mai
+    scritti in alcuna tabella — arrivavano puliti fino a un passo dalla fine
+    e venivano scartati. Risultato verificato dopo il fix (dataset completo,
+    123k giochi): 33 generi distinti (329.320 associazioni gioco-genere) e
+    59 categorie distinte (510.673 associazioni gioco-categoria, dopo aver
+    unificato i doppioni di naming "Singleplayer"/"Single-player" e
+    "Multiplayer"/"Multi-player" tra seed manuale e dataset reale — vedi
+    db/init.sql).
 
     Args:
         df: DataFrame già pulito da clean_data(), con le colonne
             "steam_app_id", "name", "release_date", "developer",
             "publisher", "price", "rating", "description",
-            "header_image_url", "genres" (quelle assenti vengono trattate
-            come mancanti riga per riga, senza sollevare errori).
+            "header_image_url", "genres", "categories" (quelle assenti
+            vengono trattate come mancanti riga per riga, senza sollevare
+            errori).
 
     Returns:
-        None. Logga il totale giochi e associazioni genere presenti in
-        database a fine esecuzione, per verifica rapida via log.
+        None. Logga il totale giochi e associazioni genere/categoria
+        presenti in database a fine esecuzione, per verifica rapida via log.
     """
     conn = get_connection()
     cur = conn.cursor()
@@ -520,6 +527,7 @@ def insert_games(df: pd.DataFrame) -> None:
     developer_names = []
     publisher_names = []
     all_genre_names = []
+    all_category_names = []
     skipped = 0
 
     for _, row in df.iterrows():
@@ -538,6 +546,11 @@ def insert_games(df: pd.DataFrame) -> None:
         genres = _parse_genres(row.get("genres"))
         all_genre_names.extend(genres)
 
+        # Stessa struttura comma-separated dei generi (es. "Co-op,Single-player"),
+        # quindi si riusa lo stesso parser invece di duplicarne la logica.
+        categories = _parse_genres(row.get("categories"))
+        all_category_names.extend(categories)
+
         parsed_rows.append({
             "appid": app_id,
             "name": _clean_text(row.get("name")) or "",
@@ -549,6 +562,7 @@ def insert_games(df: pd.DataFrame) -> None:
             "description": _clean_text(row.get("description")),
             "header_image_url": _clean_text(row.get("header_image_url")),
             "genres": genres,
+            "categories": categories,
         })
 
     if skipped:
@@ -557,7 +571,9 @@ def insert_games(df: pd.DataFrame) -> None:
     developer_map = _ensure_lookup(cur, "developers", developer_names)
     publisher_map = _ensure_lookup(cur, "publishers", publisher_names)
     genre_map = _ensure_lookup(cur, "genres", all_genre_names)
+    category_map = _ensure_lookup(cur, "categories", all_category_names)
     log.info(f"Generi distinti trovati nel dataset: {len(genre_map)}")
+    log.info(f"Categorie distinte trovate nel dataset: {len(category_map)}")
 
     game_records = []
     for item in parsed_rows:
@@ -631,6 +647,36 @@ def insert_games(df: pd.DataFrame) -> None:
     cur.execute("SELECT COUNT(*) FROM game_genres")
     total_links = cur.fetchone()[0]
     log.info(f"Associazioni gioco-genere totali nel DB: {total_links}")
+
+    # --- Popolamento relazione game_categories (molti-a-molti) ---
+    # Stessa logica della sezione game_genres sopra, applicata a "categories".
+    category_pairs = set()
+    for item in parsed_rows:
+        game_id = appid_to_gameid.get(item["appid"])
+        if game_id is None:
+            continue
+        for category_name in item["categories"]:
+            category_key = _truncate_text(category_name, 255)
+            category_id = category_map.get(category_key)
+            if category_id is not None:
+                category_pairs.add((game_id, category_id))
+
+    category_pairs = list(category_pairs)
+    log.info(f"Associazioni gioco-categoria da inserire: {len(category_pairs)}")
+
+    category_sql = """
+        INSERT INTO game_categories (game_id, category_id)
+        VALUES %s
+        ON CONFLICT (game_id, category_id) DO NOTHING
+    """
+    for i in tqdm(range(0, len(category_pairs), BATCH_SIZE), desc="Linking categories"):
+        batch = category_pairs[i:i + BATCH_SIZE]
+        execute_values(cur, category_sql, batch, page_size=BATCH_SIZE)
+        conn.commit()
+
+    cur.execute("SELECT COUNT(*) FROM game_categories")
+    total_category_links = cur.fetchone()[0]
+    log.info(f"Associazioni gioco-categoria totali nel DB: {total_category_links}")
 
     cur.close()
     conn.close()

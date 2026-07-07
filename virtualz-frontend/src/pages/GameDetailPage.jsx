@@ -69,13 +69,13 @@ export default function GameDetailPage() {
       {isAuthenticated && (
         <div className="flex gap-3 mb-6 flex-wrap">
           <button
-            onClick={() => handleAdd("WISHLIST")}
+            onClick={() => handleAdd("wishlist")}
             className="px-4 py-2 rounded-full border border-vz-pink text-vz-pink hover:bg-vz-pink/10 transition-colors text-sm font-medium"
           >
             ♥ {t("game.addToWishlist")}
           </button>
           <button
-            onClick={() => handleAdd("IN_CORSO")}
+            onClick={() => handleAdd("playing")}
             className="px-4 py-2 rounded-full bg-vz-lime text-vz-navy font-semibold text-sm hover:opacity-90 transition-opacity"
           >
             {t("game.addToBacklog")}

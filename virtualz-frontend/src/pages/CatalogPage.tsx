@@ -4,10 +4,12 @@
  * Layout: sidebar sinistra (filtri) + area risultati (ricerca, ordinamento, griglia).
  *
  * Filtri:
- *  - Genere      → funzionante. Valore inviato al backend = nome inglese canonico
- *                  (es. "Action"), etichetta mostrata = localizzata via i18n `genres`.
- *                  Prima usava getGenres() su /genres, endpoint che risponde 404:
- *                  ora la lista è statica (fix del filtro genere che era vuoto).
+ *  - Genere      → funzionante. Mostra sempre la lista curata/tradotta (CURATED_GENRES)
+ *                  come base, più eventuali generi reali aggiuntivi da GET /genres non
+ *                  ancora coperti da quella lista (es. dopo un import CSV più ricco).
+ *                  Etichetta = localizzata via i18n `genres.<nome>` quando esiste una
+ *                  traduzione, altrimenti nome grezzo. Se la fetch fallisce, resta solo
+ *                  la lista curata.
  *  - Prezzo      → funzionante (minPrice / maxPrice).
  *  - Sistema op. → DISABILITATO + badge "in arrivo". Il backend non espone ancora
  *                  un campo piattaforma/OS sull'oggetto Game, quindi non è filtrabile.
@@ -23,21 +25,16 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { searchCatalog } from "../services/gamesApi";
+import { searchCatalog, getGenres } from "../services/gamesApi";
 import GameCard from "../components/GameCard";
 import GameCardSkeleton from "../components/GameCardSkeleton";
 import type { CatalogSearchParams, Game } from "@/types/api";
 
-// Generi: value = stringa inglese che combacia col campo CSV Game.genres nel
-// dataset Steam; labelKey = chiave i18n del blocco `genres` per l'etichetta.
-const GENRE_OPTIONS = [
-  { value: "Action", labelKey: "genres.action" },
-  { value: "Adventure", labelKey: "genres.adventure" },
-  { value: "RPG", labelKey: "genres.rpg" },
-  { value: "Strategy", labelKey: "genres.strategy" },
-  { value: "Indie", labelKey: "genres.indie" },
-  { value: "Horror", labelKey: "genres.horror" },
-] as const;
+// Lista curata mostrata sempre come base (traduzione garantita in tutte le lingue).
+// "Horror" non esiste come genere ufficiale nella tassonomia Steam (è un tag, non un
+// genere), quindi non è mai stato incluso: qualunque gioco reale non lo avrebbe mai
+// avuto tra i suoi generi.
+const CURATED_GENRES = ["Action", "Adventure", "RPG", "Strategy", "Indie"];
 
 // Ordinamento: value = "campo:direzione" (vuoto = nessun ordinamento / rilevanza).
 const SORT_OPTIONS = [
@@ -78,6 +75,21 @@ export default function CatalogPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
+  const [genres, setGenres] = useState<string[]>(CURATED_GENRES);
+
+  // Carica l'elenco generi una sola volta all'ingresso nella pagina: alla lista
+  // curata aggiunge eventuali generi reali dal backend non già presenti
+  useEffect(() => {
+    getGenres()
+      .then((result) => {
+        if (!result?.length) return;
+        const extra = result.filter((g) => !CURATED_GENRES.includes(g));
+        if (extra.length) setGenres([...CURATED_GENRES, ...extra]);
+      })
+      .catch(() => {
+        // GET /genres non raggiungibile: resta la lista curata già impostata
+      });
+  }, []);
 
   // Carica i giochi in base ai filtri correnti e alla pagina
   const fetchGames = useCallback(async () => {
@@ -170,12 +182,12 @@ export default function CatalogPage() {
                 {t("catalog.genre")}
               </h3>
               <ul className="space-y-1">
-                {GENRE_OPTIONS.map((g) => {
-                  const active = filters.genre === g.value;
+                {genres.map((g) => {
+                  const active = filters.genre === g;
                   return (
-                    <li key={g.value}>
+                    <li key={g}>
                       <button
-                        onClick={() => toggleGenre(g.value)}
+                        onClick={() => toggleGenre(g)}
                         aria-pressed={active}
                         className={`w-full text-left px-3 py-1.5 rounded-lg text-sm transition-colors ${
                           active
@@ -183,7 +195,7 @@ export default function CatalogPage() {
                             : "text-zinc-300 hover:text-white hover:bg-vz-charcoal/60"
                         }`}
                       >
-                        {t(g.labelKey)}
+                        {t(`genres.${g.toLowerCase()}`, { defaultValue: g })}
                       </button>
                     </li>
                   );
