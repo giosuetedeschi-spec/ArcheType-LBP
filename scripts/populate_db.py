@@ -500,6 +500,31 @@ def _ensure_lookup(cur, table_name: str, values: list) -> dict:
     return {name: int(row_id) for row_id, name in rows}
 
 
+def _ensure_os_columns(cur) -> None:
+    """Aggiunge le colonne windows/mac/linux a "games" se non esistono già.
+
+    init.sql viene eseguito da Postgres solo alla creazione del volume dati:
+    su un database già esistente (creato prima dell'introduzione di queste
+    colonne) lo schema non si aggiorna da solo. Questo ALTER TABLE
+    idempotente (IF NOT EXISTS) permette di rilanciare semplicemente questo
+    script per portare lo schema a livello, senza comandi SQL manuali. Se le
+    colonne esistono già (database creato dopo l'introduzione di init.sql
+    aggiornato, o script già rilanciato in precedenza), non ha alcun effetto.
+
+    Args:
+        cur: cursore psycopg2 su una connessione già aperta.
+
+    Returns:
+        None.
+    """
+    cur.execute("""
+        ALTER TABLE games
+          ADD COLUMN IF NOT EXISTS windows BOOLEAN NOT NULL DEFAULT FALSE,
+          ADD COLUMN IF NOT EXISTS mac BOOLEAN NOT NULL DEFAULT FALSE,
+          ADD COLUMN IF NOT EXISTS linux BOOLEAN NOT NULL DEFAULT FALSE
+    """)
+
+
 def insert_games(df: pd.DataFrame) -> None:
     """Inserisce i giochi e le relazioni genere/categoria (molti-a-molti) nel database.
 
@@ -542,6 +567,9 @@ def insert_games(df: pd.DataFrame) -> None:
     """
     conn = get_connection()
     cur = conn.cursor()
+
+    _ensure_os_columns(cur)
+    conn.commit()
 
     cur.execute("SELECT COUNT(*) FROM games")
     existing = cur.fetchone()[0]
