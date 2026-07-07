@@ -139,9 +139,11 @@ CREATE INDEX idx_backlog_user_status ON backlog(user_id, status);
 CREATE INDEX idx_game_sessions_user ON game_sessions(user_id);
 CREATE INDEX idx_friends_user ON friends(user_id);
 
+-- Password per entrambi gli utenti demo: "password123"
+-- (hash bcrypt generato con lo stesso BCryptPasswordEncoder usato dal backend)
 INSERT INTO users (username, email, password) VALUES
-    ('gamer_alice', 'alice@example.com', 'password123'),
-    ('gamer_bob', 'bob@example.com', 'password123')
+    ('gamer_alice', 'alice@example.com', '$2a$10$T5SEaBOczJnj0xwJoBAh2O.90waCnYLX7UFScIpiFUZQZUjpv1Upe'),
+    ('gamer_bob', 'bob@example.com', '$2a$10$T5SEaBOczJnj0xwJoBAh2O.90waCnYLX7UFScIpiFUZQZUjpv1Upe')
 ON CONFLICT (username) DO NOTHING;
 
 INSERT INTO developers (name) VALUES
@@ -156,8 +158,11 @@ INSERT INTO genres (name) VALUES
     ('Action'), ('RPG'), ('Strategy')
 ON CONFLICT (name) DO NOTHING;
 
+-- Nomi allineati alla dicitura reale del dataset Steam ("Single-player",
+-- "Multi-player" con trattino) per evitare doppioni quando lo stesso valore
+-- viene reimportato dal CSV tramite populate_db.py (findOrCreate per nome).
 INSERT INTO categories (name) VALUES
-    ('Singleplayer'), ('Multiplayer'), ('Co-op'), ('Open World')
+    ('Single-player'), ('Multi-player'), ('Co-op'), ('Open World')
 ON CONFLICT (name) DO NOTHING;
 
 INSERT INTO games (appid, name, price, release_date, developer_id, publisher_id, rating, description) VALUES

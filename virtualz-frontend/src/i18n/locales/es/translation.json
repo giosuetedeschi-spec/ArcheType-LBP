@@ -68,10 +68,10 @@
     "emptyWishlist": "Tu lista de deseos está vacía. ¡Añade juegos desde el catálogo!",
     "emptyBacklog": "Aún no tienes juegos en tu backlog.",
     "status": {
-      "WISHLIST": "En lista de deseos",
-      "IN_CORSO": "En curso",
-      "FINITO": "Terminado",
-      "ABBANDONATO": "Abandonado"
+      "wishlist": "En lista de deseos",
+      "playing": "En curso",
+      "finished": "Terminado",
+      "abandoned": "Abandonado"
     },
     "statusFilter": "Filtrar por estado",
     "all": "Todos",
@@ -162,7 +162,6 @@
     "adventure": "Aventura",
     "rpg": "RPG",
     "strategy": "Estrategia",
-    "indie": "Indie",
-    "horror": "Terror"
+    "indie": "Indie"
   }
 }

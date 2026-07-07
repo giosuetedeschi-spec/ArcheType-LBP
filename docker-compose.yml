@@ -31,7 +31,7 @@ services:
       SPRING_DATASOURCE_USERNAME: archetype
       SPRING_DATASOURCE_PASSWORD: archetype_secret
       SPRING_JPA_HIBERNATE_DDL_AUTO: validate
-      CORS_ALLOWED_ORIGINS: http://localhost:3000,http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5177,http://127.0.0.1:5177,http://frontend:80
+      CORS_ALLOWED_ORIGINS: http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5177,http://127.0.0.1:5177,http://frontend:80
     ports:
       - "8080:8080"
 
@@ -39,14 +39,14 @@ services:
     build:
       context: ./virtualz-frontend
       dockerfile: Dockerfile
+      args:
+        VITE_API_BASE_URL: http://localhost:8080/api
     container_name: virtualz-frontend
     restart: unless-stopped
     depends_on:
       - backend
     ports:
-      - "3000:80"
-    environment:
-      - VITE_API_URL=http://localhost:8080/api
+      - "5173:80"
 
   populate:
     build:

@@ -24,19 +24,13 @@ export async function getGameById(id: number): Promise<Game> {
   return data;
 }
 
-// NOTA: questi due endpoint non esistono nel backend ArcheType-LBP
-// (verificato oggi con curl: 404/NoResourceFoundException). I generi
-// sono solo testo CSV dentro Game.genres, niente catalogo a parte.
-// Le funzioni restano per compatibilità futura ma vanno richiamate
-// solo se/quando il backend offrirà questi endpoint.
-
-/** @returns elenco generi — richiede un endpoint non ancora presente nel backend */
+/** @returns elenco generi distinti presenti a catalogo, ordinati alfabeticamente */
 export async function getGenres(): Promise<string[]> {
   const { data } = await api.get<string[]>("/genres");
   return data;
 }
 
-/** @returns elenco categorie — richiede un endpoint non ancora presente nel backend */
+/** @returns elenco categorie distinte presenti a catalogo, ordinate alfabeticamente */
 export async function getCategories(): Promise<string[]> {
   const { data } = await api.get<string[]>("/categories");
   return data;

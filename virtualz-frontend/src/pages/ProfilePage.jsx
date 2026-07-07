@@ -27,10 +27,10 @@ export default function ProfilePage() {
 
   const stats = {
     totalGames: library.length,
-    inProgress: library.filter((i) => i.status === "IN_CORSO").length,
-    finished: library.filter((i) => i.status === "FINITO").length,
-    abandoned: library.filter((i) => i.status === "ABBANDONATO").length,
-    wishlistCount: library.filter((i) => i.status === "WISHLIST").length,
+    inProgress: library.filter((i) => i.status === "playing").length,
+    finished: library.filter((i) => i.status === "finished").length,
+    abandoned: library.filter((i) => i.status === "abandoned").length,
+    wishlistCount: library.filter((i) => i.status === "wishlist").length,
   };
 
   const owned = stats.totalGames - stats.wishlistCount;
