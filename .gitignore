@@ -50,3 +50,7 @@ node_modules/
 virtualz-frontend/node_modules/
 data/*.csv
 !data/.gitkeep
+
+# Data
+games.json
+games.csv
