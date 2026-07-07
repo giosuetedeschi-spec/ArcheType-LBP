@@ -93,3 +93,7 @@ The wishlist page cross-references the API games list with the local library sto
 - **Buy flow** → Steam redirect from wishlist card
 - **Library sync** → Auto-remove from wishlist on Steam purchase detection
 - **Profile page** → Wishlist preview section links here
+
+
+---
+*Last project status update: 2026-07-03*
