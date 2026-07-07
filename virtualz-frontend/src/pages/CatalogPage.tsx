@@ -4,11 +4,12 @@
  * Layout: sidebar sinistra (filtri) + area risultati (ricerca, ordinamento, griglia).
  *
  * Filtri:
- *  - Genere      → funzionante. Lista caricata dinamicamente da GET /genres (ora che il
- *                  backend espone l'endpoint). Etichetta mostrata = localizzata via i18n
- *                  `genres.<nome>` quando esiste una traduzione, altrimenti nome grezzo
- *                  (il catalogo ha molti più generi dei pochi tradotti a mano).
- *                  Se la fetch fallisce, si ricade su una lista statica minima.
+ *  - Genere      → funzionante. Mostra sempre la lista curata/tradotta (CURATED_GENRES)
+ *                  come base, più eventuali generi reali aggiuntivi da GET /genres non
+ *                  ancora coperti da quella lista (es. dopo un import CSV più ricco).
+ *                  Etichetta = localizzata via i18n `genres.<nome>` quando esiste una
+ *                  traduzione, altrimenti nome grezzo. Se la fetch fallisce, resta solo
+ *                  la lista curata.
  *  - Prezzo      → funzionante (minPrice / maxPrice).
  *  - Sistema op. → DISABILITATO + badge "in arrivo". Il backend non espone ancora
  *                  un campo piattaforma/OS sull'oggetto Game, quindi non è filtrabile.
@@ -29,8 +30,8 @@ import GameCard from "../components/GameCard";
 import GameCardSkeleton from "../components/GameCardSkeleton";
 import type { CatalogSearchParams, Game } from "@/types/api";
 
-// Fallback usato solo se GET /genres fallisce (es. backend momentaneamente giù).
-const FALLBACK_GENRES = ["Action", "Adventure", "RPG", "Strategy", "Indie", "Horror"];
+// Lista curata mostrata sempre come base (traduzione garantita in tutte le lingue).
+const CURATED_GENRES = ["Action", "Adventure", "RPG", "Strategy", "Indie", "Horror"];
 
 // Ordinamento: value = "campo:direzione" (vuoto = nessun ordinamento / rilevanza).
 const SORT_OPTIONS = [
@@ -71,16 +72,19 @@ export default function CatalogPage() {
   const [page, setPage] = useState(0);
   const [totalPages, setTotalPages] = useState(1);
   const [totalElements, setTotalElements] = useState(0);
-  const [genres, setGenres] = useState<string[]>(FALLBACK_GENRES);
+  const [genres, setGenres] = useState<string[]>(CURATED_GENRES);
 
-  // Carica l'elenco generi una sola volta all'ingresso nella pagina
+  // Carica l'elenco generi una sola volta all'ingresso nella pagina: alla lista
+  // curata aggiunge eventuali generi reali dal backend non già presenti
   useEffect(() => {
     getGenres()
       .then((result) => {
-        if (result?.length) setGenres(result);
+        if (!result?.length) return;
+        const extra = result.filter((g) => !CURATED_GENRES.includes(g));
+        if (extra.length) setGenres([...CURATED_GENRES, ...extra]);
       })
       .catch(() => {
-        // GET /genres non raggiungibile: resta il fallback statico già impostato
+        // GET /genres non raggiungibile: resta la lista curata già impostata
       });
   }, []);
 
