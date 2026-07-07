@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { getLibrary } from "../services/libraryApi";
 import { useAuth } from "../context/AuthContext";
+import type { LibraryItem } from "@/types/api";
 
-const STAT_CARDS = [
+// STAT_CARDS.key deve combaciare con le chiavi dell'oggetto `stats` più sotto
+type StatKey = "totalGames" | "inProgress" | "finished" | "abandoned" | "wishlistCount";
+
+const STAT_CARDS: { key: StatKey; color: string }[] = [
   { key: "totalGames", color: "text-white" },
   { key: "inProgress", color: "text-blue-300" },
   { key: "finished", color: "text-vz-lime" },
@@ -14,18 +18,29 @@ const STAT_CARDS = [
 export default function ProfilePage() {
   const { t } = useTranslation();
   const { user } = useAuth();
-  const [library, setLibrary] = useState([]);
+  const [library, setLibrary] = useState<LibraryItem[]>([]);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
+    // ProfilePage è raggiungibile solo da utente autenticato (route protetta),
+    // ma TypeScript non lo sa: user può essere null per tipo. Guard esplicita
+    // invece di un cast, per restare onesti col compilatore.
+    if (!user) return;
+
     getLibrary(user.id)
       .then(setLibrary)
       .catch(() => setError(t("common.error")))
       .finally(() => setLoading(false));
-  }, [user.id, t]);
+  }, [user, t]);
 
-  const stats = {
+  // NOTA: i valori di status sono quelli REALI validati dal backend
+  // (vedi LibraryStatus in @/types/api: "wishlist" | "playing" | "finished" |
+  // "abandoned", minuscoli). La versione .jsx precedente confrontava contro
+  // "WISHLIST"/"IN_CORSO"/"FINITO"/"ABBANDONATO" — valori che non esistono
+  // mai nel dato reale, quindi ogni filtro restituiva sempre 0. Bug corretto
+  // qui durante la migrazione TSX.
+  const stats: Record<StatKey, number> = {
     totalGames: library.length,
     inProgress: library.filter((i) => i.status === "playing").length,
     finished: library.filter((i) => i.status === "finished").length,
@@ -35,6 +50,8 @@ export default function ProfilePage() {
 
   const owned = stats.totalGames - stats.wishlistCount;
   const completionRate = owned > 0 ? Math.round((stats.finished / owned) * 100) : 0;
+
+  if (!user) return null;
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
