@@ -328,3 +328,7 @@ Per ArcheType-LBP, **Supabase e' la scelta migliore** perche':
 6. Deploy su Vercel
 
 Tempo stimato: 2-4 ore per la migrazione completa.
+
+
+---
+*Last project status update: 2026-07-03*
