@@ -7,7 +7,9 @@
       "Bash(curl -s http://localhost:8080/api/games?page=0\\\\&size=1)",
       "Bash(curl -s -i -H \"Origin: http://localhost:3000\" http://localhost:8080/api/health)",
       "Bash(curl -s http://localhost:3000/)",
-      "Bash(curl -s http://localhost:3000/assets/index-Bsz4mrvw.js)"
+      "Bash(curl -s http://localhost:3000/assets/index-Bsz4mrvw.js)",
+      "Bash(python3 -c ' *)",
+      "Bash(node -e ' *)"
     ]
   }
 }
