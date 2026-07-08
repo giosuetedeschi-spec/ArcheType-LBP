@@ -3,9 +3,12 @@ package com.archetype.lbp.dto;
 import jakarta.validation.constraints.*;
 import lombok.Data;
 
+// gameId non è @NotNull qui: questo DTO è condiviso da add (dove serve,
+// controllato esplicitamente in UserGameService.addGame) e da update (dove
+// non ha senso richiederlo — si cambia solo status/playTimeMin/notes di una
+// voce già esistente, il gioco collegato non è riassegnabile).
 @Data
 public class UserGameRequest {
-    @NotNull(message = "Game ID is required")
     private Long gameId;
 
     @Pattern(regexp = "wishlist|playing|finished|abandoned", message = "Status must be: wishlist, playing, finished, or abandoned")
