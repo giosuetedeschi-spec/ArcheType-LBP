@@ -23,4 +23,14 @@ public interface UserGameRepository extends JpaRepository<UserGame, Long> {
     @Modifying
     @Query("DELETE FROM UserGame ug WHERE ug.id = :id AND ug.user.id = :userId")
     void deleteByIdAndUserId(@Param("id") Long id, @Param("userId") Long userId);
+
+    // Aggregati per la leaderboard: una query GROUP BY su tutti gli utenti
+    // invece di una query per utente, per evitare N+1 sullo scope "global".
+    // Object[] = { userId (Long), valore aggregato (Long) }.
+    @Query("SELECT ug.user.id, COALESCE(SUM(ug.playTimeMin), 0) FROM UserGame ug GROUP BY ug.user.id")
+    List<Object[]> sumPlayTimeMinByUser();
+
+    // "Posseduto" = qualsiasi voce di backlog che non sia solo wishlist.
+    @Query("SELECT ug.user.id, COUNT(ug) FROM UserGame ug WHERE ug.status <> 'wishlist' GROUP BY ug.user.id")
+    List<Object[]> countOwnedByUser();
 }
