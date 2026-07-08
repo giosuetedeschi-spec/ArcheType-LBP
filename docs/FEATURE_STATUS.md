@@ -13,14 +13,14 @@ Legenda: ✅ Fatta · 🟠 A metà/parziale · ⏳ Non iniziata
 |---|---|---|
 | 📚 Libreria personale | ✅ | Import Steam via `populate_db.py`, libreria con stati playing/finished/abandoned |
 | ❤️ Wishlist | 🟠 | Backend pronto; sezione dedicata nel profilo lasciata come TODO per un collega |
-| 📊 Grafici di utilizzo | 🟠 | Backend statistiche pronto e cachato (`StatsController`); nessun grafico in UI, solo numeri |
-| 🏆 Classifiche | ⏳ | `LeaderboardPage.tsx` è ancora un placeholder "Prossimamente" |
+| 📊 Grafici di utilizzo | 🟠 | Due grafici reali nel profilo (giochi per genere, composizione libreria), riusando `StatsController` già cachato; developer/anno/rating ancora solo numeri, non graficati |
+| 🏆 Classifiche | 🟠 | `LeaderboardPage.tsx` implementata (tab globale/amici, filtro metrica, paginazione), ma **19 errori TypeScript** già presenti su `main` (verificato con `tsc --noEmit`) — funziona a runtime solo perché Vite non blocca la build sui type error di default |
 | 🔍 Filtri avanzati | 🟠 | Genere/prezzo/OS fatti; mancano recensioni, voti di altri utenti, VR, colore copertina (issue #11) |
-| 👥 Amici | 🟠 | Implementata (ricerca, richieste, lista) su branch `feat/pagina-amici`, PR non ancora mergiata |
-| 👤 Profilo | ✅ | Giochi posseduti, statistiche base, sezione amici |
+| 👥 Amici | ✅ | Ricerca, richieste (invio/accetta/rifiuta), lista amici con statistiche — mergiata in `main` (PR #150) |
+| 👤 Profilo | ✅ | Giochi posseduti, statistiche + grafici, sezione amici, riassunto classifica (posizione + top 3) con link alla pagina completa |
 | 🎨 Modalità colorblind | ✅ | Presente |
 | 🌐 Multilingua | ✅ | it/en/fr/es |
-| 🔐 Login immediato | ✅ | JWT funzionante; redesign grafico da mockup non ancora fatto (issue #102) |
+| 🔐 Login immediato | ✅ | JWT funzionante, checkbox conferma maggiore età aggiunta (PR #151); redesign grafico da mockup non ancora fatto (issue #102) |
 
 ## Altri problemi/richieste aperte (da issue GitHub)
 
@@ -34,13 +34,16 @@ Legenda: ✅ Fatta · 🟠 A metà/parziale · ⏳ Non iniziata
 - #146 Occhiolino mostra/nascondi password
 
 **Backend**:
-- #19 Messaggi di errore strutturati per ogni possibile fallimento (DB, rete, conflitti)
+- #19 Messaggi di errore strutturati per ogni possibile fallimento (DB, rete, conflitti) — parzialmente affrontato: `GlobalExceptionHandler` ora logga (`log.error`) ogni eccezione non gestita prima di rispondere 500, prima era invisibile nei log. Il messaggio restituito al client resta generico di proposito; messaggi più specifici per singolo scenario restano da fare
 - #100 Da decidere: `/games` vs `/games/filter` duplicati, quale tenere
 - #101 Molti giochi seed hanno `headerImageUrl` null (fallback immagine già aggiunto lato frontend)
+
+**Trovato ma non ancora tracciato come issue**:
+- `LeaderboardPage.tsx` (PR #149, già su `main`): 19 errori TypeScript (`tsc --noEmit`), soprattutto `user` possibilmente `null` non gestito e uno state tipizzato `null` invece del tipo reale della risposta. Non causa crash visibile perché Vite non blocca la build sui type error, ma va corretto.
 
 **Minori**:
 - #87 Nascondere giochi per adulti dalla home (non fatta)
 - #106 Allineare il copyright nel footer
 
 ---
-*Ultimo aggiornamento: 2026-07-08*
+*Ultimo aggiornamento: 2026-07-08 — mergiati amici (#150), checkbox età (#151), classifica (#149); aggiunti grafici statistiche e riassunto classifica al profilo; logging aggiunto a GlobalExceptionHandler.*
