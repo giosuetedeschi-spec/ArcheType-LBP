@@ -6,6 +6,8 @@ import { getFriends } from "../services/friendsApi";
 import { getUserStats } from "../services/usersApi";
 import { useAuth } from "../context/AuthContext";
 import LibraryItemCard from "../components/LibraryItemCard";
+import GenreBarChart from "../components/GenreBarChart";
+import LibraryCompositionBar from "../components/LibraryCompositionBar";
 import type { FriendItem, LibraryItem, LibraryStatus, UserStats } from "@/types/api";
 
 // STAT_CARDS.key deve combaciare con le chiavi dell'oggetto `stats` più sotto
@@ -25,6 +27,7 @@ export default function ProfilePage() {
   const [library, setLibrary] = useState<LibraryItem[]>([]);
   const [friends, setFriends] = useState<FriendItem[]>([]);
   const [friendStats, setFriendStats] = useState<Record<number, UserStats>>({});
+  const [myStats, setMyStats] = useState<UserStats | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -34,12 +37,14 @@ export default function ProfilePage() {
   const fetchLibrary = useCallback(async () => {
     if (!user) return;
     try {
-      const [libraryResult, friendsResult] = await Promise.all([
+      const [libraryResult, friendsResult, myStatsResult] = await Promise.all([
         getLibrary(user.id),
         getFriends(user.id),
+        getUserStats(user.id),
       ]);
       setLibrary(libraryResult);
       setFriends(friendsResult);
+      setMyStats(myStatsResult);
 
       // Statistiche per ogni amico (giochi posseduti/in corso), in
       // parallelo — stesso pattern usato in FriendsPage.tsx.
@@ -135,6 +140,18 @@ export default function ProfilePage() {
                   style={{ width: `${completionRate}%` }}
                 />
               </div>
+            </div>
+          )}
+
+          {myStats && (
+            <div className="grid sm:grid-cols-2 gap-4 mt-6">
+              <LibraryCompositionBar
+                wishlist={myStats.wishlistCount}
+                playing={myStats.playingCount}
+                finished={myStats.finishedCount}
+                abandoned={myStats.abandonedCount}
+              />
+              <GenreBarChart data={myStats.gamesByGenre} />
             </div>
           )}
 
