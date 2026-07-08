@@ -3,11 +3,12 @@ import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { getLeaderboard } from "../services/leaderboardApi";
 import { useAuth } from "../context/AuthContext";
+import type { LeaderboardResponse, LeaderboardScope, LeaderboardMetric } from "@/types/api";
 
 // "local" è rimandato: il backend non ha ancora un campo regione
 // sull'utente (LeaderboardFilterRequest.java) — solo 2 tab per ora.
-const SCOPES = ["global", "friends"];
-const METRICS = ["hours", "games", "friends"];
+const SCOPES: LeaderboardScope[] = ["global", "friends"];
+const METRICS: LeaderboardMetric[] = ["hours", "games", "friends"];
 
 // LeaderboardPage — classifica utenti con tab (globale/amici) e filtro
 // metrica, stato tenuto nella query string (?scope=&metric=&page=),
@@ -18,15 +19,20 @@ export default function LeaderboardPage() {
   const search = useSearch({ from: "/leaderboard" });
   const navigate = useNavigate();
 
-  const scope = SCOPES.includes(search.scope) ? search.scope : "global";
-  const metric = METRICS.includes(search.metric) ? search.metric : "hours";
+  const scope: LeaderboardScope = SCOPES.includes(search.scope as LeaderboardScope)
+    ? (search.scope as LeaderboardScope)
+    : "global";
+  const metric: LeaderboardMetric = METRICS.includes(search.metric as LeaderboardMetric)
+    ? (search.metric as LeaderboardMetric)
+    : "hours";
   const page = search.page || 0;
 
-  const [data, setData] = useState(null);
+  const [data, setData] = useState<LeaderboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error, setError] = useState<string | null>(null);
 
   const fetchLeaderboard = useCallback(async () => {
+    if (!user) return;
     setLoading(true);
     setError(null);
     try {
@@ -37,7 +43,7 @@ export default function LeaderboardPage() {
     } finally {
       setLoading(false);
     }
-  }, [user.id, scope, metric, page, t]);
+  }, [user, scope, metric, page, t]);
 
   useEffect(() => {
     fetchLeaderboard();
@@ -53,6 +59,8 @@ export default function LeaderboardPage() {
     if (metric === "hours") return Math.round(value / 60);
     return value;
   }
+
+  if (!user) return null;
 
   return (
     <div className="max-w-3xl mx-auto px-4 py-8">
