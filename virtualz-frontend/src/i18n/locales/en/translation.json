@@ -24,7 +24,9 @@
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
     "loginError": "Invalid credentials",
-    "registerError": "Something went wrong while signing up"
+    "registerError": "Something went wrong while signing up",
+    "ageConfirm": "I confirm that I am over 18 years old",
+    "ageRequired": "You must confirm you are over 18 to sign up."
   },
   "catalog": {
     "title": "Game Catalog",
