@@ -10,6 +10,11 @@ import java.util.Optional;
 @Repository
 public interface FriendRepository extends JpaRepository<Friend, Long> {
     List<Friend> findByUser_IdAndStatus(Long userId, String status);
+
+    // Richieste ricevute: righe dove l'utente è il DESTINATARIO (colonna
+    // friend_id), non il mittente — vedi nota in FriendService.getPending().
+    List<Friend> findByFriend_IdAndStatus(Long friendId, String status);
+
     boolean existsByUser_IdAndFriend_Id(Long userId, Long friendId);
     Optional<Friend> findByUser_IdAndFriend_Id(Long userId, Long friendId);
 }
