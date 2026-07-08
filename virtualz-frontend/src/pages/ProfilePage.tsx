@@ -188,7 +188,11 @@ export default function ProfilePage() {
                     </span>
                   </div>
                 )}
-                {leaderboard.entries.map((entry) => (
+                {/* Se la propria posizione rientra già nella top N, non ripeterla
+                    due volte: la riga evidenziata sopra basta. */}
+                {leaderboard.entries
+                  .filter((entry) => entry.userId !== leaderboard.myEntry?.userId)
+                  .map((entry) => (
                   <div key={entry.userId} className="flex items-center gap-3 p-3">
                     <span className="w-8 text-center font-display font-bold text-zinc-400 text-sm">
                       #{entry.rank}
