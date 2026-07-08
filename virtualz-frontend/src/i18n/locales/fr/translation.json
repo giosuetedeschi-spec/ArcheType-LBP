@@ -132,7 +132,8 @@
     "emptyOwnedGames": "Vous ne possédez encore aucun jeu.",
     "gamesByGenre": "Jeux par genre",
     "libraryComposition": "Composition de la bibliothèque",
-    "otherGenres": "Autre"
+    "otherGenres": "Autre",
+    "viewFullLeaderboard": "Classement complet"
   },
   "common": {
     "loading": "Chargement...",

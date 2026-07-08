@@ -132,7 +132,8 @@
     "emptyOwnedGames": "You don't own any games yet.",
     "gamesByGenre": "Games by genre",
     "libraryComposition": "Library composition",
-    "otherGenres": "Other"
+    "otherGenres": "Other",
+    "viewFullLeaderboard": "Full leaderboard"
   },
   "common": {
     "loading": "Loading...",
