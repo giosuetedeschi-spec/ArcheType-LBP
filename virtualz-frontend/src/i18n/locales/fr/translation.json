@@ -63,6 +63,7 @@
     "publishers": "Éditeurs",
     "genres": "Genres",
     "reviews": "Avis",
+    "description": "Description",
     "reviewsCount_one": "{{count}} avis",
     "reviewsCount_other": "{{count}} avis",
     "writeReview": "Écrire un avis",

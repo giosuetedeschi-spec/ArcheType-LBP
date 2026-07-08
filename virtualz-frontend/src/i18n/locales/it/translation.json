@@ -63,6 +63,7 @@
     "publishers": "Publisher",
     "genres": "Generi",
     "reviews": "Recensioni",
+    "description": "Descrizione",
     "reviewsCount_one": "{{count}} recensione",
     "reviewsCount_other": "{{count}} recensioni",
     "writeReview": "Scrivi una recensione",

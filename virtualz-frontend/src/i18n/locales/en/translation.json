@@ -63,6 +63,7 @@
     "publishers": "Publishers",
     "genres": "Genres",
     "reviews": "Reviews",
+    "description": "Description",
     "reviewsCount_one": "{{count}} review",
     "reviewsCount_other": "{{count}} reviews",
     "writeReview": "Write a review",
