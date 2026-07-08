@@ -95,6 +95,9 @@ public class UserGameService {
     @CacheEvict(cacheNames = CacheConfig.USER_STATS_CACHE, key = "#userId")
     public UserGameResponse addGame(Long userId, UserGameRequest req) {
         validateUser(userId);
+        if (req.getGameId() == null) {
+            throw new IllegalArgumentException("Game ID is required");
+        }
         if (req.getStatus() != null) {
             validateStatus(req.getStatus());
         }
