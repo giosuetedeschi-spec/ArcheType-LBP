@@ -5,11 +5,13 @@ import { getLibrary, updateLibraryStatus, removeFromLibrary } from "../services/
 import { getFriends } from "../services/friendsApi";
 import { getUserStats } from "../services/usersApi";
 import { getLeaderboard } from "../services/leaderboardApi";
+import { getUserReviews } from "../services/reviewsApi";
 import { useAuth } from "../context/AuthContext";
 import LibraryItemCard from "../components/LibraryItemCard";
 import GenreBarChart from "../components/GenreBarChart";
 import LibraryCompositionBar from "../components/LibraryCompositionBar";
-import type { FriendItem, LeaderboardResponse, LibraryItem, LibraryStatus, UserStats } from "@/types/api";
+import StarRating from "../components/StarRating";
+import type { FriendItem, LeaderboardResponse, LibraryItem, LibraryStatus, Review, UserStats } from "@/types/api";
 
 // STAT_CARDS.key deve combaciare con le chiavi dell'oggetto `stats` più sotto
 type StatKey = "totalGames" | "inProgress" | "finished" | "abandoned" | "wishlistCount";
@@ -30,6 +32,7 @@ export default function ProfilePage() {
   const [friendStats, setFriendStats] = useState<Record<number, UserStats>>({});
   const [myStats, setMyStats] = useState<UserStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardResponse | null>(null);
+  const [myReviews, setMyReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -39,7 +42,7 @@ export default function ProfilePage() {
   const fetchLibrary = useCallback(async () => {
     if (!user) return;
     try {
-      const [libraryResult, friendsResult, myStatsResult, leaderboardResult] = await Promise.all([
+      const [libraryResult, friendsResult, myStatsResult, leaderboardResult, myReviewsResult] = await Promise.all([
         getLibrary(user.id),
         getFriends(user.id),
         getUserStats(user.id),
@@ -47,11 +50,13 @@ export default function ProfilePage() {
         // propria posizione (myEntry, calcolata su tutta la classifica
         // indipendentemente da page/size — vedi nota in @/types/api).
         getLeaderboard({ userId: user.id, scope: "global", metric: "hours", page: 0, size: 3 }),
+        getUserReviews(user.id),
       ]);
       setLibrary(libraryResult);
       setFriends(friendsResult);
       setMyStats(myStatsResult);
       setLeaderboard(leaderboardResult);
+      setMyReviews(myReviewsResult);
 
       // Statistiche per ogni amico (giochi posseduti/in corso), in
       // parallelo — stesso pattern usato in FriendsPage.tsx.
