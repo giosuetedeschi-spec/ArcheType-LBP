@@ -1,37 +1,35 @@
 import api from "./api";
 import type { LibraryItem, LibraryStatus } from "@/types/api";
 
-// Endpoint reale confermato dal codice sorgente del backend
-// (BacklogController.java): /api/users/{userId}/backlog.
-// Esiste anche /api/users/{userId}/games (UserGameController) che opera
-// sulla stessa tabella — i due endpoint sono storicamente duplicati,
-// "backlog" è quello con più funzionalità (note, tempo di gioco) ed è
-// quello scelto qui.
+// Endpoint reale confermato leggendo UserGameController.java:
+// /api/users/{userId}/games. "/backlog" (usato qui prima) non esiste come
+// endpoint nel backend — solo la tabella si chiama "backlog", non c'è
+// nessun BacklogController — e restituiva 500 (verificato dal vivo).
 
 /**
  * @param userId id dell'utente
  * @param status filtro opzionale per stato (valori minuscoli: "wishlist", "playing", "finished", "abandoned")
- * @returns le voci di backlog dell'utente
+ * @returns le voci di libreria dell'utente
  */
 export async function getLibrary(
   userId: number,
   status?: LibraryStatus
 ): Promise<LibraryItem[]> {
-  const { data } = await api.get<LibraryItem[]>(`/users/${userId}/backlog`, {
+  const { data } = await api.get<LibraryItem[]>(`/users/${userId}/games`, {
     params: status ? { status } : {},
   });
   return data;
 }
 
 /**
- * Aggiunge un gioco al backlog dell'utente con uno stato iniziale.
- * @returns la voce di backlog creata
+ * Aggiunge un gioco alla libreria dell'utente con uno stato iniziale.
+ * @returns la voce di libreria creata
  */
 export async function addToLibrary(
   userId: number,
   payload: { gameId: number; status: LibraryStatus }
 ): Promise<LibraryItem> {
-  const { data } = await api.post<LibraryItem>(`/users/${userId}/backlog`, payload);
+  const { data } = await api.post<LibraryItem>(`/users/${userId}/games`, payload);
   return data;
 }
 
@@ -47,7 +45,7 @@ export async function updateLibraryStatus(
   status: LibraryStatus
 ): Promise<LibraryItem> {
   const { data } = await api.put<LibraryItem>(
-    `/users/${userId}/backlog/${entryId}`,
+    `/users/${userId}/games/${entryId}`,
     { status }
   );
   return data;
@@ -60,5 +58,5 @@ export async function updateLibraryStatus(
  *                errore il gameId qui cancellerebbe la voce sbagliata.
  */
 export async function removeFromLibrary(userId: number, entryId: number): Promise<void> {
-  await api.delete(`/users/${userId}/backlog/${entryId}`);
+  await api.delete(`/users/${userId}/games/${entryId}`);
 }
