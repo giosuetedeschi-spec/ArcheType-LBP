@@ -61,7 +61,15 @@
     "developers": "Desarrolladores",
     "publishers": "Editores",
     "genres": "Géneros",
-    "reviews": "Reseñas"
+    "reviews": "Reseñas",
+    "reviewsCount_one": "{{count}} reseña",
+    "reviewsCount_other": "{{count}} reseñas",
+    "writeReview": "Escribe una reseña",
+    "editYourReview": "Tu reseña",
+    "reviewPlaceholder": "¿Qué piensas de este juego? (opcional)",
+    "submitReview": "Publicar",
+    "removeReview": "Quitar tu reseña",
+    "noReviews": "Todavía no hay reseñas. ¡Sé el primero!"
   },
   "library": {
     "title": "Mi biblioteca",

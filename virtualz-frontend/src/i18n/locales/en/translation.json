@@ -61,7 +61,15 @@
     "developers": "Developers",
     "publishers": "Publishers",
     "genres": "Genres",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "reviewsCount_one": "{{count}} review",
+    "reviewsCount_other": "{{count}} reviews",
+    "writeReview": "Write a review",
+    "editYourReview": "Your review",
+    "reviewPlaceholder": "What do you think of this game? (optional)",
+    "submitReview": "Post",
+    "removeReview": "Remove your review",
+    "noReviews": "No reviews yet. Be the first!"
   },
   "library": {
     "title": "My Library",
