@@ -24,7 +24,9 @@
     "noAccount": "¿No tienes una cuenta?",
     "haveAccount": "¿Ya tienes una cuenta?",
     "loginError": "Credenciales no válidas",
-    "registerError": "Ocurrió un error durante el registro"
+    "registerError": "Ocurrió un error durante el registro",
+    "ageConfirm": "Confirmo que soy mayor de 18 años",
+    "ageRequired": "Debes confirmar que eres mayor de 18 años para registrarte."
   },
   "catalog": {
     "title": "Catálogo de juegos",
