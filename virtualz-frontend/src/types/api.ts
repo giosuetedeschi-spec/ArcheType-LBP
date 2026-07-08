@@ -43,6 +43,8 @@ export interface CatalogSearchParams {
   minRating?: number;
   /** Valori: "windows" | "mac" | "linux". Più valori = OR lato backend. */
   os?: string[];
+  /** true = solo giochi con supporto VR (categorie Steam dedicate). */
+  vr?: boolean;
   sortBy?: string;
   sortDir?: "asc" | "desc";
 }
