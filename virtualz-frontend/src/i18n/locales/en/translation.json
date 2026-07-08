@@ -108,6 +108,10 @@
     "playingNow": "Playing now",
     "remove": "Remove"
   },
+  "profile": {
+    "ownedGames": "Owned games",
+    "emptyOwnedGames": "You don't own any games yet."
+  },
   "common": {
     "loading": "Loading...",
     "error": "Something went wrong.",

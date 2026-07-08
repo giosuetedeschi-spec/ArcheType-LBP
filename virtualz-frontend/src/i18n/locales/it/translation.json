@@ -108,6 +108,10 @@
     "playingNow": "In corso",
     "remove": "Rimuovi"
   },
+  "profile": {
+    "ownedGames": "Giochi posseduti",
+    "emptyOwnedGames": "Non hai ancora nessun gioco posseduto."
+  },
   "common": {
     "loading": "Caricamento...",
     "error": "Qualcosa è andato storto.",
