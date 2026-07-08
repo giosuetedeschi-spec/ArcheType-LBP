@@ -34,6 +34,18 @@ public class ReviewService {
                 .collect(Collectors.toList());
     }
 
+    /** Tutte le recensioni scritte da un utente, su qualsiasi gioco — per
+     *  la sezione "Le mie recensioni" nella pagina profilo. */
+    @Transactional(readOnly = true)
+    public List<ReviewResponse> getUserReviews(Long userId) {
+        if (!userRepo.existsById(userId)) {
+            throw new ResourceNotFoundException("User", "id", userId);
+        }
+        return reviewRepo.findByUser_IdOrderByCreatedAtDesc(userId).stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     /**
      * Crea la recensione dell'utente per un gioco, o aggiorna quella già
      * esistente (una recensione per utente per gioco — UNIQUE constraint
@@ -72,6 +84,8 @@ public class ReviewService {
         ReviewResponse r = new ReviewResponse();
         r.setId(review.getId());
         r.setGameId(review.getGame().getId());
+        r.setGameName(review.getGame().getName());
+        r.setGameHeaderImageUrl(review.getGame().getHeaderImageUrl());
         r.setUserId(review.getUser().getId());
         r.setUsername(review.getUser().getUsername());
         r.setRating(review.getRating());
