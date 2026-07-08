@@ -1,8 +1,9 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { getLibrary } from "../services/libraryApi";
+import { getLibrary, updateLibraryStatus, removeFromLibrary } from "../services/libraryApi";
 import { useAuth } from "../context/AuthContext";
-import type { LibraryItem } from "@/types/api";
+import LibraryItemCard from "../components/LibraryItemCard";
+import type { LibraryItem, LibraryStatus } from "@/types/api";
 
 // STAT_CARDS.key deve combaciare con le chiavi dell'oggetto `stats` più sotto
 type StatKey = "totalGames" | "inProgress" | "finished" | "abandoned" | "wishlistCount";
@@ -22,17 +23,38 @@ export default function ProfilePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  useEffect(() => {
-    // ProfilePage è raggiungibile solo da utente autenticato (route protetta),
-    // ma TypeScript non lo sa: user può essere null per tipo. Guard esplicita
-    // invece di un cast, per restare onesti col compilatore.
+  // ProfilePage è raggiungibile solo da utente autenticato (route protetta),
+  // ma TypeScript non lo sa: user può essere null per tipo. Guard esplicita
+  // invece di un cast, per restare onesti col compilatore.
+  const fetchLibrary = useCallback(async () => {
     if (!user) return;
-
-    getLibrary(user.id)
-      .then(setLibrary)
-      .catch(() => setError(t("common.error")))
-      .finally(() => setLoading(false));
+    try {
+      const result = await getLibrary(user.id);
+      setLibrary(result);
+    } catch {
+      setError(t("common.error"));
+    } finally {
+      setLoading(false);
+    }
   }, [user, t]);
+
+  useEffect(() => {
+    fetchLibrary();
+  }, [fetchLibrary]);
+
+  // Stessa distinzione id voce / id gioco spiegata in LibraryItemCard.tsx:
+  // entryId è l'id della voce di libreria (LibraryItem.id), non il gameId.
+  async function handleStatusChange(entryId: number, newStatus: LibraryStatus) {
+    if (!user) return;
+    await updateLibraryStatus(user.id, entryId, newStatus);
+    fetchLibrary();
+  }
+
+  async function handleRemove(entryId: number) {
+    if (!user) return;
+    await removeFromLibrary(user.id, entryId);
+    fetchLibrary();
+  }
 
   // NOTA: i valori di status sono quelli REALI validati dal backend
   // (vedi LibraryStatus in @/types/api: "wishlist" | "playing" | "finished" |
@@ -50,6 +72,10 @@ export default function ProfilePage() {
 
   const owned = stats.totalGames - stats.wishlistCount;
   const completionRate = owned > 0 ? Math.round((stats.finished / owned) * 100) : 0;
+
+  // "Posseduto" = qualunque voce non in wishlist (playing/finished/abandoned),
+  // ognuna con lo status reale mostrato dal badge colorato di LibraryItemCard.
+  const ownedGames = library.filter((i) => i.status !== "wishlist");
 
   if (!user) return null;
 
@@ -95,6 +121,26 @@ export default function ProfilePage() {
               </div>
             </div>
           )}
+
+          <div className="mt-8">
+            <h2 className="text-lg font-display font-semibold text-white mb-4">
+              {t("profile.ownedGames")}
+            </h2>
+            {ownedGames.length === 0 ? (
+              <p className="text-zinc-400">{t("profile.emptyOwnedGames")}</p>
+            ) : (
+              <div className="grid sm:grid-cols-2 gap-4">
+                {ownedGames.map((item) => (
+                  <LibraryItemCard
+                    key={item.id}
+                    item={item}
+                    onStatusChange={handleStatusChange}
+                    onRemove={handleRemove}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>
