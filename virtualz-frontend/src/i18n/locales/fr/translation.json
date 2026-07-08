@@ -62,7 +62,8 @@
     "developers": "Développeurs",
     "publishers": "Éditeurs",
     "genres": "Genres",
-    "reviews": "Avis"
+    "reviews": "Avis",
+    "description": "Description"
   },
   "library": {
     "title": "Ma bibliothèque",

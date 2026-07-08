@@ -62,7 +62,8 @@
     "developers": "Sviluppatori",
     "publishers": "Publisher",
     "genres": "Generi",
-    "reviews": "Recensioni"
+    "reviews": "Recensioni",
+    "description": "Descrizione"
   },
   "library": {
     "title": "La mia Libreria",

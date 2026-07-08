@@ -62,7 +62,8 @@
     "developers": "Developers",
     "publishers": "Publishers",
     "genres": "Genres",
-    "reviews": "Reviews"
+    "reviews": "Reviews",
+    "description": "Description"
   },
   "library": {
     "title": "My Library",

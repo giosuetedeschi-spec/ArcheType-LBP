@@ -62,7 +62,8 @@
     "developers": "Desarrolladores",
     "publishers": "Editores",
     "genres": "Géneros",
-    "reviews": "Reseñas"
+    "reviews": "Reseñas",
+    "description": "Descripción"
   },
   "library": {
     "title": "Mi biblioteca",
