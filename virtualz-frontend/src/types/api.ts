@@ -134,3 +134,37 @@ export interface FriendItem {
   status: FriendStatus;
   createdAt: string;
 }
+
+// Rispecchia LeaderboardEntryResponse.java.
+export interface LeaderboardEntry {
+  rank: number;
+  userId: number;
+  username: string;
+  avatarUrl: string | null;
+  value: number;
+}
+
+// "local" non è ancora supportato lato backend (manca il campo regione
+// sull'utente) — vedi LeaderboardFilterRequest.java.
+export type LeaderboardScope = "global" | "friends";
+export type LeaderboardMetric = "hours" | "games" | "friends";
+
+export interface LeaderboardParams {
+  userId: number;
+  scope: LeaderboardScope;
+  metric: LeaderboardMetric;
+  page?: number;
+  size?: number;
+}
+
+// Rispecchia LeaderboardResponse.java — myEntry è la posizione di chi ha
+// fatto la richiesta, calcolata su tutta la classifica (non solo sulla
+// pagina corrente), quindi va mostrata anche se non compare in "entries".
+export interface LeaderboardResponse {
+  entries: LeaderboardEntry[];
+  page: number;
+  size: number;
+  totalElements: number;
+  totalPages: number;
+  myEntry: LeaderboardEntry | null;
+}

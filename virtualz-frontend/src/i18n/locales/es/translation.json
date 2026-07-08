@@ -85,6 +85,23 @@
     "confirmAbandon": "Sí, abandonarlo",
     "dismissWarning": "No, todavía juego"
   },
+  "leaderboard": {
+    "title": "Clasificación",
+    "scope": {
+      "global": "Global",
+      "friends": "Amigos"
+    },
+    "metric": {
+      "hours": "Horas jugadas",
+      "games": "Juegos poseídos",
+      "friends": "Amigos añadidos"
+    },
+    "you": "Tú",
+    "empty": "No hay datos disponibles.",
+    "prev": "Anterior",
+    "next": "Siguiente",
+    "page": "Página {{current}} de {{total}}"
+  },
   "stats": {
     "title": "Mis estadísticas",
     "totalGames": "Juegos totales",
