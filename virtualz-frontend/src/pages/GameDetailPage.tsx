@@ -1,11 +1,13 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { useParams } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
 import { getGameById } from "../services/gamesApi";
 import { addToLibrary } from "../services/libraryApi";
+import { getGameReviews, addOrUpdateReview, removeReview } from "../services/reviewsApi";
 import { useAuth } from "../context/AuthContext";
-import type { Game, LibraryStatus } from "@/types/api";
+import StarRating from "../components/StarRating";
+import type { Game, LibraryStatus, Review } from "@/types/api";
 
 /**
  * GameDetailPage — pagina di dettaglio di un singolo gioco (route
@@ -33,6 +35,25 @@ export default function GameDetailPage() {
   const [error, setError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
 
+  const [reviews, setReviews] = useState<Review[]>([]);
+  const [reviewRating, setReviewRating] = useState(0);
+  const [reviewComment, setReviewComment] = useState("");
+  const [reviewError, setReviewError] = useState<string | null>(null);
+
+  // La propria recensione, se già presente — precompila il form invece di
+  // mostrarlo vuoto, dato che un nuovo invio la sovrascrive (una sola
+  // recensione per utente per gioco, vedi reviewsApi.ts).
+  const myReview = reviews.find((r) => r.userId === user?.id) ?? null;
+
+  const fetchReviews = useCallback(() => {
+    getGameReviews(Number(id))
+      .then(setReviews)
+      .catch(() => {
+        // Lista recensioni non caricata: non blocca il resto della pagina,
+        // la sezione recensioni resta semplicemente vuota.
+      });
+  }, [id]);
+
   // Ricarica il gioco ogni volta che cambia l'id nella route (navigazione
   // tra un dettaglio gioco e l'altro senza smontare il componente).
   useEffect(() => {
@@ -41,7 +62,36 @@ export default function GameDetailPage() {
       .then(setGame)
       .catch(() => setError(t("common.error")))
       .finally(() => setLoading(false));
-  }, [id, t]);
+    fetchReviews();
+  }, [id, t, fetchReviews]);
+
+  // Precompila il form quando arriva/cambia la propria recensione esistente.
+  useEffect(() => {
+    if (myReview) {
+      setReviewRating(myReview.rating);
+      setReviewComment(myReview.comment ?? "");
+    }
+  }, [myReview]);
+
+  async function handleSubmitReview() {
+    if (!user || !game || reviewRating === 0) return;
+    setReviewError(null);
+    try {
+      await addOrUpdateReview(user.id, { gameId: game.id, rating: reviewRating, comment: reviewComment || null });
+      fetchReviews();
+    } catch (err) {
+      const message = isAxiosError<{ message?: string }>(err) ? err.response?.data?.message : undefined;
+      setReviewError(message || t("common.error"));
+    }
+  }
+
+  async function handleRemoveReview() {
+    if (!user || !myReview) return;
+    await removeReview(user.id, myReview.id);
+    setReviewRating(0);
+    setReviewComment("");
+    fetchReviews();
+  }
 
   /**
    * Aggiunge il gioco corrente al backlog dell'utente con lo stato
@@ -154,6 +204,68 @@ export default function GameDetailPage() {
           <p className="text-zinc-300 leading-relaxed whitespace-pre-line">{game.description}</p>
         </div>
       )}
+
+      <div className="mt-8">
+        <div className="flex items-center gap-3 mb-4">
+          <h2 className="text-lg font-semibold text-white">{t("game.reviews")}</h2>
+          {reviews.length > 0 && (
+            <span className="text-sm text-zinc-400">
+              ★ {(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)} ·{" "}
+              {t("game.reviewsCount", { count: reviews.length })}
+            </span>
+          )}
+        </div>
+
+        {isAuthenticated && (
+          <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-4 mb-4">
+            <p className="text-sm text-zinc-400 mb-2">
+              {myReview ? t("game.editYourReview") : t("game.writeReview")}
+            </p>
+            <StarRating value={reviewRating} onChange={setReviewRating} size="md" />
+            <textarea
+              value={reviewComment}
+              onChange={(e) => setReviewComment(e.target.value)}
+              placeholder={t("game.reviewPlaceholder")}
+              rows={3}
+              className="w-full mt-3 bg-vz-charcoal border border-zinc-700 rounded-lg px-3 py-2 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime resize-none"
+            />
+            {reviewError && <p className="text-vz-pink text-sm mt-2">{reviewError}</p>}
+            <div className="flex gap-2 mt-3">
+              <button
+                onClick={handleSubmitReview}
+                disabled={reviewRating === 0}
+                className="px-4 py-2 rounded-full bg-vz-lime text-vz-navy font-semibold text-sm hover:opacity-90 transition-opacity disabled:opacity-40"
+              >
+                {t("game.submitReview")}
+              </button>
+              {myReview && (
+                <button
+                  onClick={handleRemoveReview}
+                  className="px-4 py-2 rounded-full text-zinc-500 hover:text-vz-pink transition-colors text-sm"
+                >
+                  {t("game.removeReview")}
+                </button>
+              )}
+            </div>
+          </div>
+        )}
+
+        {reviews.length === 0 ? (
+          <p className="text-zinc-400 text-sm">{t("game.noReviews")}</p>
+        ) : (
+          <div className="space-y-3">
+            {reviews.map((r) => (
+              <div key={r.id} className="rounded-xl border border-zinc-800 bg-vz-charcoal p-4">
+                <div className="flex items-center justify-between gap-3 mb-1">
+                  <span className="text-white font-medium">{r.username}</span>
+                  <StarRating value={r.rating} />
+                </div>
+                {r.comment && <p className="text-zinc-300 text-sm mt-1">{r.comment}</p>}
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }
