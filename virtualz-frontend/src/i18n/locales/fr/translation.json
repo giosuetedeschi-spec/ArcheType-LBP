@@ -93,6 +93,10 @@
     "abandoned": "Abandonnés",
     "wishlistCount": "Dans la liste de souhaits"
   },
+  "profile": {
+    "ownedGames": "Jeux possédés",
+    "emptyOwnedGames": "Vous ne possédez encore aucun jeu."
+  },
   "common": {
     "loading": "Chargement...",
     "error": "Une erreur est survenue.",

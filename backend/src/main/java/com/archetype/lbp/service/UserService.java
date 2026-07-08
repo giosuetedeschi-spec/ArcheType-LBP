@@ -72,7 +72,6 @@ public class UserService {
         UserResponse r = new UserResponse();
         r.setId(user.getId());
         r.setUsername(user.getUsername());
-        r.setEmail(user.getEmail());
         r.setAvatarUrl(user.getAvatarUrl());
         r.setStatus(user.getStatus());
         r.setBio(user.getBio());

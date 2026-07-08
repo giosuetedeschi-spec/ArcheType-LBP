@@ -53,8 +53,12 @@ public class AuthController {
         UserResponse created = userService.register(req);
         String token = jwtUtils.generateToken(created.getUsername());
 
+        // L'email non è più su UserResponse (non va esposta pubblicamente
+        // via GET /api/users/{id} ad altri utenti), ma qui è legittimo:
+        // è l'utente stesso appena registrato che rivede la propria email,
+        // la stessa già validata in req.
         return ResponseEntity.status(HttpStatus.CREATED).body(ApiResponse.ok(
-                new AuthResponse(token, created.getId(), created.getUsername(), created.getEmail()),
+                new AuthResponse(token, created.getId(), created.getUsername(), req.getEmail()),
                 "Registrazione completata"));
     }
 }
