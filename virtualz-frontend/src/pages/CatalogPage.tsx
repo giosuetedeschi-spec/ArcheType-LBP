@@ -14,6 +14,8 @@
  *  - Sistema op. → funzionante (checkbox multiple, OR lato backend). Valori:
  *                  "windows" | "mac" | "linux", dai campi booleani reali
  *                  sull'oggetto Game (colonne Windows/Mac/Linux del dataset Steam).
+ *  - VR          → funzionante (checkbox singola). Riusa le categorie Steam
+ *                  già importate ("VR Support"/"VR Only"/ecc.), non un campo dedicato.
  *  - Ordinamento → funzionante (sortBy + sortDir, già previsti da CatalogSearchParams).
  *
  * NOTA ricerca: il parametro inviato è `name` (come documentato in CatalogSearchParams),
@@ -60,6 +62,7 @@ interface FilterState {
   minPrice: string;
   maxPrice: string;
   os: string[];
+  vr: boolean;
   sort: string; // "campo:direzione" oppure ""
 }
 
@@ -69,6 +72,7 @@ const EMPTY_FILTERS: FilterState = {
   minPrice: "",
   maxPrice: "",
   os: [],
+  vr: false,
   sort: "rating:desc",
 };
 
@@ -108,6 +112,7 @@ export default function CatalogPage() {
       if (filters.minPrice) params.minPrice = Number(filters.minPrice);
       if (filters.maxPrice) params.maxPrice = Number(filters.maxPrice);
       if (filters.os.length) params.os = filters.os;
+      if (filters.vr) params.vr = true;
       if (filters.sort) {
         const [sortBy, sortDir] = filters.sort.split(":");
         params.sortBy = sortBy;
@@ -150,6 +155,11 @@ export default function CatalogPage() {
     }));
   }
 
+  function toggleVr() {
+    setPage(0);
+    setFilters((f) => ({ ...f, vr: !f.vr }));
+  }
+
   function resetFilters() {
     setPage(0);
     setFilters(EMPTY_FILTERS);
@@ -161,6 +171,7 @@ export default function CatalogPage() {
     filters.minPrice !== "" ||
     filters.maxPrice !== "" ||
     filters.os.length > 0 ||
+    filters.vr ||
     filters.sort !== "";
 
   const inputClass =
@@ -241,6 +252,22 @@ export default function CatalogPage() {
                   </li>
                 ))}
               </ul>
+            </div>
+
+            {/* --- VR --- */}
+            <div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="vr-filter"
+                  checked={filters.vr}
+                  onChange={toggleVr}
+                  className="h-4 w-4 rounded border-zinc-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
+                />
+                <label htmlFor="vr-filter" className="text-sm text-zinc-300 cursor-pointer">
+                  {t("catalog.vrOnly")}
+                </label>
+              </div>
             </div>
 
             {/* --- Prezzo --- */}
