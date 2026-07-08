@@ -1,9 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { Link } from "@tanstack/react-router";
 import { getLibrary, updateLibraryStatus, removeFromLibrary } from "../services/libraryApi";
+import { getFriends } from "../services/friendsApi";
+import { getUserStats } from "../services/usersApi";
 import { useAuth } from "../context/AuthContext";
 import LibraryItemCard from "../components/LibraryItemCard";
-import type { LibraryItem, LibraryStatus } from "@/types/api";
+import type { FriendItem, LibraryItem, LibraryStatus, UserStats } from "@/types/api";
 
 // STAT_CARDS.key deve combaciare con le chiavi dell'oggetto `stats` più sotto
 type StatKey = "totalGames" | "inProgress" | "finished" | "abandoned" | "wishlistCount";
@@ -20,6 +23,8 @@ export default function ProfilePage() {
   const { t } = useTranslation();
   const { user } = useAuth();
   const [library, setLibrary] = useState<LibraryItem[]>([]);
+  const [friends, setFriends] = useState<FriendItem[]>([]);
+  const [friendStats, setFriendStats] = useState<Record<number, UserStats>>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -29,8 +34,19 @@ export default function ProfilePage() {
   const fetchLibrary = useCallback(async () => {
     if (!user) return;
     try {
-      const result = await getLibrary(user.id);
-      setLibrary(result);
+      const [libraryResult, friendsResult] = await Promise.all([
+        getLibrary(user.id),
+        getFriends(user.id),
+      ]);
+      setLibrary(libraryResult);
+      setFriends(friendsResult);
+
+      // Statistiche per ogni amico (giochi posseduti/in corso), in
+      // parallelo — stesso pattern usato in FriendsPage.tsx.
+      const statsEntries = await Promise.all(
+        friendsResult.map(async (f) => [f.friendId, await getUserStats(f.friendId)] as const)
+      );
+      setFriendStats(Object.fromEntries(statsEntries));
     } catch {
       setError(t("common.error"));
     } finally {
@@ -151,6 +167,46 @@ export default function ProfilePage() {
             già presente in questo componente — non serve una nuova chiamata
             API, i dati sono già tutti in `library`.
           */}
+
+          <div className="mt-8">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-lg font-display font-semibold text-white">
+                {t("friends.myFriends")}
+              </h2>
+              <Link to="/friends" className="text-sm text-vz-lime hover:underline">
+                {t("friends.title")} →
+              </Link>
+            </div>
+            {friends.length === 0 ? (
+              <p className="text-zinc-400">{t("friends.noFriends")}</p>
+            ) : (
+              <div className="grid sm:grid-cols-2 gap-4">
+                {friends.map((friend) => {
+                  const stats = friendStats[friend.friendId];
+                  const friendOwned = stats ? stats.totalGames - stats.wishlistCount : null;
+                  return (
+                    <div
+                      key={friend.friendId}
+                      className="flex items-center gap-3 bg-vz-charcoal rounded-xl border border-zinc-800 p-3"
+                    >
+                      <div className="w-10 h-10 rounded-full bg-vz-lime text-vz-navy flex items-center justify-center font-bold font-display shrink-0">
+                        {friend.username.charAt(0).toUpperCase()}
+                      </div>
+                      <div className="min-w-0">
+                        <p className="text-white font-medium truncate">{friend.username}</p>
+                        {stats && (
+                          <p className="text-xs text-zinc-500">
+                            {t("friends.ownedGames")}: {friendOwned} · {t("friends.playingNow")}:{" "}
+                            {stats.playingCount}
+                          </p>
+                        )}
+                      </div>
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </div>
         </>
       )}
     </div>

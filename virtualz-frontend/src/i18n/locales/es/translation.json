@@ -110,6 +110,21 @@
     "abandoned": "Abandonados",
     "wishlistCount": "En lista de deseos"
   },
+  "friends": {
+    "title": "Amigos",
+    "searchPlaceholder": "Buscar un usuario por nombre...",
+    "searchNoResults": "No se encontraron usuarios.",
+    "add": "Añadir",
+    "requestSent": "Solicitud enviada.",
+    "requestsReceived": "Solicitudes recibidas",
+    "accept": "Aceptar",
+    "reject": "Rechazar",
+    "myFriends": "Mis amigos",
+    "noFriends": "Todavía no tienes amigos. ¡Búscalos aquí arriba!",
+    "ownedGames": "Juegos poseídos",
+    "playingNow": "En curso",
+    "remove": "Quitar"
+  },
   "profile": {
     "ownedGames": "Juegos poseídos",
     "emptyOwnedGames": "Todavía no tienes ningún juego."

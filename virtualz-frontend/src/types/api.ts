@@ -94,6 +94,47 @@ export interface RegisterPayload {
   password: string;
 }
 
+// Rispecchia UserResponse.java — niente campo "email": rimosso lato
+// backend perché questo DTO è restituito anche per l'ID di ALTRI utenti
+// (es. GET /api/users, usato qui per la ricerca amici), non solo per il
+// proprio profilo.
+export interface UserSummary {
+  id: number;
+  username: string;
+  avatarUrl: string | null;
+  status: string;
+  bio: string | null;
+  createdAt: string;
+}
+
+// Rispecchia UserStatsResponse.java (GET /api/users/{id}/stats).
+export interface UserStats {
+  totalGames: number;
+  wishlistCount: number;
+  playingCount: number;
+  finishedCount: number;
+  abandonedCount: number;
+  gamesByGenre: Record<string, number>;
+  gamesByDeveloper: Record<string, number>;
+  gamesByYear: Record<string, number>;
+  averageRating: number | null;
+  totalSpent: number | null;
+}
+
+export type FriendStatus = "pending" | "accepted";
+
+// Rispecchia FriendResponse.java. friendId/username/avatarUrl si
+// riferiscono sempre "all'altra persona" della relazione — mai a se
+// stessi — sia per la lista amici accettati sia per le richieste
+// ricevute (vedi nota in FriendService.getPending sul backend).
+export interface FriendItem {
+  friendId: number;
+  username: string;
+  avatarUrl: string | null;
+  status: FriendStatus;
+  createdAt: string;
+}
+
 // Rispecchia LeaderboardEntryResponse.java.
 export interface LeaderboardEntry {
   rank: number;
