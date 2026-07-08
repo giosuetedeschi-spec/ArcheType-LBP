@@ -4,11 +4,12 @@ import { Link } from "@tanstack/react-router";
 import { getLibrary, updateLibraryStatus, removeFromLibrary } from "../services/libraryApi";
 import { getFriends } from "../services/friendsApi";
 import { getUserStats } from "../services/usersApi";
+import { getLeaderboard } from "../services/leaderboardApi";
 import { useAuth } from "../context/AuthContext";
 import LibraryItemCard from "../components/LibraryItemCard";
 import GenreBarChart from "../components/GenreBarChart";
 import LibraryCompositionBar from "../components/LibraryCompositionBar";
-import type { FriendItem, LibraryItem, LibraryStatus, UserStats } from "@/types/api";
+import type { FriendItem, LeaderboardResponse, LibraryItem, LibraryStatus, UserStats } from "@/types/api";
 
 // STAT_CARDS.key deve combaciare con le chiavi dell'oggetto `stats` più sotto
 type StatKey = "totalGames" | "inProgress" | "finished" | "abandoned" | "wishlistCount";
@@ -28,6 +29,7 @@ export default function ProfilePage() {
   const [friends, setFriends] = useState<FriendItem[]>([]);
   const [friendStats, setFriendStats] = useState<Record<number, UserStats>>({});
   const [myStats, setMyStats] = useState<UserStats | null>(null);
+  const [leaderboard, setLeaderboard] = useState<LeaderboardResponse | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -37,14 +39,19 @@ export default function ProfilePage() {
   const fetchLibrary = useCallback(async () => {
     if (!user) return;
     try {
-      const [libraryResult, friendsResult, myStatsResult] = await Promise.all([
+      const [libraryResult, friendsResult, myStatsResult, leaderboardResult] = await Promise.all([
         getLibrary(user.id),
         getFriends(user.id),
         getUserStats(user.id),
+        // Riassunto: prime 3 posizioni globali per ore di gioco + la
+        // propria posizione (myEntry, calcolata su tutta la classifica
+        // indipendentemente da page/size — vedi nota in @/types/api).
+        getLeaderboard({ userId: user.id, scope: "global", metric: "hours", page: 0, size: 3 }),
       ]);
       setLibrary(libraryResult);
       setFriends(friendsResult);
       setMyStats(myStatsResult);
+      setLeaderboard(leaderboardResult);
 
       // Statistiche per ogni amico (giochi posseduti/in corso), in
       // parallelo — stesso pattern usato in FriendsPage.tsx.
@@ -152,6 +159,47 @@ export default function ProfilePage() {
                 abandoned={myStats.abandonedCount}
               />
               <GenreBarChart data={myStats.gamesByGenre} />
+            </div>
+          )}
+
+          {leaderboard && (
+            <div className="mt-8">
+              <div className="flex items-center justify-between mb-4">
+                <h2 className="text-lg font-display font-semibold text-white">
+                  {t("leaderboard.title")}
+                </h2>
+                <Link to="/leaderboard" className="text-sm text-vz-lime hover:underline">
+                  {t("profile.viewFullLeaderboard")} →
+                </Link>
+              </div>
+
+              <div className="bg-vz-charcoal rounded-xl border border-zinc-800 divide-y divide-zinc-800">
+                {leaderboard.myEntry && (
+                  <div className="flex items-center gap-3 p-3 bg-vz-lime/5">
+                    <span className="w-8 text-center font-display font-bold text-vz-lime text-sm">
+                      #{leaderboard.myEntry.rank}
+                    </span>
+                    <span className="flex-1 text-white font-medium truncate">
+                      {leaderboard.myEntry.username}
+                    </span>
+                    <span className="text-xs text-zinc-400">{t("leaderboard.you")}</span>
+                    <span className="text-vz-lime font-semibold text-sm w-14 text-right">
+                      {Math.round(leaderboard.myEntry.value / 60)}h
+                    </span>
+                  </div>
+                )}
+                {leaderboard.entries.map((entry) => (
+                  <div key={entry.userId} className="flex items-center gap-3 p-3">
+                    <span className="w-8 text-center font-display font-bold text-zinc-400 text-sm">
+                      #{entry.rank}
+                    </span>
+                    <span className="flex-1 text-zinc-200 truncate">{entry.username}</span>
+                    <span className="text-zinc-300 font-semibold text-sm w-14 text-right">
+                      {Math.round(entry.value / 60)}h
+                    </span>
+                  </div>
+                ))}
+              </div>
             </div>
           )}
 
