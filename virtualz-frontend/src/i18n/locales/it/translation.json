@@ -63,7 +63,15 @@
     "publishers": "Publisher",
     "genres": "Generi",
     "reviews": "Recensioni",
-    "description": "Descrizione"
+    "description": "Descrizione",
+    "reviewsCount_one": "{{count}} recensione",
+    "reviewsCount_other": "{{count}} recensioni",
+    "writeReview": "Scrivi una recensione",
+    "editYourReview": "La tua recensione",
+    "reviewPlaceholder": "Cosa ne pensi di questo gioco? (opzionale)",
+    "submitReview": "Pubblica",
+    "removeReview": "Rimuovi la tua recensione",
+    "noReviews": "Nessuna recensione ancora. Scrivi la prima!"
   },
   "library": {
     "title": "La mia Libreria",
@@ -135,7 +143,8 @@
     "gamesByGenre": "Giochi per genere",
     "libraryComposition": "Composizione libreria",
     "otherGenres": "Altro",
-    "viewFullLeaderboard": "Classifica completa"
+    "viewFullLeaderboard": "Classifica completa",
+    "myReviews": "Le mie recensioni"
   },
   "common": {
     "loading": "Caricamento...",

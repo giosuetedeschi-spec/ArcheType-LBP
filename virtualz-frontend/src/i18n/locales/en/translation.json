@@ -63,7 +63,15 @@
     "publishers": "Publishers",
     "genres": "Genres",
     "reviews": "Reviews",
-    "description": "Description"
+    "description": "Description",
+    "reviewsCount_one": "{{count}} review",
+    "reviewsCount_other": "{{count}} reviews",
+    "writeReview": "Write a review",
+    "editYourReview": "Your review",
+    "reviewPlaceholder": "What do you think of this game? (optional)",
+    "submitReview": "Post",
+    "removeReview": "Remove your review",
+    "noReviews": "No reviews yet. Be the first!"
   },
   "library": {
     "title": "My Library",
@@ -135,7 +143,8 @@
     "gamesByGenre": "Games by genre",
     "libraryComposition": "Library composition",
     "otherGenres": "Other",
-    "viewFullLeaderboard": "Full leaderboard"
+    "viewFullLeaderboard": "Full leaderboard",
+    "myReviews": "My reviews"
   },
   "common": {
     "loading": "Loading...",

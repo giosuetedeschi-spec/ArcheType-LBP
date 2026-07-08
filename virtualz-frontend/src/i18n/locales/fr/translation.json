@@ -63,7 +63,15 @@
     "publishers": "Éditeurs",
     "genres": "Genres",
     "reviews": "Avis",
-    "description": "Description"
+    "description": "Description",
+    "reviewsCount_one": "{{count}} avis",
+    "reviewsCount_other": "{{count}} avis",
+    "writeReview": "Écrire un avis",
+    "editYourReview": "Votre avis",
+    "reviewPlaceholder": "Que pensez-vous de ce jeu ? (facultatif)",
+    "submitReview": "Publier",
+    "removeReview": "Retirer votre avis",
+    "noReviews": "Aucun avis pour le moment. Soyez le premier !"
   },
   "library": {
     "title": "Ma bibliothèque",
@@ -135,7 +143,8 @@
     "gamesByGenre": "Jeux par genre",
     "libraryComposition": "Composition de la bibliothèque",
     "otherGenres": "Autre",
-    "viewFullLeaderboard": "Classement complet"
+    "viewFullLeaderboard": "Classement complet",
+    "myReviews": "Mes avis"
   },
   "common": {
     "loading": "Chargement...",

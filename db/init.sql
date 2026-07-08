@@ -108,6 +108,21 @@ CREATE TABLE IF NOT EXISTS game_sessions (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Recensioni/voti degli utenti: scala 1-5, del tutto separata dalla
+-- colonna games.rating (quella è importata da Steam, non scritta dagli
+-- utenti). UNIQUE(user_id, game_id): una sola recensione per utente per
+-- gioco — un nuovo invio aggiorna la propria, non ne crea un'altra.
+CREATE TABLE IF NOT EXISTS reviews (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
+    game_id BIGINT REFERENCES games(id) ON DELETE CASCADE,
+    rating INTEGER NOT NULL CHECK (rating BETWEEN 1 AND 5),
+    comment TEXT,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE(user_id, game_id)
+);
+
 CREATE TABLE IF NOT EXISTS friends (
     id BIGSERIAL PRIMARY KEY,
     user_id BIGINT REFERENCES users(id) ON DELETE CASCADE,
@@ -141,6 +156,8 @@ CREATE INDEX idx_backlog_user ON backlog(user_id);
 CREATE INDEX idx_backlog_user_status ON backlog(user_id, status);
 CREATE INDEX idx_game_sessions_user ON game_sessions(user_id);
 CREATE INDEX idx_friends_user ON friends(user_id);
+CREATE INDEX idx_reviews_game ON reviews(game_id);
+CREATE INDEX idx_reviews_user ON reviews(user_id);
 
 -- Password per entrambi gli utenti demo: "password123"
 -- (hash bcrypt generato con lo stesso BCryptPasswordEncoder usato dal backend)
