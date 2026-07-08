@@ -129,7 +129,10 @@
   },
   "profile": {
     "ownedGames": "Giochi posseduti",
-    "emptyOwnedGames": "Non hai ancora nessun gioco posseduto."
+    "emptyOwnedGames": "Non hai ancora nessun gioco posseduto.",
+    "gamesByGenre": "Giochi per genere",
+    "libraryComposition": "Composizione libreria",
+    "otherGenres": "Altro"
   },
   "common": {
     "loading": "Caricamento...",
