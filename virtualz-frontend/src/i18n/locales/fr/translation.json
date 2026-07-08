@@ -24,7 +24,9 @@
     "noAccount": "Vous n'avez pas de compte ?",
     "haveAccount": "Vous avez déjà un compte ?",
     "loginError": "Identifiants invalides",
-    "registerError": "Une erreur est survenue lors de l'inscription"
+    "registerError": "Une erreur est survenue lors de l'inscription",
+    "ageConfirm": "Je confirme avoir plus de 18 ans",
+    "ageRequired": "Vous devez confirmer avoir plus de 18 ans pour vous inscrire."
   },
   "catalog": {
     "title": "Catalogue de jeux",
@@ -84,6 +86,23 @@
     "inactivityWarning": "Vous n'avez pas touché ce jeu depuis un moment. Le marquer comme abandonné ?",
     "confirmAbandon": "Oui, l'abandonner",
     "dismissWarning": "Non, j'y joue encore"
+  },
+  "leaderboard": {
+    "title": "Classement",
+    "scope": {
+      "global": "Global",
+      "friends": "Amis"
+    },
+    "metric": {
+      "hours": "Heures jouées",
+      "games": "Jeux possédés",
+      "friends": "Amis ajoutés"
+    },
+    "you": "Toi",
+    "empty": "Aucune donnée disponible.",
+    "prev": "Précédent",
+    "next": "Suivant",
+    "page": "Page {{current}} sur {{total}}"
   },
   "stats": {
     "title": "Mes statistiques",

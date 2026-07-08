@@ -24,7 +24,9 @@
     "noAccount": "Don't have an account?",
     "haveAccount": "Already have an account?",
     "loginError": "Invalid credentials",
-    "registerError": "Something went wrong while signing up"
+    "registerError": "Something went wrong while signing up",
+    "ageConfirm": "I confirm that I am over 18 years old",
+    "ageRequired": "You must confirm you are over 18 to sign up."
   },
   "catalog": {
     "title": "Game Catalog",
@@ -84,6 +86,23 @@
     "inactivityWarning": "You haven't touched this game in a while. Mark it as abandoned?",
     "confirmAbandon": "Yes, abandon it",
     "dismissWarning": "No, still playing"
+  },
+  "leaderboard": {
+    "title": "Leaderboard",
+    "scope": {
+      "global": "Global",
+      "friends": "Friends"
+    },
+    "metric": {
+      "hours": "Hours played",
+      "games": "Games owned",
+      "friends": "Friends added"
+    },
+    "you": "You",
+    "empty": "No data available.",
+    "prev": "Previous",
+    "next": "Next",
+    "page": "Page {{current}} of {{total}}"
   },
   "stats": {
     "title": "My stats",

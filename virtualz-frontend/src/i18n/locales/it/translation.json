@@ -24,7 +24,9 @@
     "noAccount": "Non hai un account?",
     "haveAccount": "Hai già un account?",
     "loginError": "Credenziali non valide",
-    "registerError": "Errore durante la registrazione"
+    "registerError": "Errore durante la registrazione",
+    "ageConfirm": "Confermo di avere più di 18 anni",
+    "ageRequired": "Devi confermare di avere più di 18 anni per registrarti."
   },
   "catalog": {
     "title": "Catalogo Giochi",
@@ -84,6 +86,23 @@
     "inactivityWarning": "Non aggiorni questo gioco da un po'. Lo segni come abbandonato?",
     "confirmAbandon": "Sì, abbandona",
     "dismissWarning": "No, ci gioco ancora"
+  },
+  "leaderboard": {
+    "title": "Classifica",
+    "scope": {
+      "global": "Globale",
+      "friends": "Amici"
+    },
+    "metric": {
+      "hours": "Ore di gioco",
+      "games": "Giochi posseduti",
+      "friends": "Amici aggiunti"
+    },
+    "you": "Tu",
+    "empty": "Nessun dato disponibile.",
+    "prev": "Precedente",
+    "next": "Successiva",
+    "page": "Pagina {{current}} di {{total}}"
   },
   "stats": {
     "title": "Le mie statistiche",
