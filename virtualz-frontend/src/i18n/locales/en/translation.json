@@ -141,7 +141,8 @@
     "gamesByGenre": "Games by genre",
     "libraryComposition": "Library composition",
     "otherGenres": "Other",
-    "viewFullLeaderboard": "Full leaderboard"
+    "viewFullLeaderboard": "Full leaderboard",
+    "myReviews": "My reviews"
   },
   "common": {
     "loading": "Loading...",
