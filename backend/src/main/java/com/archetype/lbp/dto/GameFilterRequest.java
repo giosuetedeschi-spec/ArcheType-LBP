@@ -21,6 +21,11 @@ public class GameFilterRequest {
     // piattaforme selezionate), coerente con checkbox multiple lato UI.
     private List<String> os;
 
+    // Se true, mostra solo giochi con supporto VR (categorie "VR Support" /
+    // "VR Only" / "VR Supported" / "SteamVR Collectibles" — vedi
+    // GameRepository.withFilters per l'elenco esatto).
+    private Boolean vr;
+
     private String sortBy = "name";
     private String sortDir = "asc";
     private int page = 0;
