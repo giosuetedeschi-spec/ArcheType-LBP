@@ -3,14 +3,8 @@ name: Frontend Build
 on:
   push:
     branches: [main]
-    paths:
-      - "virtualz-frontend/**"
-      - ".github/workflows/frontend-build.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "virtualz-frontend/**"
-      - ".github/workflows/frontend-build.yml"
 
 jobs:
   build:

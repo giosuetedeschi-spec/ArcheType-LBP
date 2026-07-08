@@ -3,16 +3,8 @@ name: Docker Build
 on:
   push:
     branches: [main]
-    paths:
-      - "backend/**"
-      - "virtualz-frontend/**"
-      - ".github/workflows/docker-build.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "backend/**"
-      - "virtualz-frontend/**"
-      - ".github/workflows/docker-build.yml"
 
 jobs:
   backend:
