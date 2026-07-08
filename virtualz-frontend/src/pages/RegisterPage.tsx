@@ -12,12 +12,22 @@ export default function RegisterPage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState<RegisterPayload>({ username: "", email: "", password: "" });
+  const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
     setError(null);
+
+    // Guard esplicita oltre al disabled sul bottone: un submit via invio
+    // da tastiera su un campo di testo può comunque attivare il form anche
+    // se il bottone è disabled, quindi il blocco reale va fatto qui.
+    if (!ageConfirmed) {
+      setError(t("auth.ageRequired"));
+      return;
+    }
+
     setLoading(true);
     try {
       await register(form);
@@ -71,11 +81,21 @@ export default function RegisterPage() {
           className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
         />
 
+        <label className="flex items-start gap-2 text-sm text-zinc-300">
+          <input
+            type="checkbox"
+            checked={ageConfirmed}
+            onChange={(e) => setAgeConfirmed(e.target.checked)}
+            className="mt-0.5 h-4 w-4 rounded border-zinc-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
+          />
+          <span>{t("auth.ageConfirm")}</span>
+        </label>
+
         {error && <p className="text-vz-pink text-sm">{error}</p>}
 
         <button
           type="submit"
-          disabled={loading}
+          disabled={loading || !ageConfirmed}
           className="w-full bg-vz-lime text-vz-navy font-semibold rounded-lg py-2.5 hover:opacity-90 transition-opacity disabled:opacity-50"
         >
           {t("auth.registerButton")}
