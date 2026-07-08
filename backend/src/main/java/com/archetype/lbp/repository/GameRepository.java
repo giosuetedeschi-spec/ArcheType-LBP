@@ -25,10 +25,18 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
     // si naviga tramite la entity Genre.
     List<Game> findByGenres_NameContainingIgnoreCase(String genreName);
 
+    // Nomi esatti (case-sensitive, così come importati da populate_db.py
+    // dalla colonna "Categories" del dataset Steam) delle categorie che
+    // indicano supporto VR — un gioco con almeno una di queste passa il
+    // filtro vr=true.
+    List<String> VR_CATEGORY_NAMES = List.of(
+            "VR Support", "VR Only", "VR Supported", "SteamVR Collectibles"
+    );
+
     static Specification<Game> withFilters(String name, String genre, String developer,
                                             BigDecimal minPrice, BigDecimal maxPrice,
                                             BigDecimal minRating, LocalDate releasedAfter,
-                                            LocalDate releasedBefore, List<String> os) {
+                                            LocalDate releasedBefore, List<String> os, Boolean vr) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -78,6 +86,14 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
                 if (!osPredicates.isEmpty()) {
                     predicates.add(cb.or(osPredicates.toArray(new Predicate[0])));
                 }
+            }
+            if (Boolean.TRUE.equals(vr)) {
+                // Stesso pattern del join su "genres" sopra: un gioco può
+                // avere più categorie VR contemporaneamente, quindi serve
+                // distinct per non restituirlo duplicato.
+                query.distinct(true);
+                Join<Object, Object> categoryJoin = root.join("categories", JoinType.LEFT);
+                predicates.add(categoryJoin.get("name").in(VR_CATEGORY_NAMES));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

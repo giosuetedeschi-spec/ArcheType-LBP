@@ -62,6 +62,18 @@ public class Game {
     )
     private Set<Genre> genres = new HashSet<>();
 
+    // Relazione N:N verso categories, tramite game_categories (già presente
+    // in db/init.sql, popolata da populate_db.py) — non era ancora mappata
+    // su Game, serve per il filtro VR (categorie "VR Support"/"VR Only"/
+    // "VR Supported"/"SteamVR Collectibles", già importate dal dataset Steam).
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "game_categories",
+            joinColumns = @JoinColumn(name = "game_id"),
+            inverseJoinColumns = @JoinColumn(name = "category_id")
+    )
+    private Set<Category> categories = new HashSet<>();
+
     private String description;
 
     @Column(name = "header_image_url")
