@@ -93,6 +93,21 @@
     "abandoned": "Abandoned",
     "wishlistCount": "Wishlisted"
   },
+  "friends": {
+    "title": "Friends",
+    "searchPlaceholder": "Search a user by username...",
+    "searchNoResults": "No users found.",
+    "add": "Add",
+    "requestSent": "Request sent.",
+    "requestsReceived": "Requests received",
+    "accept": "Accept",
+    "reject": "Reject",
+    "myFriends": "My friends",
+    "noFriends": "You don't have any friends yet. Search for some above!",
+    "ownedGames": "Owned games",
+    "playingNow": "Playing now",
+    "remove": "Remove"
+  },
   "common": {
     "loading": "Loading...",
     "error": "Something went wrong.",
