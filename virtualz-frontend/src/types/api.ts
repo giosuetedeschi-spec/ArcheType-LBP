@@ -170,3 +170,25 @@ export interface LeaderboardResponse {
   totalPages: number;
   myEntry: LeaderboardEntry | null;
 }
+
+// Rispecchia ReviewResponse.java. Scala 1-5, del tutto separata dal
+// Game.rating importato da Steam (vedi Game.rating sopra) — questo è il
+// voto scritto da un utente reale.
+export interface Review {
+  id: number;
+  gameId: number;
+  gameName: string;
+  gameHeaderImageUrl: string | null;
+  userId: number;
+  username: string;
+  rating: number;
+  comment: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ReviewPayload {
+  gameId: number;
+  rating: number;
+  comment: string | null;
+}
