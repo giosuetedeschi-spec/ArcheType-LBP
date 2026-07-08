@@ -28,6 +28,11 @@ public class ReviewController {
         return ResponseEntity.ok(ApiResponse.ok(reviewService.getGameReviews(gameId)));
     }
 
+    @GetMapping("/api/users/{userId}/reviews")
+    public ResponseEntity<ApiResponse<List<ReviewResponse>>> getUserReviews(@PathVariable Long userId) {
+        return ResponseEntity.ok(ApiResponse.ok(reviewService.getUserReviews(userId)));
+    }
+
     @PostMapping("/api/users/{userId}/reviews")
     public ResponseEntity<ApiResponse<ReviewResponse>> addOrUpdateReview(
             @PathVariable Long userId,
