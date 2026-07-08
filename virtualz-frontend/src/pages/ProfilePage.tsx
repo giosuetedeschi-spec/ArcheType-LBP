@@ -232,6 +232,37 @@ export default function ProfilePage() {
             )}
           </div>
 
+          {myReviews.length > 0 && (
+            <div className="mt-8">
+              <h2 className="text-lg font-display font-semibold text-white mb-4">
+                {t("profile.myReviews")}
+              </h2>
+              <div className="space-y-3">
+                {myReviews.map((review) => (
+                  <Link
+                    key={review.id}
+                    to="/games/$id"
+                    params={{ id: String(review.gameId) }}
+                    className="flex items-center gap-3 bg-vz-charcoal rounded-xl border border-zinc-800 p-3 hover:border-vz-lime transition-colors"
+                  >
+                    <img
+                      src={review.gameHeaderImageUrl || "https://placehold.co/120x67/111827/ffffff?text=No+Image"}
+                      alt={review.gameName}
+                      className="w-20 h-11 object-cover rounded-lg bg-zinc-900 shrink-0"
+                    />
+                    <div className="min-w-0 flex-1">
+                      <p className="text-white font-medium truncate">{review.gameName}</p>
+                      <StarRating value={review.rating} />
+                      {review.comment && (
+                        <p className="text-xs text-zinc-500 truncate mt-0.5">{review.comment}</p>
+                      )}
+                    </div>
+                  </Link>
+                ))}
+              </div>
+            </div>
+          )}
+
           {/*
             TODO(wishlist): sezione in arrivo, implementata da un collega.
             Stesso pattern della sezione "Giochi posseduti" sopra, filtro
