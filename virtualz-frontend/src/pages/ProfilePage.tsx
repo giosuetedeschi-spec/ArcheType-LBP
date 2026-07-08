@@ -141,6 +141,16 @@ export default function ProfilePage() {
               </div>
             )}
           </div>
+
+          {/*
+            TODO(wishlist): sezione in arrivo, implementata da un collega.
+            Stesso pattern della sezione "Giochi posseduti" sopra, filtro
+            opposto: library.filter((i) => i.status === "wishlist") invece
+            di !== "wishlist". Riusa LibraryItemCard (già gestisce lo status
+            "wishlist" col bottone "Sposta nel Backlog") e fetchLibrary()
+            già presente in questo componente — non serve una nuova chiamata
+            API, i dati sono già tutti in `library`.
+          */}
         </>
       )}
     </div>
