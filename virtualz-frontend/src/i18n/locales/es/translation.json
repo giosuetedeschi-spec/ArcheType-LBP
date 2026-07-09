@@ -10,7 +10,8 @@
     "home": "Inicio",
     "leaderboard": "Clasificación",
     "friends": "Amigos",
-    "tagline": "Your data, Your hero's journey"
+    "tagline": "Your data, Your hero's journey",
+    "toggleMenu": "Alternar menú"
   },
   "auth": {
     "login": "Iniciar sesión",
