@@ -1,5 +1,7 @@
 package com.archetype.lbp.dto;
 
+import jakarta.validation.constraints.Max;
+import jakarta.validation.constraints.Min;
 import lombok.Data;
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -28,6 +30,11 @@ public class GameFilterRequest {
 
     private String sortBy = "name";
     private String sortDir = "asc";
+
+    @Min(value = 0, message = "page non può essere negativo")
     private int page = 0;
+
+    @Min(value = 1, message = "size deve essere almeno 1")
+    @Max(value = 100, message = "size non può superare 100")
     private int size = 20;
 }

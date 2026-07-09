@@ -1,8 +1,11 @@
 import { useState, type FormEvent } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { isAxiosError } from "axios";
 import { useAuth } from "../context/AuthContext";
 import Logo from "../components/Logo";
+import OAuthButtons from "../components/OAuthButtons";
+import PasswordInput from "../components/PasswordInput";
 import type { LoginPayload } from "@/types/api";
 
 export default function LoginPage() {
@@ -21,86 +24,60 @@ export default function LoginPage() {
     try {
       await login(form);
       navigate({ to: "/" });
-    } catch (err: any) {
-      setError(err.response?.data?.message || t("auth.loginError"));
+    } catch (err) {
+      // isAxiosError() stringe il tipo di `err` (unknown in un blocco catch)
+      // in modo sicuro, stesso pattern usato in RegisterPage.tsx.
+      const message = isAxiosError<{ message?: string }>(err) ? err.response?.data?.message : undefined;
+      setError(message || t("auth.loginError"));
     } finally {
       setLoading(false);
     }
   }
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-slate-900 via-purple-900 to-slate-900">
-      <div className="w-full max-w-md">
-        <div className="bg-white/10 backdrop-blur-lg rounded-2xl shadow-2xl p-8 border border-white/20">
-          <div className="flex justify-center mb-8">
-            <Logo />
-          </div>
-          
-          <h1 className="text-3xl font-bold text-white text-center mb-2">
-            {t("auth.login")}
-          </h1>
-          <p className="text-gray-300 text-center mb-8">
-            {t("auth.loginSubtitle")}
-          </p>
-
-          <form onSubmit={handleSubmit} className="space-y-6">
-            {error && (
-              <div className="bg-red-500/20 border border-red-500/50 text-red-200 px-4 py-3 rounded-lg text-sm">
-                {error}
-              </div>
-            )}
-
-            <div>
-              <label htmlFor="username" className="block text-sm font-medium text-gray-200 mb-2">
-                {t("auth.username")}
-              </label>
-              <input
-                id="username"
-                type="text"
-                value={form.username}
-                onChange={(e) => setForm({ ...form, username: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                placeholder={t("auth.usernamePlaceholder")}
-                required
-              />
-            </div>
-
-            <div>
-              <label htmlFor="password" className="block text-sm font-medium text-gray-200 mb-2">
-                {t("auth.password")}
-              </label>
-              <input
-                id="password"
-                type="password"
-                value={form.password}
-                onChange={(e) => setForm({ ...form, password: e.target.value })}
-                className="w-full px-4 py-3 bg-white/5 border border-white/20 rounded-lg text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition"
-                placeholder={t("auth.passwordPlaceholder")}
-                required
-              />
-            </div>
-
-            <button
-              type="submit"
-              disabled={loading}
-              className="w-full bg-gradient-to-r from-purple-600 to-pink-600 hover:from-purple-700 hover:to-pink-700 text-white font-semibold py-3 rounded-lg transition duration-200 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg"
-            >
-              {loading ? t("auth.loggingIn") : t("auth.login")}
-            </button>
-          </form>
-
-          <div className="mt-6 text-center">
-            <p className="text-gray-300 text-sm">
-              {t("auth.noAccount")}{" "}
-              <Link
-                to="/register"
-                className="text-purple-400 hover:text-purple-300 font-medium transition"
-              >
-                {t("auth.registerHere")}
-              </Link>
-            </p>
-          </div>
+    <div className="max-w-md mx-auto mt-16 px-4 animate-fade-in-up">
+      <div className="bg-vz-charcoal/60 backdrop-blur border border-zinc-800 rounded-2xl p-8">
+        <div className="flex items-center justify-center mb-1">
+          <Logo className="text-2xl" />
         </div>
+        <h1 className="text-xl font-display font-bold text-white mb-1 text-center">{t("auth.loginTitle")}</h1>
+        <p className="text-sm text-zinc-400 mb-6 text-center">{t("auth.loginSubtitle")}</p>
+
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <input
+            type="text"
+            placeholder={t("auth.usernamePlaceholder")}
+            value={form.username}
+            onChange={(e) => setForm({ ...form, username: e.target.value })}
+            required
+            className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
+          />
+          <PasswordInput
+            placeholder={t("auth.passwordPlaceholder")}
+            value={form.password}
+            onChange={(value) => setForm({ ...form, password: value })}
+            required
+          />
+
+          {error && <p className="text-vz-pink text-sm">{error}</p>}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-vz-lime text-vz-navy font-semibold rounded-lg py-2.5 hover:opacity-90 transition-opacity disabled:opacity-50"
+          >
+            {loading ? t("auth.loggingIn") : t("auth.loginButton")}
+          </button>
+        </form>
+
+        <OAuthButtons />
+
+        <p className="text-sm text-zinc-400 mt-6 text-center">
+          {t("auth.noAccount")}{" "}
+          <Link to="/register" className="text-vz-lime hover:underline">
+            {t("auth.registerHere")}
+          </Link>
+        </p>
       </div>
     </div>
   );
