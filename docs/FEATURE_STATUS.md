@@ -28,10 +28,12 @@ Legenda: ✅ Fatta · 🟠 A metà/parziale · ⏳ Non iniziata
 - #102 Login/Register: redesign visivo fatto (PR #170); i bottoni Steam/Google restano placeholder disabilitati — l'integrazione OAuth vera e propria resta da fare
 
 **Backend**:
-- #101 Molti giochi seed hanno `headerImageUrl` null (fallback immagine già aggiunto lato frontend) — data-quality del dataset Steam, non un bug di codice
+- #101 Molti giochi seed hanno `headerImageUrl` null (fallback grafico già aggiunto lato frontend: `GameCoverPlaceholder`, gradiente animato con la palette del brand invece di un riquadro statico "No Image") — resta comunque data-quality del dataset Steam, non un bug di codice
 
 ---
-*Ultimo aggiornamento: 2026-07-09 — risolte tutte le voci rimaste aperte tranne #101 (data-quality del dataset, non un bug) e la parte OAuth di #102 (fuori scope, richiede credenziali/integrazione reale con Steam/Google):*
+*Ultimo aggiornamento: 2026-07-10 — sostituiti i tre fallback statici per `headerImageUrl` null (SVG "No Image" grigio in `GameCard`/`LibraryItemCard`, dipendenza esterna `placehold.co` in `GameDetailPage`) con un unico componente condiviso `GameCoverPlaceholder` (gradiente animato coi colori del brand — navy/pink/lime —, iniziale del nome, `role="img"`/`aria-label` per l'accessibilità, `prefers-reduced-motion` rispettato, e nessuna chiamata a servizi esterni); chiuse anche #140/#19 su GitHub (già risolte da PR #176/#178, mancava solo lo stato "Done" sulla issue) — vedi changelog del giorno precedente:*
+
+*Precedente (2026-07-09) — risolte tutte le voci rimaste aperte tranne #101 (data-quality del dataset, non un bug) e la parte OAuth di #102 (fuori scope, richiede credenziali/integrazione reale con Steam/Google):*
 - *#84 validazione input: `FriendRequest.friendId` e `LeaderboardFilterRequest.userId` non avevano `@NotNull`/`@Valid`, quindi un valore mancante arrivava fino a `findById(null)` e usciva come 500 invece di 400 (PR #176); `GlobalExceptionHandler` non gestiva `BindException` (validazione su query param) né `HttpRequestMethodNotSupportedException` (verbo HTTP sbagliato), quindi entrambi i casi finivano nel catch-all generico come 500 invece di 400/405 (PR #176, #178). SQL injection e XSS verificati direttamente: nessuna query concatenata (solo JPQL con binding), zero `dangerouslySetInnerHTML`/`innerHTML` nel frontend — non exploitable allo stato attuale, nessuna modifica necessaria*
 - *#85 credenziali hardcoded: `spring.datasource.*` e `jwt.secret` erano hardcoded in `application.properties`; ora `${ENV_VAR:default-dev}`, sovrascrivibili per ambiente senza toccare il file (PR #176)*
 - *#100 duplicazione `/games`: rimosso il `GET /api/games` non paginato (zero consumer, `/filter` copre lo stesso caso con page/size ora limitati) (PR #176)*

@@ -1,5 +1,6 @@
 import { useTranslation } from "react-i18next";
 import type { LibraryItem, LibraryStatus } from "@/types/api";
+import GameCoverPlaceholder from "./GameCoverPlaceholder";
 
 // Valori reali dello status, come validati dal backend (vedi
 // BacklogRequest.java @Pattern) — minuscoli, non quelli che si potrebbero
@@ -38,13 +39,6 @@ interface LibraryItemCardProps {
  * tipo LibraryItem aggiornato (mai da un'interfaccia locale scollegata
  * dalla risposta reale dell'API, come accadeva prima).
  */
-// Stesso fallback SVG di GameCard.tsx: molti giochi (es. i 5 di seed in
-// db/init.sql) non hanno mai avuto header_image_url valorizzato, quindi
-// senza questo placeholder l'immagine risulta rotta/vuota invece che
-// mostrare un riquadro "No Image" coerente col resto del catalogo.
-const NO_IMAGE_PLACEHOLDER =
-  "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 225'%3E%3Crect fill='%23272727' width='400' height='225'/%3E%3Ctext fill='%2371717a' font-family='sans-serif' font-size='14' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
-
 export default function LibraryItemCard({ item, onStatusChange, onRemove }: LibraryItemCardProps) {
   const { t } = useTranslation();
 
@@ -55,12 +49,20 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
   return (
     <div className="bg-vz-charcoal rounded-xl border border-zinc-800 overflow-hidden">
       <div className="flex gap-3 p-3">
-        <img
-          src={item.game.headerImageUrl || NO_IMAGE_PLACEHOLDER}
-          alt={item.game.name}
-          className="w-24 h-14 object-cover rounded-lg bg-zinc-900 flex-shrink-0"
-          loading="lazy"
-        />
+        {item.game.headerImageUrl ? (
+          <img
+            src={item.game.headerImageUrl}
+            alt={item.game.name}
+            className="w-24 h-14 object-cover rounded-lg bg-zinc-900 flex-shrink-0"
+            loading="lazy"
+          />
+        ) : (
+          <GameCoverPlaceholder
+            name={item.game.name}
+            seed={item.game.id}
+            className="w-24 h-14 rounded-lg flex-shrink-0"
+          />
+        )}
         <div className="flex-1 min-w-0">
           <h3 className="font-semibold text-white truncate">{item.game.name}</h3>
           <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[item.status]}`}>

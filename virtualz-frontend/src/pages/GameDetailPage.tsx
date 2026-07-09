@@ -7,6 +7,7 @@ import { addToLibrary, getLibrary } from "../services/libraryApi";
 import { getGameReviews, addOrUpdateReview, removeReview } from "../services/reviewsApi";
 import { useAuth } from "../context/AuthContext";
 import StarRating from "../components/StarRating";
+import GameCoverPlaceholder from "../components/GameCoverPlaceholder";
 import type { Game, LibraryItem, LibraryStatus, Review } from "@/types/api";
 
 /**
@@ -145,11 +146,19 @@ export default function GameDetailPage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <img
-        src={game.headerImageUrl || "https://placehold.co/1200x600/111827/ffffff?text=No+Image"}
-        alt={game.name}
-        className="w-full rounded-xl mb-6 bg-zinc-900 aspect-[16/6] object-cover"
-      />
+      {game.headerImageUrl ? (
+        <img
+          src={game.headerImageUrl}
+          alt={game.name}
+          className="w-full rounded-xl mb-6 bg-zinc-900 aspect-[16/6] object-cover"
+        />
+      ) : (
+        <GameCoverPlaceholder
+          name={game.name}
+          seed={game.id}
+          className="w-full rounded-xl mb-6 aspect-[16/6]"
+        />
+      )}
 
       <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
         <h1 className="text-3xl font-display font-bold text-white">{game.name}</h1>
