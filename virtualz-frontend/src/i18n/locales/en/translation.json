@@ -32,7 +32,11 @@
     "loginError": "Invalid credentials",
     "registerError": "Something went wrong while signing up",
     "ageConfirm": "I confirm that I am over 18 years old",
-    "ageRequired": "You must confirm you are over 18 to sign up."
+    "ageRequired": "You must confirm you are over 18 to sign up.",
+    "orContinueWith": "or continue with",
+    "continueWithSteam": "Continue with Steam",
+    "continueWithGoogle": "Continue with Google",
+    "comingSoon": "Coming soon"
   },
   "catalog": {
     "title": "Game Catalog",

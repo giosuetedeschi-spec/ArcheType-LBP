@@ -32,7 +32,11 @@
     "loginError": "Identifiants invalides",
     "registerError": "Une erreur est survenue lors de l'inscription",
     "ageConfirm": "Je confirme avoir plus de 18 ans",
-    "ageRequired": "Vous devez confirmer avoir plus de 18 ans pour vous inscrire."
+    "ageRequired": "Vous devez confirmer avoir plus de 18 ans pour vous inscrire.",
+    "orContinueWith": "ou continuer avec",
+    "continueWithSteam": "Continuer avec Steam",
+    "continueWithGoogle": "Continuer avec Google",
+    "comingSoon": "Bientôt disponible"
   },
   "catalog": {
     "title": "Catalogue de jeux",
