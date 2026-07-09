@@ -24,21 +24,19 @@ Legenda: ✅ Fatta · 🟠 A metà/parziale · ⏳ Non iniziata
 
 ## Altri problemi/richieste aperte (da issue GitHub)
 
-**Sicurezza/infrastruttura** (non affrontate):
-- #84 Validazione/sanitizzazione input (SQL injection, XSS)
-- #85 Credenziali ancora hardcoded in `application.properties`, da spostare in env/vault
-
 **UI da rifare secondo mockup**:
 - #102 Login/Register: redesign visivo fatto (PR #170); i bottoni Steam/Google restano placeholder disabilitati — l'integrazione OAuth vera e propria resta da fare
-- #146 Occhiolino mostra/nascondi password
 
 **Backend**:
-- #19 Messaggi di errore strutturati per ogni possibile fallimento (DB, rete, conflitti) — parzialmente affrontato: `GlobalExceptionHandler` ora logga (`log.error`) ogni eccezione non gestita prima di rispondere 500, prima era invisibile nei log. Il messaggio restituito al client resta generico di proposito; messaggi più specifici per singolo scenario restano da fare
-- #100 Da decidere: `/games` vs `/games/filter` duplicati, quale tenere
-- #101 Molti giochi seed hanno `headerImageUrl` null (fallback immagine già aggiunto lato frontend)
-
-**Minori**:
-- #106 Allineare il copyright nel footer (non riverificato dopo il redesign navbar/footer del 2026-07-09)
+- #101 Molti giochi seed hanno `headerImageUrl` null (fallback immagine già aggiunto lato frontend) — data-quality del dataset Steam, non un bug di codice
 
 ---
-*Ultimo aggiornamento: 2026-07-09 — risolti i 19 errori TypeScript di `LeaderboardPage.tsx` (commit `37d6e64`); mergiati sezione wishlist nel profilo (#167), bottone dinamico Compra/Gioca in base al possesso (#103, PR #168), esclusione dei giochi per adulti da home/filtro catalogo (#87, PR #169 — verificato via query diretta: esclude correttamente 139 giochi taggati `Nudity`/`Sexual Content`; nota di data-quality, non un bug: centinaia di altri titoli espliciti nel dataset Steam non sono taggati in quel modo), redesign Login/Register (#102 parziale — solo l'OAuth reale resta da fare, PR #170), fix layout navbar su schermi medi (PR #171), infrastruttura di test frontend con Vitest + Testing Library (PR #166); corrette chiavi i18n mancanti/incoerenti (PR #173); `docker compose up` ora avvia tutto con un solo comando, incluso il populate automatico del dataset (PR #174); ribackfillate le colonne `windows`/`mac`/`linux` (prima tutte `false` per un volume dati locale stantio) e i dati demo di amici/classifica sul volume di sviluppo locale.*
+*Ultimo aggiornamento: 2026-07-09 — risolte tutte le voci rimaste aperte tranne #101 (data-quality del dataset, non un bug) e la parte OAuth di #102 (fuori scope, richiede credenziali/integrazione reale con Steam/Google):*
+- *#84 validazione input: `FriendRequest.friendId` e `LeaderboardFilterRequest.userId` non avevano `@NotNull`/`@Valid`, quindi un valore mancante arrivava fino a `findById(null)` e usciva come 500 invece di 400 (PR #176); `GlobalExceptionHandler` non gestiva `BindException` (validazione su query param) né `HttpRequestMethodNotSupportedException` (verbo HTTP sbagliato), quindi entrambi i casi finivano nel catch-all generico come 500 invece di 400/405 (PR #176, #178). SQL injection e XSS verificati direttamente: nessuna query concatenata (solo JPQL con binding), zero `dangerouslySetInnerHTML`/`innerHTML` nel frontend — non exploitable allo stato attuale, nessuna modifica necessaria*
+- *#85 credenziali hardcoded: `spring.datasource.*` e `jwt.secret` erano hardcoded in `application.properties`; ora `${ENV_VAR:default-dev}`, sovrascrivibili per ambiente senza toccare il file (PR #176)*
+- *#100 duplicazione `/games`: rimosso il `GET /api/games` non paginato (zero consumer, `/filter` copre lo stesso caso con page/size ora limitati) (PR #176)*
+- *#106 copyright footer: `currentYear` era calcolato ma mai usato — il testo aveva l'anno hardcoded "2025-2026"; ora dinamico (PR #177)*
+- *#146 occhiolino password: componente `PasswordInput` condiviso (icona Eye/EyeOff da `lucide-react`) su Login e Register (PR #177)*
+- *#19 messaggi di errore strutturati: con le due voci sopra, tutti i fallimenti noti (validazione, non trovato, conflitto, verbo HTTP sbagliato) hanno ora uno status/messaggio specifico invece di un 500 generico; i soli 500 restano le eccezioni davvero impreviste, generiche di proposito per non esporre dettagli interni — considerato risolto*
+
+*In precedenza (stesso giorno): risolti i 19 errori TypeScript di `LeaderboardPage.tsx` (commit `37d6e64`); mergiati sezione wishlist nel profilo (#167), bottone dinamico Compra/Gioca in base al possesso (#103, PR #168), esclusione dei giochi per adulti da home/filtro catalogo (#87, PR #169 — verificato via query diretta: esclude correttamente 139 giochi taggati `Nudity`/`Sexual Content`; nota di data-quality, non un bug: centinaia di altri titoli espliciti nel dataset Steam non sono taggati in quel modo), redesign Login/Register (#102 parziale — solo l'OAuth reale resta da fare, PR #170), fix layout navbar su schermi medi (PR #171), infrastruttura di test frontend con Vitest + Testing Library (PR #166); corrette chiavi i18n mancanti/incoerenti (PR #173); `docker compose up` ora avvia tutto con un solo comando, incluso il populate automatico del dataset (PR #174); ribackfillate le colonne `windows`/`mac`/`linux` (prima tutte `false` per un volume dati locale stantio) e i dati demo di amici/classifica sul volume di sviluppo locale.*
