@@ -70,6 +70,19 @@ body {
   100% { background-position: 400px 0; }
 }
 
+/* Usata da GameCoverPlaceholder.tsx (fallback per headerImageUrl null) */
+@keyframes gradient-pan {
+  0%   { background-position: 0% 50%; }
+  50%  { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  [style*="gradient-pan"] {
+    animation: none !important;
+  }
+}
+
 /* ============================================================
    CUSTOM UTILITY CLASSES
    ============================================================ */

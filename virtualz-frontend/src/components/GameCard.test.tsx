@@ -45,10 +45,10 @@ describe("GameCard", () => {
     expect(screen.getByText("Untitled Game")).toBeInTheDocument();
   });
 
-  it("falls back to the placeholder image when headerImageUrl is missing", () => {
+  it("falls back to the animated gradient placeholder when headerImageUrl is missing", () => {
     render(<GameCard game={{ ...baseGame, headerImageUrl: null }} />);
-    const img = screen.getByRole("img") as HTMLImageElement;
-    expect(img.src).toMatch(/^data:image\/svg\+xml/);
+    const placeholder = screen.getByRole("img", { name: "Half-Life 3" });
+    expect(placeholder.tagName).toBe("DIV");
   });
 
   it("shows 'Free' instead of a price when price is 0", () => {
