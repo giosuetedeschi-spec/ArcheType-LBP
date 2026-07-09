@@ -3,11 +3,11 @@ import { useParams } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
 import { getGameById } from "../services/gamesApi";
-import { addToLibrary } from "../services/libraryApi";
+import { addToLibrary, getLibrary } from "../services/libraryApi";
 import { getGameReviews, addOrUpdateReview, removeReview } from "../services/reviewsApi";
 import { useAuth } from "../context/AuthContext";
 import StarRating from "../components/StarRating";
-import type { Game, LibraryStatus, Review } from "@/types/api";
+import type { Game, LibraryItem, LibraryStatus, Review } from "@/types/api";
 
 /**
  * GameDetailPage — pagina di dettaglio di un singolo gioco (route
@@ -34,6 +34,7 @@ export default function GameDetailPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
+  const [library, setLibrary] = useState<LibraryItem[]>([]);
 
   const [reviews, setReviews] = useState<Review[]>([]);
   const [reviewRating, setReviewRating] = useState(0);
@@ -54,6 +55,17 @@ export default function GameDetailPage() {
       });
   }, [id]);
 
+  // Serve a sapere se il gioco è già posseduto (voce di libreria con status
+  // diverso da "wishlist"), per mostrare "Gioca" invece di "Compra".
+  const fetchLibrary = useCallback(() => {
+    if (!user) return;
+    getLibrary(user.id)
+      .then(setLibrary)
+      .catch(() => {
+        // Libreria non caricata: il pulsante resta su "Compra" per default.
+      });
+  }, [user]);
+
   // Ricarica il gioco ogni volta che cambia l'id nella route (navigazione
   // tra un dettaglio gioco e l'altro senza smontare il componente).
   useEffect(() => {
@@ -63,7 +75,10 @@ export default function GameDetailPage() {
       .catch(() => setError(t("common.error")))
       .finally(() => setLoading(false));
     fetchReviews();
-  }, [id, t, fetchReviews]);
+    fetchLibrary();
+  }, [id, t, fetchReviews, fetchLibrary]);
+
+  const ownedEntry = game ? library.find((i) => i.game.id === game.id && i.status !== "wishlist") : undefined;
 
   // Precompila il form quando arriva/cambia la propria recensione esistente.
   useEffect(() => {
@@ -106,6 +121,7 @@ export default function GameDetailPage() {
     try {
       await addToLibrary(user.id, { gameId: game.id, status });
       setActionMessage(t(`library.status.${status}`));
+      fetchLibrary();
     } catch (err) {
       // isAxiosError() stringe il tipo di `err` (unknown in un blocco
       // catch) in modo sicuro, invece di un cast/any — stesso pattern
@@ -154,26 +170,41 @@ export default function GameDetailPage() {
 
       {isAuthenticated && (
         <div className="flex gap-3 mb-6 flex-wrap">
-          <button
-            onClick={() => handleAdd("wishlist")}
-            className="px-4 py-2 rounded-full border border-vz-pink text-vz-pink hover:bg-vz-pink/10 transition-colors text-sm font-medium"
-          >
-            ♥ {t("game.addToWishlist")}
-          </button>
-          <button
-            onClick={() => handleAdd("playing")}
-            className="px-4 py-2 rounded-full bg-vz-lime text-vz-navy font-semibold text-sm hover:opacity-90 transition-opacity"
-          >
-            {t("game.addToBacklog")}
-          </button>
-          <a
-            href={`https://store.steampowered.com/app/${game.steamAppId}`}
-            target="_blank"
-            rel="noreferrer"
-            className="px-4 py-2 rounded-full border border-zinc-600 text-zinc-300 hover:text-white transition-colors text-sm"
-          >
-            {t("game.viewOnSteam")} ↗
-          </a>
+          {!ownedEntry && (
+            <button
+              onClick={() => handleAdd("wishlist")}
+              className="px-4 py-2 rounded-full border border-vz-pink text-vz-pink hover:bg-vz-pink/10 transition-colors text-sm font-medium"
+            >
+              ♥ {t("game.addToWishlist")}
+            </button>
+          )}
+          {ownedEntry ? (
+            <a
+              href={`https://store.steampowered.com/app/${game.steamAppId}`}
+              target="_blank"
+              rel="noreferrer"
+              className="px-4 py-2 rounded-full bg-vz-lime text-vz-navy font-semibold text-sm hover:opacity-90 transition-opacity"
+            >
+              {t("game.play")} ↗
+            </a>
+          ) : (
+            <>
+              <button
+                onClick={() => handleAdd("playing")}
+                className="px-4 py-2 rounded-full bg-vz-lime text-vz-navy font-semibold text-sm hover:opacity-90 transition-opacity"
+              >
+                {t("game.buy")}
+              </button>
+              <a
+                href={`https://store.steampowered.com/app/${game.steamAppId}`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-4 py-2 rounded-full border border-zinc-600 text-zinc-300 hover:text-white transition-colors text-sm"
+              >
+                {t("game.viewOnSteam")} ↗
+              </a>
+            </>
+          )}
         </div>
       )}
 

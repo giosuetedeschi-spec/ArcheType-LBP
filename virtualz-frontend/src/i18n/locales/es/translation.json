@@ -63,7 +63,8 @@
   },
   "game": {
     "addToWishlist": "Añadir a la lista de deseos",
-    "addToBacklog": "Marcar como adquirido",
+    "buy": "Comprar",
+    "play": "Jugar",
     "viewOnSteam": "Ver en Steam",
     "developers": "Desarrolladores",
     "publishers": "Editores",
