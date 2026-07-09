@@ -150,7 +150,9 @@
     "libraryComposition": "Composizione libreria",
     "otherGenres": "Altro",
     "viewFullLeaderboard": "Classifica completa",
-    "myReviews": "Le mie recensioni"
+    "myReviews": "Le mie recensioni",
+    "wishlist": "Wishlist",
+    "emptyWishlist": "La tua wishlist è vuota."
   },
   "common": {
     "loading": "Caricamento...",

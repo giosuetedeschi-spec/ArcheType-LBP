@@ -150,7 +150,9 @@
     "libraryComposition": "Library composition",
     "otherGenres": "Other",
     "viewFullLeaderboard": "Full leaderboard",
-    "myReviews": "My reviews"
+    "myReviews": "My reviews",
+    "wishlist": "Wishlist",
+    "emptyWishlist": "Your wishlist is empty."
   },
   "common": {
     "loading": "Loading...",
