@@ -59,3 +59,6 @@ data/*.json
 
 # Claude Code local folder (per-developer, not shared: settings, skills, notes)
 .claude/
+
+# Playwright MCP scratch output (screenshots/snapshots from local testing)
+.playwright-mcp/

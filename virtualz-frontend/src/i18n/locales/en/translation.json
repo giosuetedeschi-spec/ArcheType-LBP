@@ -10,7 +10,8 @@
     "home": "Home",
     "leaderboard": "Leaderboard",
     "friends": "Friends",
-    "tagline": "Your data, Your hero's journey"
+    "tagline": "Your data, Your hero's journey",
+    "toggleMenu": "Toggle menu"
   },
   "auth": {
     "login": "Log in",
