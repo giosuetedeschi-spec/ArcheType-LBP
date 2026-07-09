@@ -5,6 +5,7 @@ import { isAxiosError } from "axios";
 import { useAuth } from "../context/AuthContext";
 import Logo from "../components/Logo";
 import OAuthButtons from "../components/OAuthButtons";
+import PasswordInput from "../components/PasswordInput";
 import type { LoginPayload } from "@/types/api";
 
 export default function LoginPage() {
@@ -51,13 +52,11 @@ export default function LoginPage() {
             required
             className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
           />
-          <input
-            type="password"
+          <PasswordInput
             placeholder={t("auth.passwordPlaceholder")}
             value={form.password}
-            onChange={(e) => setForm({ ...form, password: e.target.value })}
+            onChange={(value) => setForm({ ...form, password: value })}
             required
-            className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
           />
 
           {error && <p className="text-vz-pink text-sm">{error}</p>}

@@ -45,9 +45,9 @@ export default function Footer() {
         </div>
         <div className="border-t border-zinc-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
           <Logo className="text-2xl" />
-         <p className="text-xs text-zinc-500 text-center md:text-right">
-  © Archetype Analytics 2025-2026 - Beni G., Digiglio A., Galarza J.G., Tedeschi G., Vurchio L., El Mbimbey M.
-        </p>
+          <p className="text-xs text-zinc-500 text-center md:text-right">
+            © Archetype Analytics 2025-{currentYear} - Beni G., Digiglio A., Galarza J.G., Tedeschi G., Vurchio L., El Mbimbey M.
+          </p>
         </div>
       </div>
     </footer>

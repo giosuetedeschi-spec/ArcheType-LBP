@@ -5,6 +5,7 @@ import { isAxiosError } from "axios";
 import { useAuth } from "../context/AuthContext";
 import Logo from "../components/Logo";
 import OAuthButtons from "../components/OAuthButtons";
+import PasswordInput from "../components/PasswordInput";
 import type { RegisterPayload } from "@/types/api";
 
 export default function RegisterPage() {
@@ -72,14 +73,12 @@ export default function RegisterPage() {
           required
           className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
         />
-        <input
-          type="password"
+        <PasswordInput
           placeholder={t("auth.password")}
           value={form.password}
-          onChange={(e) => setForm({ ...form, password: e.target.value })}
+          onChange={(value) => setForm({ ...form, password: value })}
           required
           minLength={8}
-          className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
         />
 
         <label className="flex items-start gap-2 text-sm text-zinc-300">
