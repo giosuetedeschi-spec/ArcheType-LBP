@@ -26,6 +26,8 @@ services:
     depends_on:
       db:
         condition: service_healthy
+      populate:
+        condition: service_completed_successfully
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/archetype
       SPRING_DATASOURCE_USERNAME: archetype
@@ -48,6 +50,12 @@ services:
     ports:
       - "5173:80"
 
+  # Popola il database dal dataset Steam. Gira ad ogni "docker compose up"
+  # ma si auto-salta (exit rapido) se il database e' gia' popolato, quindi
+  # non rallenta gli avvii successivi al primo. Il backend attende il suo
+  # completamento (vedi depends_on sopra) per non partire con un catalogo
+  # vuoto durante il primo import. Vedi scripts/populate_db.py per la
+  # logica di skip e FORCE_REPOPULATE.
   populate:
     build:
       context: ./scripts
@@ -63,10 +71,9 @@ services:
       DB_USER: archetype
       DB_PASSWORD: archetype_secret
       STEAM_DATASET_PATH: /data/games.csv
+      FORCE_REPOPULATE: ${FORCE_REPOPULATE:-false}
     volumes:
       - ./data:/data:ro
-    profiles:
-      - init
 
 volumes:
   pgdata:
