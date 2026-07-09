@@ -11,9 +11,18 @@ export default function GameCard({ game }: GameCardProps) {
 
   // Fallback for missing or empty game names
   const displayName = game.name && game.name.trim() !== "" ? game.name : "Untitled Game";
-  
+
   // Fallback for missing images (SVG placeholder)
   const displayImage = game.headerImageUrl || "data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 400 225'%3E%3Crect fill='%23272727' width='400' height='225'/%3E%3Ctext fill='%2371717a' font-family='sans-serif' font-size='14' x='50%25' y='50%25' text-anchor='middle' dy='.3em'%3ENo Image%3C/text%3E%3C/svg%3E";
+
+  // Traduce un singolo genere (es. "Early Access" -> chiave "genres.earlyAccess").
+  // Se la chiave di traduzione non esiste, mostra il nome originale invece
+  // della chiave grezza (defaultValue), così non compaiono mai "genres.xxx".
+  const localizeGenre = (raw: string): string => {
+    const name = raw.trim();
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+(.)/g, (_, c) => c.toUpperCase());
+    return t(`genres.${slug}`, { defaultValue: name });
+  };
 
   return (
     <Link
@@ -38,7 +47,7 @@ export default function GameCard({ game }: GameCardProps) {
         </h3>
         {game.genres && game.genres.trim() !== "" && (
           <span className="text-xs text-zinc-500 truncate block mt-1">
-            {game.genres.split(",").slice(0, 2).join(" · ")}
+            {game.genres.split(",").slice(0, 2).map(localizeGenre).join(" · ")}
           </span>
         )}
       </div>
