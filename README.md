@@ -112,7 +112,7 @@ docker compose up -d
 - Se il reset da terminale non risolve, apri Docker Desktop → **Troubleshoot** (icona a forma di insetto, in alto) → **Clean / Purge data** per un reset più aggressivo (rimuove tutte le immagini/cache locali di Docker, non solo quelle di questo progetto — usalo con cautela se hai altri progetti Docker attivi).
 - Su Apple Silicon (M1/M2/M3): se un'immagine era stata costruita in precedenza per `linux/amd64` (es. scaricata o buildata su una macchina Intel), la rebuild potrebbe risultare lenta per via dell'emulazione. In tal caso rimuovi esplicitamente l'immagine (`docker image rm ...`) e lascia che `docker compose build --no-cache` la ricostruisca nativamente per `linux/arm64`.
 
-> Nota: `docker compose down -v` elimina anche il volume Postgres (`pgdata`), quindi dopo il reset dovrai ripopolare il database (vedi sezione Dataset sopra e il servizio `populate` più sotto).
+> Nota: `docker compose down -v` elimina anche il volume Postgres (`pgdata`). Non serve ripopolare manualmente: il servizio `populate` gira in automatico al successivo `docker compose up` e importa di nuovo il dataset da `data/games.csv` (se presente — vedi sezione Dataset sopra).
 
 ### Con Docker (consigliato)
 
@@ -124,7 +124,17 @@ cd ArcheType-LBP
 # Assicurati di aver scaricato il dataset come descritto sopra
 
 # Avvia tutti i servizi (frontend su http://localhost:5173)
+# Un solo comando: schema DB, import del dataset, backend e frontend.
 docker compose up --build
+```
+
+Il servizio `populate` importa il dataset automaticamente ad ogni avvio, ma
+si auto-salta (in pochi secondi) se il database è già popolato — quindi i
+riavvii successivi al primo restano veloci. Per forzare un nuovo import (es.
+dopo aver aggiunto colonne che richiedono un backfill):
+
+```bash
+docker compose run --rm -e FORCE_REPOPULATE=true populate
 ```
 
 | Servizio | URL |

@@ -10,8 +10,13 @@ pip install -r scripts/requirements.txt
 ## scripts/populate_db.py
 Legge il dataset Steam (`data/games.csv` o `data/games.json`), lo pulisce/normalizza
 e popola le tabelle `games`, `developers`, `publishers`, `genres`, `categories` (+ le
-relazioni many-to-many). È lo script usato dal servizio Docker Compose `populate`
-(`docker compose --profile init run --rm populate`), idempotente (`ON CONFLICT DO NOTHING`).
+relazioni many-to-many). È lo script usato dal servizio Docker Compose `populate`,
+che gira in automatico ad ogni `docker compose up` (idempotente, `ON CONFLICT DO
+NOTHING`) ma si auto-salta se il database è già popolato oltre i soli dati seed.
+Per forzare un nuovo giro (es. backfill di colonne aggiunte dopo il primo import):
+```bash
+docker compose run --rm -e FORCE_REPOPULATE=true populate
+```
 
 ### Variabili d'ambiente
 | Var | Default | Descrizione |
@@ -22,6 +27,7 @@ relazioni many-to-many). È lo script usato dal servizio Docker Compose `populat
 | `DB_USER` | `archetype` | Utente database |
 | `DB_PASSWORD` | `archetype_secret` | Password database |
 | `STEAM_DATASET_PATH` | `/data/steam_games.csv` | Percorso del dataset (CSV o JSON) |
+| `FORCE_REPOPULATE` | `false` | Se `true`, salta il controllo "già popolato" e reimporta comunque |
 
 ## scripts/seed_test_data.py
 Crea utenti di test e assegna loro backlog/wishlist casuali, per lo sviluppo locale.
