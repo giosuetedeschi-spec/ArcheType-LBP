@@ -13,6 +13,12 @@
     "tagline": "Your data, Your hero's journey"
   },
   "auth": {
+    "login": "Se connecter",
+    "loginSubtitle": "Bon retour sur VirtualZ",
+    "loggingIn": "Connexion en cours…",
+    "registerHere": "Inscrivez-vous",
+    "usernamePlaceholder": "Entrez votre nom d'utilisateur",
+    "passwordPlaceholder": "Entrez votre mot de passe",
     "loginTitle": "Bon retour",
     "registerTitle": "Créez votre compte",
     "username": "Nom d'utilisateur",
