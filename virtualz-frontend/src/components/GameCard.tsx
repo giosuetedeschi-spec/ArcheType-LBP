@@ -13,6 +13,15 @@ export default function GameCard({ game }: GameCardProps) {
   // Fallback for missing or empty game names
   const displayName = game.name && game.name.trim() !== "" ? game.name : "Untitled Game";
 
+  // Traduce un singolo genere (es. "Early Access" -> chiave "genres.earlyAccess").
+  // Se la chiave di traduzione non esiste, mostra il nome originale invece
+  // della chiave grezza (defaultValue), così non compaiono mai "genres.xxx".
+  const localizeGenre = (raw: string): string => {
+    const name = raw.trim();
+    const slug = name.toLowerCase().replace(/[^a-z0-9]+(.)/g, (_, c) => c.toUpperCase());
+    return t(`genres.${slug}`, { defaultValue: name });
+  };
+
   return (
     <Link
       to="/games/$id"
@@ -40,7 +49,7 @@ export default function GameCard({ game }: GameCardProps) {
         </h3>
         {game.genres && game.genres.trim() !== "" && (
           <span className="text-xs text-zinc-500 truncate block mt-1">
-            {game.genres.split(",").slice(0, 2).join(" · ")}
+            {game.genres.split(",").slice(0, 2).map(localizeGenre).join(" · ")}
           </span>
         )}
       </div>
