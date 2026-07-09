@@ -228,6 +228,14 @@
     "adventure": "Avventura",
     "rpg": "RPG",
     "strategy": "Strategia",
-    "indie": "Indie"
+    "indie": "Indie",
+    "casual": "Casual",
+    "simulation": "Simulazione",
+    "sports": "Sport",
+    "racing": "Corse",
+    "horror": "Horror",
+    "earlyAccess": "Accesso anticipato",
+    "freeToPlay": "Free to Play",
+    "massivelyMultiplayer": "Multiplayer di massa"
   }
 }
