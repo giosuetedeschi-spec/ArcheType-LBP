@@ -5,6 +5,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -46,6 +47,18 @@ public class GlobalExceptionHandler {
                 .collect(Collectors.joining("; "));
         return ResponseEntity.status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(400, "Validation Error", errors, LocalDateTime.now()));
+    }
+
+    // Senza questo handler, un metodo HTTP non supportato su un path
+    // esistente (es. GET su un endpoint che accetta solo POST) finiva nel
+    // catch-all generico e usciva come 500 invece del 405 che Spring MVC
+    // restituirebbe di suo — scoperto rimuovendo il GET duplicato di
+    // /api/games (issue #100): il path resta valido (altri verbi lo usano),
+    // quindi il verbo sbagliato non è più un 404 ma questo caso.
+    @ExceptionHandler(HttpRequestMethodNotSupportedException.class)
+    public ResponseEntity<ErrorResponse> handleMethodNotAllowed(HttpRequestMethodNotSupportedException ex) {
+        return ResponseEntity.status(HttpStatus.METHOD_NOT_ALLOWED)
+                .body(new ErrorResponse(405, "Method Not Allowed", ex.getMessage(), LocalDateTime.now()));
     }
 
     @ExceptionHandler(Exception.class)
