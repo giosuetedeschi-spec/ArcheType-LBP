@@ -109,6 +109,7 @@ export default function ProfilePage() {
   // "Posseduto" = qualunque voce non in wishlist (playing/finished/abandoned),
   // ognuna con lo status reale mostrato dal badge colorato di LibraryItemCard.
   const ownedGames = library.filter((i) => i.status !== "wishlist");
+  const wishlistGames = library.filter((i) => i.status === "wishlist");
 
   if (!user) return null;
 
@@ -263,15 +264,25 @@ export default function ProfilePage() {
             </div>
           )}
 
-          {/*
-            TODO(wishlist): sezione in arrivo, implementata da un collega.
-            Stesso pattern della sezione "Giochi posseduti" sopra, filtro
-            opposto: library.filter((i) => i.status === "wishlist") invece
-            di !== "wishlist". Riusa LibraryItemCard (già gestisce lo status
-            "wishlist" col bottone "Sposta nel Backlog") e fetchLibrary()
-            già presente in questo componente — non serve una nuova chiamata
-            API, i dati sono già tutti in `library`.
-          */}
+          <div className="mt-8">
+            <h2 className="text-lg font-display font-semibold text-white mb-4">
+              {t("profile.wishlist")}
+            </h2>
+            {wishlistGames.length === 0 ? (
+              <p className="text-zinc-400">{t("profile.emptyWishlist")}</p>
+            ) : (
+              <div className="grid sm:grid-cols-2 gap-4">
+                {wishlistGames.map((item) => (
+                  <LibraryItemCard
+                    key={item.id}
+                    item={item}
+                    onStatusChange={handleStatusChange}
+                    onRemove={handleRemove}
+                  />
+                ))}
+              </div>
+            )}
+          </div>
 
           <div className="mt-8">
             <div className="flex items-center justify-between mb-4">
