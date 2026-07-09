@@ -32,7 +32,11 @@
     "loginError": "Credenciales no válidas",
     "registerError": "Ocurrió un error durante el registro",
     "ageConfirm": "Confirmo que soy mayor de 18 años",
-    "ageRequired": "Debes confirmar que eres mayor de 18 años para registrarte."
+    "ageRequired": "Debes confirmar que eres mayor de 18 años para registrarte.",
+    "orContinueWith": "o continúa con",
+    "continueWithSteam": "Continuar con Steam",
+    "continueWithGoogle": "Continuar con Google",
+    "comingSoon": "Próximamente"
   },
   "catalog": {
     "title": "Catálogo de juegos",

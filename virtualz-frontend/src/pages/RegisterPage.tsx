@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
 import { useAuth } from "../context/AuthContext";
 import Logo from "../components/Logo";
+import OAuthButtons from "../components/OAuthButtons";
 import type { RegisterPayload } from "@/types/api";
 
 export default function RegisterPage() {
@@ -102,7 +103,9 @@ export default function RegisterPage() {
         </button>
       </form>
 
-      <p className="text-sm text-zinc-400 mt-4 text-center">
+      <OAuthButtons />
+
+      <p className="text-sm text-zinc-400 mt-6 text-center">
         {t("auth.haveAccount")}{" "}
         <Link to="/login" className="text-vz-lime hover:underline">
           {t("nav.login")}
