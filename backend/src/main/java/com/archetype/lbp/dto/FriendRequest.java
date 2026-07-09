@@ -9,6 +9,7 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class FriendRequest {
+    @NotNull(message = "friendId è obbligatorio")
     private Long friendId;
 
     private String action; // "accept" or "reject"

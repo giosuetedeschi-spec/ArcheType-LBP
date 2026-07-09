@@ -7,6 +7,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.BindingResult;
 import org.springframework.validation.FieldError;
+import org.springframework.web.HttpRequestMethodNotSupportedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 
 import static org.assertj.core.api.Assertions.*;
@@ -36,6 +37,13 @@ class GlobalExceptionHandlerTest {
         var ex = new IllegalStateException("duplicate");
         ResponseEntity<ErrorResponse> resp = handler.handleConflict(ex);
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.CONFLICT);
+    }
+
+    @Test
+    void handleMethodNotAllowed_returns405() {
+        var ex = new HttpRequestMethodNotSupportedException("GET", java.util.List.of("POST", "PUT"));
+        ResponseEntity<ErrorResponse> resp = handler.handleMethodNotAllowed(ex);
+        assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.METHOD_NOT_ALLOWED);
     }
 
     @Test

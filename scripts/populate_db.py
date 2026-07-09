@@ -5,9 +5,11 @@ database PostgreSQL: giochi, developer/publisher (lookup), generi e categorie
 (entrambe relazioni molti-a-molti, tramite genres + game_genres e
 categories + game_categories rispettivamente).
 
-Uso tipico (via Docker Compose, profilo "init"):
-    docker compose build populate
-    docker compose run --rm populate
+Fa parte dei servizi avviati di default da "docker compose up": si auto-salta
+(exit rapido) se il database risulta già popolato, così ogni avvio successivo
+resta veloce. Per forzare un nuovo giro (es. backfill di colonne aggiunte
+dopo il primo import) imposta FORCE_REPOPULATE=true:
+    docker compose run --rm -e FORCE_REPOPULATE=true populate
 """
 
 import os
@@ -37,6 +39,13 @@ DB_CONFIG = {
 
 DATASET_PATH = os.getenv("STEAM_DATASET_PATH", "/data/steam_games.csv")
 BATCH_SIZE = 1000
+
+# init.sql inserisce esattamente 5 giochi seed: superata questa soglia il
+# dataset reale è già stato importato, quindi un successivo avvio automatico
+# (docker compose up) può saltare l'intero giro invece di rileggere ogni
+# volta un CSV da ~389 MB.
+SEED_GAME_COUNT_THRESHOLD = 10
+FORCE_REPOPULATE = os.getenv("FORCE_REPOPULATE", "false").strip().lower() in {"1", "true", "yes"}
 
 
 def get_connection():
@@ -748,14 +757,57 @@ def insert_games(df: pd.DataFrame) -> None:
     conn.close()
 
 
+def _count_games() -> int:
+    """Conta i giochi già presenti, per decidere se saltare l'import.
+
+    Apre e chiude una connessione dedicata: viene chiamata prima di
+    qualunque altra operazione, quando non è ancora chiaro se serva aprire
+    la pipeline completa di lettura/pulizia/insert.
+
+    Returns:
+        int: numero di righe in "games" al momento della chiamata.
+    """
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        cur.execute("SELECT COUNT(*) FROM games")
+        return cur.fetchone()[0]
+    finally:
+        conn.close()
+
+
 def main() -> None:
     """Entry point: carica il dataset, lo pulisce e popola il database.
 
-    Orchestratore dei tre passi principali dello script (load_dataset,
-    clean_data, insert_games), con log di inizio/fine per delimitare
-    l'esecuzione nei log del container Docker.
+    Chiamato ad ogni "docker compose up" (il servizio "populate" non è più
+    dietro un profilo opzionale): per restare veloce sugli avvii successivi,
+    salta l'intero giro se il database risulta già popolato oltre i soli
+    dati seed di init.sql, a meno che FORCE_REPOPULATE non sia impostato
+    (usato per backfillare colonne aggiunte dopo il primo import, come
+    windows/mac/linux). Se il CSV/JSON del dataset non è presente (es. non
+    ancora scaricato manualmente, essendo troppo grande per il repo), salta
+    l'import con un warning invece di interrompere l'avvio dell'intero
+    stack: l'app resta comunque utilizzabile con i soli dati seed.
     """
     log.info("=== Popolamento Database ArcheType ===")
+
+    if not FORCE_REPOPULATE:
+        existing = _count_games()
+        if existing > SEED_GAME_COUNT_THRESHOLD:
+            log.info(
+                f"Database già popolato ({existing} giochi), salto l'import. "
+                "Imposta FORCE_REPOPULATE=true per forzare un nuovo giro."
+            )
+            return
+
+    if not Path(DATASET_PATH).exists():
+        log.warning(
+            f"Dataset non trovato: {DATASET_PATH}. Salto l'import: l'app "
+            "partirà con i soli dati seed di init.sql. Scarica il dataset "
+            "in data/games.csv per popolare il catalogo completo (vedi README)."
+        )
+        return
+
     df = load_dataset(DATASET_PATH)
     df = clean_data(df)
     insert_games(df)

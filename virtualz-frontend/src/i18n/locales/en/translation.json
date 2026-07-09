@@ -10,7 +10,8 @@
     "home": "Home",
     "leaderboard": "Leaderboard",
     "friends": "Friends",
-    "tagline": "Your data, Your hero's journey"
+    "tagline": "Your data, Your hero's journey",
+    "toggleMenu": "Toggle menu"
   },
   "auth": {
     "login": "Log in",
@@ -36,7 +37,9 @@
     "orContinueWith": "or continue with",
     "continueWithSteam": "Continue with Steam",
     "continueWithGoogle": "Continue with Google",
-    "comingSoon": "Coming soon"
+    "comingSoon": "Coming soon",
+    "showPassword": "Show password",
+    "hidePassword": "Hide password"
   },
   "catalog": {
     "title": "Game Catalog",
@@ -72,6 +75,8 @@
     "viewOnSteam": "View on Steam",
     "developers": "Developers",
     "publishers": "Publishers",
+    "releaseDate": "Release date",
+    "rating": "Rating",
     "genres": "Genres",
     "reviews": "Reviews",
     "description": "Description",
