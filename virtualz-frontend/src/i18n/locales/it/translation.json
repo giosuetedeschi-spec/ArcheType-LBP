@@ -37,7 +37,9 @@
     "orContinueWith": "oppure continua con",
     "continueWithSteam": "Continua con Steam",
     "continueWithGoogle": "Continua con Google",
-    "comingSoon": "Presto disponibile"
+    "comingSoon": "Presto disponibile",
+    "showPassword": "Mostra password",
+    "hidePassword": "Nascondi password"
   },
   "catalog": {
     "title": "Catalogo Giochi",
