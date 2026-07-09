@@ -2,7 +2,7 @@
   "nav": {
     "catalog": "Catalogo",
     "library": "Libreria",
-    "wishlist": "Wishlist",
+    "wishlist": "Lista dei desideri",
     "profile": "Profilo",
     "login": "Accedi",
     "register": "Registrati",
@@ -18,12 +18,12 @@
     "loginSubtitle": "Bentornato su VirtualZ",
     "loggingIn": "Accesso in corso…",
     "registerHere": "Registrati",
-    "usernamePlaceholder": "Inserisci il tuo username",
+    "usernamePlaceholder": "Inserisci il tuo nome utente",
     "passwordPlaceholder": "Inserisci la tua password",
     "loginTitle": "Bentornato",
     "registerTitle": "Crea il tuo account",
-    "username": "Username",
-    "usernameOrEmail": "Username o email",
+    "username": "Nome utente",
+    "usernameOrEmail": "Nome utente o email",
     "email": "Email",
     "password": "Password",
     "loginButton": "Accedi",
@@ -67,12 +67,14 @@
     "price": "Prezzo"
   },
   "game": {
-    "addToWishlist": "Aggiungi alla Wishlist",
+    "addToWishlist": "Aggiungi alla lista dei desideri",
     "buy": "Compra",
     "play": "Gioca",
     "viewOnSteam": "Vedi su Steam",
     "developers": "Sviluppatori",
     "publishers": "Publisher",
+    "releaseDate": "Data di uscita",
+    "rating": "Valutazione",
     "genres": "Generi",
     "reviews": "Recensioni",
     "description": "Descrizione",
@@ -87,12 +89,12 @@
   },
   "library": {
     "title": "La mia Libreria",
-    "wishlistSection": "Wishlist",
+    "wishlistSection": "Lista dei desideri",
     "backlogSection": "Backlog",
-    "emptyWishlist": "La tua wishlist è vuota. Aggiungi qualche gioco dal catalogo!",
+    "emptyWishlist": "La tua lista dei desideri è vuota. Aggiungi qualche gioco dal catalogo!",
     "emptyBacklog": "Non hai ancora giochi nel backlog.",
     "status": {
-      "wishlist": "In wishlist",
+      "wishlist": "In lista dei desideri",
       "playing": "In corso",
       "finished": "Finito",
       "abandoned": "Abbandonato"
@@ -132,7 +134,7 @@
     "inProgress": "In corso",
     "finished": "Finiti",
     "abandoned": "Abbandonati",
-    "wishlistCount": "In wishlist"
+    "wishlistCount": "In lista dei desideri"
   },
   "friends": {
     "title": "Amici",
@@ -157,22 +159,22 @@
     "otherGenres": "Altro",
     "viewFullLeaderboard": "Classifica completa",
     "myReviews": "Le mie recensioni",
-    "wishlist": "Wishlist",
-    "emptyWishlist": "La tua wishlist è vuota."
+    "wishlist": "Lista dei desideri",
+    "emptyWishlist": "La tua lista dei desideri è vuota."
   },
   "common": {
     "loading": "Caricamento...",
     "error": "Qualcosa è andato storto.",
     "save": "Salva",
     "cancel": "Annulla",
-    "confirm": "Confirma",
+    "confirm": "Conferma",
     "language": "Lingua",
     "free": "Gratis"
   },
   "home": {
     "tagline": "Bentornato",
     "subtitle": "La tua collezione Steam, sempre organizzata.",
-    "exploreCatalog": "Explore Catalog",
+    "exploreCatalog": "Esplora il catalogo",
     "getStarted": "Inizia ora",
     "features": {
       "catalog": {
@@ -181,7 +183,7 @@
       },
       "library": {
         "title": "Libreria personale",
-        "desc": "Wishlist e backlog: tieni traccia di cosa vuoi giocare e a che punto sei."
+        "desc": "Lista dei desideri e backlog: tieni traccia di cosa vuoi giocare e a che punto sei."
       },
       "stats": {
         "title": "Statistiche",
@@ -190,7 +192,7 @@
     },
     "featured": "In evidenza",
     "seeAll": "Vedi tutti",
-    "openLibrary": "Open Library"
+    "openLibrary": "Apri libreria"
   },
   "colorblind": {
     "normal": "Normale",
@@ -212,7 +214,7 @@
       "analytics": "Statistiche"
     },
     "shop": {
-      "title": "Shop",
+      "title": "Negozio",
       "offers": "Offerte",
       "giftCards": "Carte regalo",
       "redeem": "Riscatta codice"
@@ -221,7 +223,7 @@
       "title": "Supporto",
       "help": "Centro assistenza",
       "contact": "Contattaci",
-      "privacy": "Privacy policy"
+      "privacy": "Informativa sulla privacy"
     }
   },
   "genres": {
