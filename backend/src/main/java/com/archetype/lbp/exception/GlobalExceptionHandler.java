@@ -3,8 +3,8 @@ package com.archetype.lbp.exception;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
-import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -32,8 +32,15 @@ public class GlobalExceptionHandler {
                 .body(new ErrorResponse(409, "Conflict", ex.getMessage(), LocalDateTime.now()));
     }
 
-    @ExceptionHandler(MethodArgumentNotValidException.class)
-    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
+    // BindException copre entrambe le vie con cui arriva un errore di
+    // validazione: MethodArgumentNotValidException (corpo JSON con @Valid
+    // @RequestBody) ne è una sottoclasse diretta, e lo stesso handler serve
+    // anche i parametri @Valid legati da query string (es. GameFilterRequest,
+    // LeaderboardFilterRequest) — senza questo, quei casi finivano nel
+    // catch-all generico e uscivano come 500 invece di un 400 con il
+    // messaggio del campo che non valida.
+    @ExceptionHandler(BindException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(BindException ex) {
         String errors = ex.getBindingResult().getFieldErrors().stream()
                 .map(FieldError::getDefaultMessage)
                 .collect(Collectors.joining("; "));

@@ -4,6 +4,7 @@ import com.archetype.lbp.dto.ApiResponse;
 import com.archetype.lbp.dto.LeaderboardFilterRequest;
 import com.archetype.lbp.dto.LeaderboardResponse;
 import com.archetype.lbp.service.LeaderboardService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,7 @@ public class LeaderboardController {
     private final LeaderboardService leaderboardService;
 
     @GetMapping
-    public ResponseEntity<ApiResponse<LeaderboardResponse>> get(LeaderboardFilterRequest filter) {
+    public ResponseEntity<ApiResponse<LeaderboardResponse>> get(@Valid LeaderboardFilterRequest filter) {
         return ResponseEntity.ok(ApiResponse.ok(leaderboardService.getLeaderboard(filter)));
     }
 }
