@@ -21,26 +21,16 @@ public class GameController {
      * Catalogo con paginazione e filtri.
      * GET /api/games/filter?name=elden&genre=rpg&page=0&size=20&sortBy=rating&sortDir=desc
      *
-     * Usare sempre questo endpoint invece di /api/games per evitare
-     * di caricare decine di migliaia di record in memoria.
+     * Unico endpoint di listing (issue #100): esisteva anche un
+     * GET /api/games non paginato "per uso interno/admin", ma non aveva
+     * nessun consumer (né frontend né test) e /filter con i parametri di
+     * default (page=0, size=20, size cappata a 100 dalla validazione su
+     * GameFilterRequest) copre lo stesso caso d'uso — rimosso invece di
+     * mantenere due endpoint che fanno la stessa cosa.
      */
     @GetMapping("/filter")
-    public ResponseEntity<ApiResponse<PagedResponse<GameResponse>>> filter(GameFilterRequest filter) {
+    public ResponseEntity<ApiResponse<PagedResponse<GameResponse>>> filter(@Valid GameFilterRequest filter) {
         return ResponseEntity.ok(ApiResponse.ok(gameService.filter(filter)));
-    }
-
-    /**
-     * Lista non paginata — uso interno / admin.
-     * Limitata a 100 risultati per protezione.
-     */
-    @GetMapping
-    public ResponseEntity<ApiResponse<PagedResponse<GameResponse>>> list(
-            @RequestParam(defaultValue = "0")  int page,
-            @RequestParam(defaultValue = "20") int size) {
-        GameFilterRequest req = new GameFilterRequest();
-        req.setPage(page);
-        req.setSize(Math.min(size, 100)); // max 100 per chiamata
-        return ResponseEntity.ok(ApiResponse.ok(gameService.filter(req)));
     }
 
     @GetMapping("/{id}")

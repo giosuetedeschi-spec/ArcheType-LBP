@@ -31,11 +31,11 @@ class GameControllerTest {
     }
 
     @Test
-    void list_returns200_paged() {
+    void filter_returns200_paged() {
         var game = new GameResponse(); game.setId(1L); game.setName("CS2");
         when(gameService.filter(any())).thenReturn(pagedOf(game));
 
-        var resp = controller.list(0, 20);
+        var resp = controller.filter(new GameFilterRequest());
         assertThat(resp.getStatusCode()).isEqualTo(HttpStatus.OK);
         assertThat(resp.getBody().getData().getContent()).hasSize(1);
     }

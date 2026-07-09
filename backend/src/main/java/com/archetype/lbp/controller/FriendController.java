@@ -4,6 +4,7 @@ import com.archetype.lbp.dto.ApiResponse;
 import com.archetype.lbp.dto.FriendRequest;
 import com.archetype.lbp.dto.FriendResponse;
 import com.archetype.lbp.service.FriendService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -31,7 +32,7 @@ public class FriendController {
     @PostMapping
     public ResponseEntity<ApiResponse<Void>> addFriend(
             @PathVariable Long userId,
-            @RequestBody FriendRequest req) {
+            @Valid @RequestBody FriendRequest req) {
         friendService.addFriend(userId, req.getFriendId());
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.ok(null, "Richiesta di amicizia inviata"));
