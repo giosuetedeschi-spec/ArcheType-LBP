@@ -1,6 +1,6 @@
-"""Popolamento database da dataset Steam CSV/JSON.
+"""Popolamento database da dataset Steam CSV.
 
-Legge il dataset Steam (CSV o JSON), lo pulisce/normalizza e lo inserisce nel
+Legge il dataset Steam (CSV), lo pulisce/normalizza e lo inserisce nel
 database PostgreSQL: giochi, developer/publisher (lookup), generi e categorie
 (entrambe relazioni molti-a-molti, tramite genres + game_genres e
 categories + game_categories rispettivamente).
@@ -42,8 +42,8 @@ BATCH_SIZE = 1000
 
 # init.sql inserisce esattamente 5 giochi seed: superata questa soglia il
 # dataset reale è già stato importato, quindi un successivo avvio automatico
-# (docker compose up) può saltare l'intero giro invece di rileggere ogni
-# volta un CSV da ~389 MB.
+# (docker compose up) può saltare l'intero giro invece di rileggere il CSV ogni volta.
+
 SEED_GAME_COUNT_THRESHOLD = 10
 FORCE_REPOPULATE = os.getenv("FORCE_REPOPULATE", "false").strip().lower() in {"1", "true", "yes"}
 
@@ -776,6 +776,41 @@ def _count_games() -> int:
         conn.close()
 
 
+
+def prewarm_games_table() -> None:
+    """Precarica la tabella games in memoria RAM usando pg_prewarm.
+
+    Issue #21: dopo aver popolato il database con 122k+ giochi, questa funzione
+    chiama l'estensione pg_prewarm di PostgreSQL per caricare l'intera tabella
+    games in shared_buffers (RAM). Questo migliora le performance delle query
+    successive, specialmente le prime dopo l'avvio del container, evitando che
+    PostgreSQL debba leggere i dati dal disco.
+
+    L'operazione è opzionale: se pg_prewarm non è disponibile (es. estensione
+    non installata o permessi insufficienti), logga un warning ma non interrompe
+    il populate. Questo garantisce che lo script funzioni anche su installazioni
+    PostgreSQL senza estensioni contrib.
+
+    Returns:
+        None. Logga il numero di blocchi caricati in memoria in caso di successo,
+        oppure un warning in caso di fallimento (non critico).
+    """
+    conn = get_connection()
+    try:
+        cur = conn.cursor()
+        log.info("Avvio prewarm della tabella games...")
+        # pg_prewarm restituisce il numero di blocchi (buffer) caricati in memoria
+        cur.execute("SELECT pg_prewarm('games')")
+        result = cur.fetchone()
+        log.info(f"Prewarm completato: {result[0]} blocchi caricati in memoria")
+        conn.commit()
+    except Exception as e:
+        # Non critico: il database funziona comunque, solo più lento sulle prime query
+        log.warning(f"Prewarm fallito (non critico): {e}")
+    finally:
+        conn.close()
+
+
 def main() -> None:
     """Entry point: carica il dataset, lo pulisce e popola il database.
 
@@ -811,6 +846,11 @@ def main() -> None:
     df = load_dataset(DATASET_PATH)
     df = clean_data(df)
     insert_games(df)
+    
+    # Issue #21: precarica la tabella games in RAM per migliorare le performance
+    # delle query successive (specialmente le prime dopo l'avvio del container)
+    prewarm_games_table()
+    
     log.info("=== Completato ===")
 
 

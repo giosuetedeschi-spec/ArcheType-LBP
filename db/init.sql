@@ -2,6 +2,10 @@
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+-- Issue #21: abilita pg_prewarm per precaricare tabelle grandi (es. games con 122k+ righe)
+-- in memoria RAM all'avvio. Migliora le performance delle query successive evitando letture da disco.
+CREATE EXTENSION IF NOT EXISTS pg_prewarm;
+
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
