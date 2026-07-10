@@ -4,6 +4,8 @@ import com.archetype.lbp.dto.*;
 import com.archetype.lbp.service.GameService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -15,6 +17,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class GameController {
 
+    private static final Logger log = LoggerFactory.getLogger(GameController.class);
+    
     private final GameService gameService;
 
     /**
@@ -38,22 +42,49 @@ public class GameController {
         return ResponseEntity.ok(ApiResponse.ok(gameService.getById(id)));
     }
 
+    /**
+     * Crea un nuovo gioco.
+     * Issue #15: aggiunto log INFO per tracciare la creazione riuscita.
+     * 
+     * @param req dati del gioco da creare
+     * @return ResponseEntity con il gioco creato e status 201
+     */
     @PostMapping
     public ResponseEntity<ApiResponse<GameResponse>> create(@Valid @RequestBody GameRequest req) {
+        GameResponse response = gameService.create(req);
+        log.info("Game created successfully - ID: {}, Name: {}", response.getId(), response.getName());
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.ok(gameService.create(req), "Gioco creato"));
+                .body(ApiResponse.ok(response, "Gioco creato"));
     }
 
+    /**
+     * Aggiorna un gioco esistente.
+     * Issue #15: aggiunto log INFO per tracciare l'aggiornamento riuscito.
+     * 
+     * @param id ID del gioco da aggiornare
+     * @param req dati aggiornati del gioco
+     * @return ResponseEntity con il gioco aggiornato
+     */
     @PutMapping("/{id}")
     public ResponseEntity<ApiResponse<GameResponse>> update(
             @PathVariable Long id,
             @Valid @RequestBody GameRequest req) {
-        return ResponseEntity.ok(ApiResponse.ok(gameService.update(id, req), "Gioco aggiornato"));
+        GameResponse response = gameService.update(id, req);
+        log.info("Game updated successfully - ID: {}", id);
+        return ResponseEntity.ok(ApiResponse.ok(response, "Gioco aggiornato"));
     }
 
+    /**
+     * Elimina un gioco.
+     * Issue #15: aggiunto log INFO per tracciare l'eliminazione riuscita.
+     * 
+     * @param id ID del gioco da eliminare
+     * @return ResponseEntity con status 200
+     */
     @DeleteMapping("/{id}")
     public ResponseEntity<ApiResponse<Void>> delete(@PathVariable Long id) {
         gameService.delete(id);
+        log.info("Game deleted successfully - ID: {}", id);
         return ResponseEntity.ok(ApiResponse.ok(null, "Gioco eliminato"));
     }
 
