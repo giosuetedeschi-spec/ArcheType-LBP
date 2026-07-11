@@ -22,7 +22,7 @@ export default function StarRating({ value, onChange, size = "sm" }: StarRatingP
           onClick={() => onChange?.(n)}
           aria-label={`${n} stelle`}
           className={`leading-none ${interactive ? "cursor-pointer hover:scale-110 transition-transform" : "cursor-default"} ${
-            n <= value ? "text-vz-lime" : "text-zinc-700"
+            n <= value ? "text-vz-lime" : "text-slate-700"
           }`}
         >
           ★

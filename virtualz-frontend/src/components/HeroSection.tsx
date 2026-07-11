@@ -85,11 +85,11 @@ export default function HeroSection() {
       {/* Hero content */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 text-center">
         <div className="animate-fade-in-up mb-6">
-          <Logo className="text-5xl sm:text-6xl md:text-7xl" />
+          <Logo className="text-5xl sm:text-6xl md:text-7xl" variant="text" />
         </div>
 
         <p
-          className="text-lg sm:text-xl md:text-2xl text-white/90 font-display font-light mb-10 tracking-wide animate-fade-in-up"
+          className="text-lg sm:text-xl md:text-2xl text-slate-300 font-display font-light mb-10 tracking-wide animate-fade-in-up"
           style={{ animationDelay: "200ms" }}
         >
           {t("nav.tagline")}
@@ -109,7 +109,7 @@ export default function HeroSection() {
           {!isAuthenticated && (
             <Link
               to="/register"
-              className="px-10 py-4 rounded-full border-2 border-white/80 text-white font-semibold text-lg hover:bg-white hover:text-vz-navy transition-all duration-200"
+              className="px-10 py-4 rounded-full border-2 border-slate-300/70 text-slate-100 font-semibold text-lg hover:bg-white hover:text-vz-navy transition-all duration-200"
             >
               {t("home.getStarted")}
             </Link>

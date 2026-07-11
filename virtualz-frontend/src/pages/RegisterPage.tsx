@@ -49,9 +49,9 @@ export default function RegisterPage() {
 
   return (
     <div className="max-w-md mx-auto mt-16 px-4 animate-fade-in-up">
-      <div className="bg-vz-charcoal/60 backdrop-blur border border-zinc-800 rounded-2xl p-8">
+      <div className="bg-vz-charcoal/60 backdrop-blur border border-slate-800 rounded-2xl p-8">
         <div className="flex items-center justify-center mb-1">
-          <Logo className="text-2xl" />
+          <Logo className="text-2xl" variant="text" />
         </div>
         <h1 className="text-xl font-display font-bold text-white mb-6 text-center">{t("auth.registerTitle")}</h1>
 
@@ -63,7 +63,7 @@ export default function RegisterPage() {
           onChange={(e) => setForm({ ...form, username: e.target.value })}
           required
           minLength={3}
-          className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
+          className="w-full bg-vz-charcoal border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
         />
         <input
           type="email"
@@ -71,7 +71,7 @@ export default function RegisterPage() {
           value={form.email}
           onChange={(e) => setForm({ ...form, email: e.target.value })}
           required
-          className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
+          className="w-full bg-vz-charcoal border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
         />
         <PasswordInput
           placeholder={t("auth.password")}
@@ -81,12 +81,12 @@ export default function RegisterPage() {
           minLength={8}
         />
 
-        <label className="flex items-start gap-2 text-sm text-zinc-300">
+        <label className="flex items-start gap-2 text-sm text-slate-300">
           <input
             type="checkbox"
             checked={ageConfirmed}
             onChange={(e) => setAgeConfirmed(e.target.checked)}
-            className="mt-0.5 h-4 w-4 rounded border-zinc-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
+            className="mt-0.5 h-4 w-4 rounded border-slate-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
           />
           <span>{t("auth.ageConfirm")}</span>
         </label>
@@ -104,7 +104,7 @@ export default function RegisterPage() {
 
       <OAuthButtons />
 
-      <p className="text-sm text-zinc-400 mt-6 text-center">
+      <p className="text-sm text-slate-400 mt-6 text-center">
         {t("auth.haveAccount")}{" "}
         <Link to="/login" className="text-vz-lime hover:underline">
           {t("nav.login")}

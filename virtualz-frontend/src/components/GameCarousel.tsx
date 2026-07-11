@@ -70,7 +70,7 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
         {scrollIndex > 0 && (
           <button
             onClick={handlePrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-vz-charcoal/90 border border-zinc-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
           >
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
@@ -92,7 +92,7 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
         {scrollIndex < maxIndex && (
           <button
             onClick={handleNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-vz-charcoal/90 border border-zinc-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
           >
             <ChevronRight className="w-6 h-6 text-white" />
           </button>
