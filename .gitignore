@@ -62,3 +62,5 @@ data/*.json
 
 # Playwright MCP scratch output (screenshots/snapshots from local testing)
 .playwright-mcp/
+out/
+.tanstack/

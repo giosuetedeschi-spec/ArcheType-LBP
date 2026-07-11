@@ -24,10 +24,10 @@ export const Logo: React.FC<LogoProps> = ({
   if (variant === 'text') {
     return (
       <div className={className}>
-        <span className="bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent">
+        <span className="bg-gradient-to-r from-vz-pink to-slate-100 bg-clip-text text-transparent">
           Virtual
         </span>
-        <span className="bg-gradient-to-r from-pink-500 to-vz-lime bg-clip-text text-transparent">
+        <span className="text-vz-lime">
           Z
         </span>
       </div>
@@ -48,7 +48,7 @@ export const Logo: React.FC<LogoProps> = ({
     >
       <defs>
         <linearGradient id="vz-gem" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#3b82f6" />
+          <stop offset="0" stopColor="#ff66c4" />
           <stop offset="1" stopColor="#a855f7" />
         </linearGradient>
       </defs>
