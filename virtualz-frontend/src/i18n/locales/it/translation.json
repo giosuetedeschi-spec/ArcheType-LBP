@@ -87,7 +87,8 @@
     "reviewPlaceholder": "Cosa ne pensi di questo gioco? (opzionale)",
     "submitReview": "Pubblica",
     "removeReview": "Rimuovi la tua recensione",
-    "noReviews": "Nessuna recensione ancora. Scrivi la prima!"
+    "noReviews": "Nessuna recensione ancora. Scrivi la prima!",
+    "descriptionBadge": "EN · Descrizione originale"
   },
   "library": {
     "title": "La mia Libreria",

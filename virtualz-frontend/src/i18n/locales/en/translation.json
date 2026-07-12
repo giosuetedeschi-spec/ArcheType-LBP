@@ -87,7 +87,8 @@
     "reviewPlaceholder": "What do you think of this game? (optional)",
     "submitReview": "Post",
     "removeReview": "Remove your review",
-    "noReviews": "No reviews yet. Be the first!"
+    "noReviews": "No reviews yet. Be the first!",
+    "descriptionBadge": "EN · Original description"
   },
   "library": {
     "title": "My Library",
