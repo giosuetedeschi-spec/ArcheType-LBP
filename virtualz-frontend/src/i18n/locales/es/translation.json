@@ -15,7 +15,7 @@
   },
   "auth": {
     "login": "Iniciar sesión",
-    "loginSubtitle": "Bienvenido de nuevo a VirtualZ",
+    "loginSubtitle": "Introduce tus credenciales para acceder",
     "loggingIn": "Iniciando sesión…",
     "registerHere": "Regístrate",
     "usernamePlaceholder": "Ingresa tu nombre de usuario",

@@ -15,7 +15,7 @@
   },
   "auth": {
     "login": "Se connecter",
-    "loginSubtitle": "Bon retour sur VirtualZ",
+    "loginSubtitle": "Entrez vos identifiants pour vous connecter",
     "loggingIn": "Connexion en cours…",
     "registerHere": "Inscrivez-vous",
     "usernamePlaceholder": "Entrez votre nom d'utilisateur",
