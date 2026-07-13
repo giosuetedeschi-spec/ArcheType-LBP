@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { useAuth } from "../context/AuthContext";
 import { listUsers, getUserStats } from "../services/usersApi";
 import {
@@ -38,6 +39,8 @@ export default function FriendsPage() {
   const [pending, setPending] = useState<FriendItem[]>([]);
   const [allUsers, setAllUsers] = useState<UserSummary[]>([]);
   const [statsByUserId, setStatsByUserId] = useState<Record<number, UserStats>>({});
+  const [pendingListRef] = useAutoAnimate();
+  const [friendsListRef] = useAutoAnimate();
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [actionMessage, setActionMessage] = useState<string | null>(null);
@@ -171,7 +174,7 @@ export default function FriendsPage() {
               <h2 className="text-lg font-display font-semibold text-white mb-3">
                 {t("friends.requestsReceived")}
               </h2>
-              <div className="space-y-2">
+              <div ref={pendingListRef} className="space-y-2">
                 {pending.map((req) => (
                   <div
                     key={req.friendId}
@@ -207,7 +210,7 @@ export default function FriendsPage() {
             {friends.length === 0 ? (
               <p className="text-slate-400">{t("friends.noFriends")}</p>
             ) : (
-              <div className="space-y-2">
+              <div ref={friendsListRef} className="space-y-2">
                 {friends.map((friend) => {
                   const stats = statsByUserId[friend.friendId];
                   const owned = stats ? stats.totalGames - stats.wishlistCount : null;
