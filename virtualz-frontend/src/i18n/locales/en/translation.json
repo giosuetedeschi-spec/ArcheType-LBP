@@ -77,6 +77,7 @@
     "publishers": "Publishers",
     "releaseDate": "Release date",
     "rating": "Rating",
+    "ageRating": "Minimum age",
     "genres": "Genres",
     "reviews": "Reviews",
     "description": "Description",
