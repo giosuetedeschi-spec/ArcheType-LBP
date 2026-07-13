@@ -45,6 +45,8 @@ export interface CatalogSearchParams {
   os?: string[];
   /** true = solo giochi con supporto VR (categorie Steam dedicate). */
   vr?: boolean;
+  /** Media minima delle recensioni utente (tabella reviews, scala 1-5). */
+  minUserRating?: number;
   sortBy?: string;
   sortDir?: "asc" | "desc";
 }

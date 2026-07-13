@@ -16,6 +16,9 @@
  *                  sull'oggetto Game (colonne Windows/Mac/Linux del dataset Steam).
  *  - VR          → funzionante (checkbox singola). Riusa le categorie Steam
  *                  già importate ("VR Support"/"VR Only"/ecc.), non un campo dedicato.
+ *  - Voto utenti → funzionante (minUserRating). Media delle recensioni scritte dagli
+ *                  utenti sulla piattaforma (tabella reviews), distinta dal rating Steam
+ *                  del dataset importato.
  *  - Ordinamento → funzionante (sortBy + sortDir, già previsti da CatalogSearchParams).
  *
  * NOTA ricerca: il parametro inviato è `name` (come documentato in CatalogSearchParams),
@@ -63,6 +66,7 @@ interface FilterState {
   maxPrice: string;
   os: string[];
   vr: boolean;
+  minUserRating: string;
   sort: string; // "campo:direzione" oppure ""
 }
 
@@ -73,8 +77,12 @@ const EMPTY_FILTERS: FilterState = {
   maxPrice: "",
   os: [],
   vr: false,
+  minUserRating: "",
   sort: "rating:desc",
 };
+
+// Valori dello <select> voto minimo utenti (scala reviews.rating, 1-5).
+const MIN_USER_RATING_OPTIONS = ["3", "4", "4.5"] as const;
 
 export default function CatalogPage() {
   const { t } = useTranslation();
@@ -113,6 +121,7 @@ export default function CatalogPage() {
       if (filters.maxPrice) params.maxPrice = Number(filters.maxPrice);
       if (filters.os.length) params.os = filters.os;
       if (filters.vr) params.vr = true;
+      if (filters.minUserRating) params.minUserRating = Number(filters.minUserRating);
       if (filters.sort) {
         const [sortBy, sortDir] = filters.sort.split(":");
         params.sortBy = sortBy;
@@ -172,6 +181,7 @@ export default function CatalogPage() {
     filters.maxPrice !== "" ||
     filters.os.length > 0 ||
     filters.vr ||
+    filters.minUserRating !== "" ||
     filters.sort !== "";
 
   const inputClass =
@@ -268,6 +278,25 @@ export default function CatalogPage() {
                   {t("catalog.vrOnly")}
                 </label>
               </div>
+            </div>
+
+            {/* --- Voto utenti --- */}
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">
+                {t("catalog.userRating")}
+              </h3>
+              <select
+                value={filters.minUserRating}
+                onChange={(e) => handleFilterChange("minUserRating", e.target.value)}
+                className={`${inputClass} w-full`}
+              >
+                <option value="">{t("catalog.userRatingAny")}</option>
+                {MIN_USER_RATING_OPTIONS.map((value) => (
+                  <option key={value} value={value}>
+                    {t("catalog.userRatingAndUp", { value })}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* --- Prezzo --- */}
