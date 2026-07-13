@@ -35,8 +35,15 @@ public class GameFilterRequest {
     // vederli anche) — checkbox "Mostra giochi 18+" lato UI.
     private Boolean mature;
 
-    private String sortBy = "name";
-    private String sortDir = "asc";
+    // Default "estimatedOwners"/"desc" invece di "name"/"asc": un ordinamento
+    // alfabetico per nome mette in prima pagina titoli obscure/asset-flip
+    // (es. "! Shakabula", "#!/bin/bash") solo perché iniziano con simboli.
+    // "rating" sarebbe l'alternativa ovvia ma è priva di segnale in questo
+    // dataset (zero giochi su 122.611 hanno uno User score diverso da 0) —
+    // vedi populate_db.py._parse_estimated_owners per il confronto con le
+    // altre colonne di popolarità valutate.
+    private String sortBy = "estimatedOwners";
+    private String sortDir = "desc";
 
     @Min(value = 0, message = "page non può essere negativo")
     private int page = 0;
