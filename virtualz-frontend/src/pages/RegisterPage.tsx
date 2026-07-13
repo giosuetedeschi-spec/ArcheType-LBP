@@ -1,5 +1,5 @@
 import { useState, type FormEvent } from "react";
-import { Link, useNavigate } from "@tanstack/react-router";
+import { Link, Navigate, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
 import { useAuth } from "../context/AuthContext";
@@ -10,13 +10,16 @@ import type { RegisterPayload } from "@/types/api";
 
 export default function RegisterPage() {
   const { t } = useTranslation();
-  const { register } = useAuth();
+  const { register, isAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const [form, setForm] = useState<RegisterPayload>({ username: "", email: "", password: "" });
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Se utente gia autenticato, redirect alla home
+  if (isAuthenticated) return <Navigate to="/" />;
 
   async function handleSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
