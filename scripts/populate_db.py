@@ -357,20 +357,28 @@ def _parse_price(value) -> float:
 
 
 def _parse_rating(value):
-    """Estrae e normalizza il rating su una scala 0-9.99 (vincolo colonna DB).
+    """Estrae e normalizza il rating su una scala 0-5 (coerente con
+    Game.rating, @DecimalMax(5.00)).
 
     Il dataset può esprimere il voto su scale diverse (es. 0-5 stelle oppure
     0-100 come "User score" percentuale): questa funzione riconosce la scala
     in base al valore letto (>5 implica una scala più ampia, tipicamente
-    0-100) e la riporta a un intervallo unico compatibile con la colonna
-    `rating DECIMAL(3,2)` del database, il cui massimo rappresentabile è
-    9.99 — da cui il cap finale con min(result, 9.99).
+    0-100) e la riporta a 0-5.
+
+    Bug corretto: la versione precedente divideva per 10 invece che per 20
+    per normalizzare una scala 0-100 a 0-5, e il cap finale era min(x, 9.99)
+    invece di min(x, 5.0) — coerente solo con la capacità grezza della
+    colonna DECIMAL(3,2), non con la scala 0-5 realmente prevista. Risultato:
+    un "User score" del 99% diventava rating 9.9 invece di 4.95, producendo
+    valori fuori scala (fino a 9.99) per un piccolo sottoinsieme di righe —
+    per lo più titoli con testo insolito in altri campi, che finivano in
+    cima a qualunque ordinamento per rating decrescente.
 
     Args:
         value: valore grezzo dalla colonna rating/user score.
 
     Returns:
-        float | None: rating normalizzato in [0, 9.99], oppure None se il
+        float | None: rating normalizzato in [0, 5.0], oppure None se il
         valore è mancante o non contiene alcun numero riconoscibile.
     """
     if pd.isna(value):
@@ -382,8 +390,8 @@ def _parse_rating(value):
     if not match:
         return None
     value_num = float(match.group(1))
-    result = value_num if value_num <= 5 else round(value_num / 10, 2)
-    return min(result, 9.99)
+    result = value_num if value_num <= 5 else round(value_num / 20, 2)
+    return min(result, 5.0)
 
 
 def _parse_estimated_owners(value) -> int:
@@ -773,10 +781,13 @@ def insert_games(df: pd.DataFrame) -> None:
         ))
 
     # Su conflitto (gioco già esistente) si aggiornano solo windows/mac/linux/
-    # mature/estimated_owners: permette di rilanciare lo script per fare il
-    # backfill di questi campi su un database già popolato (es. dopo
-    # l'aggiunta delle colonne via ALTER TABLE) senza toccare gli altri campi
-    # né duplicare righe.
+    # mature/estimated_owners/rating: permette di rilanciare lo script per
+    # fare il backfill di questi campi su un database già popolato (es. dopo
+    # l'aggiunta delle colonne via ALTER TABLE, o dopo il fix di _parse_rating
+    # sotto) senza toccare gli altri campi né duplicare righe. rating incluso
+    # qui apposta: senza, un FORCE_REPOPULATE su un DB già popolato prima del
+    # fix di _parse_rating (divideva per 10 invece che per 20, cap a 9.99
+    # invece che 5.0) lascerebbe i valori fuori scala già scritti intatti.
     sql = """
         INSERT INTO games (appid, name, release_date, developer_id, publisher_id,
                           price, rating, description, header_image_url,
@@ -787,7 +798,8 @@ def insert_games(df: pd.DataFrame) -> None:
             mac = EXCLUDED.mac,
             linux = EXCLUDED.linux,
             mature = EXCLUDED.mature,
-            estimated_owners = EXCLUDED.estimated_owners
+            estimated_owners = EXCLUDED.estimated_owners,
+            rating = EXCLUDED.rating
     """
 
     for i in tqdm(range(0, len(game_records), BATCH_SIZE), desc="Inserting"):
