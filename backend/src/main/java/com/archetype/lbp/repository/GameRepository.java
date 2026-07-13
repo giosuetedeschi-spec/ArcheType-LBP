@@ -7,6 +7,9 @@ import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -111,4 +114,7 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
+
+    @Query("SELECT g FROM Game g WHERE g.headerImageUrl IS NOT NULL AND g.headerImageUrl <> ''") 
+    Page<Game> findValidGames(Pageable pageable);
 }
