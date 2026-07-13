@@ -31,9 +31,11 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
   const [scrollIndex, setScrollIndex] = useState(0);
   const gamesPerView = 4;
 
+  // sortBy/sortDir espliciti per mostrare i titoli più diffusi del genere,
+  // non i primi in ordine alfabetico — stesso motivo di HomePage.tsx.
   const { data, isLoading } = useQuery({
     queryKey: ["games", "genre", genre],
-    queryFn: () => searchCatalog({ page: 0, size: 20, genre }),
+    queryFn: () => searchCatalog({ page: 0, size: 20, genre, sortBy: "estimatedOwners", sortDir: "desc" }),
   });
 
   const games: Game[] = data?.content ?? [];
