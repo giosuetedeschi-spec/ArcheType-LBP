@@ -33,9 +33,6 @@ export default function Navbar() {
       <Link to="/library" className="text-zinc-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
         {t("nav.library")}
       </Link>
-      <Link to="/library" search={{ status: "wishlist" }} className="text-zinc-300 hover:text-vz-pink transition-colors" onClick={() => setMenuOpen(false)}>
-        {t("nav.wishlist")}
-      </Link>
       <Link to="/leaderboard" className="text-zinc-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
         {t("nav.leaderboard")}
       </Link>

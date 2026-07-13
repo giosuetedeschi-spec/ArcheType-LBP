@@ -69,7 +69,7 @@
     "price": "Prezzo"
   },
   "game": {
-    "addToWishlist": "Aggiungi alla lista dei desideri",
+    "addToWishlist": "Lista desideri",
     "buy": "Compra",
     "play": "Gioca",
     "viewOnSteam": "Vedi su Steam",
@@ -90,7 +90,7 @@
     "noReviews": "Nessuna recensione ancora. Scrivi la prima!"
   },
   "library": {
-    "title": "La mia Libreria",
+    "title": "Libreria",
     "wishlistSection": "Lista dei desideri",
     "backlogSection": "Backlog",
     "emptyWishlist": "La tua lista dei desideri è vuota. Aggiungi qualche gioco dal catalogo!",
