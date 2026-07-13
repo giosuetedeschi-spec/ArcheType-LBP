@@ -14,6 +14,7 @@ export default function LoginPage() {
   const navigate = useNavigate();
 
   const [form, setForm] = useState<LoginPayload>({ username: "", password: "" });
+  const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
 
@@ -25,7 +26,7 @@ export default function LoginPage() {
     setError(null);
     setLoading(true);
     try {
-      await login(form);
+      await login(form, rememberMe);
       navigate({ to: "/" });
     } catch (err) {
       // isAxiosError() stringe il tipo di `err` (unknown in un blocco catch)
@@ -61,6 +62,16 @@ export default function LoginPage() {
             onChange={(value) => setForm({ ...form, password: value })}
             required
           />
+
+          <label className="flex items-center gap-2 cursor-pointer">
+            <input
+              type="checkbox"
+              checked={rememberMe}
+              onChange={(e) => setRememberMe(e.target.checked)}
+              className="h-4 w-4 rounded border-zinc-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
+            />
+            <span className="text-sm text-zinc-300">{t("auth.rememberMe")}</span>
+          </label>
 
           {error && <p className="text-vz-pink text-sm">{error}</p>}
 
