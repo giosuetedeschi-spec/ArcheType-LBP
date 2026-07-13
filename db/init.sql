@@ -69,6 +69,7 @@ CREATE TABLE IF NOT EXISTS games (
     mac BOOLEAN NOT NULL DEFAULT FALSE,
     linux BOOLEAN NOT NULL DEFAULT FALSE,
     mature BOOLEAN NOT NULL DEFAULT FALSE,
+    estimated_owners INTEGER NOT NULL DEFAULT 0,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
@@ -161,6 +162,7 @@ CREATE INDEX idx_games_appid ON games(appid);
 CREATE INDEX idx_games_name ON games(name);
 CREATE INDEX idx_games_release_date ON games(release_date);
 CREATE INDEX idx_games_rating ON games(rating);
+CREATE INDEX idx_games_estimated_owners ON games(estimated_owners);
 CREATE INDEX idx_games_developer ON games(developer_id);
 CREATE INDEX idx_games_publisher ON games(publisher_id);
 CREATE INDEX idx_game_genres_game ON game_genres(game_id);

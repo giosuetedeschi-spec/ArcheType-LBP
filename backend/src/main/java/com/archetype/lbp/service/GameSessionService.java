@@ -20,6 +20,10 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service per la gestione delle sessioni di gioco.
+ * Issue #58: aggiunto JavaDoc per documentare le operazioni disponibili.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional
@@ -29,6 +33,10 @@ public class GameSessionService {
     private final UserRepository userRepo;
     private final GameRepository gameRepo;
 
+    /**
+     * Lista le sessioni di un utente, eventualmente filtrate per gioco.
+     * @return lista di sessioni ordinate per data di inizio (più recenti prima)
+     */
     @Transactional(readOnly = true)
     public List<GameSessionResponse> list(Long userId, Long gameId) {
         validateUser(userId);
@@ -38,6 +46,10 @@ public class GameSessionService {
         return sessions.stream().map(this::toResponse).collect(Collectors.toList());
     }
 
+    /**
+     * Avvia una nuova sessione di gioco per un utente.
+     * @return la sessione creata
+     */
     public GameSessionResponse start(Long userId, GameSessionRequest req) {
         User user = userRepo.findById(userId)
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", userId));
@@ -51,6 +63,11 @@ public class GameSessionService {
         return toResponse(sessionRepo.save(session));
     }
 
+    /**
+     * Termina una sessione di gioco in corso, calcolando la durata.
+     * @return la sessione aggiornata con data di fine e durata
+     * @throws IllegalArgumentException se la sessione è già terminata o se sessionEnd è prima di sessionStart
+     */
     public GameSessionResponse end(Long userId, Long id, GameSessionEndRequest req) {
         GameSession session = sessionRepo.findByIdAndUser_Id(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("GameSession", "id", id));
@@ -68,18 +85,21 @@ public class GameSessionService {
         return toResponse(sessionRepo.save(session));
     }
 
+    /** Elimina una sessione di gioco. */
     public void delete(Long userId, Long id) {
         GameSession session = sessionRepo.findByIdAndUser_Id(id, userId)
                 .orElseThrow(() -> new ResourceNotFoundException("GameSession", "id", id));
         sessionRepo.delete(session);
     }
 
+    /** Verifica che l'utente esista, lancia ResourceNotFoundException se non esiste. */
     private void validateUser(Long userId) {
         if (!userRepo.existsById(userId)) {
             throw new ResourceNotFoundException("User", "id", userId);
         }
     }
 
+    /** Converte una entity GameSession nel DTO GameSessionResponse. */
     private GameSessionResponse toResponse(GameSession session) {
         GameSessionResponse r = new GameSessionResponse();
         r.setId(session.getId());

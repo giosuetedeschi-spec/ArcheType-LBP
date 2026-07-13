@@ -26,21 +26,21 @@ export default function GenreBarChart({ data }: GenreBarChartProps) {
   const maxValue = Math.max(...rows.map(([, count]) => count));
 
   return (
-    <div className="bg-vz-charcoal rounded-xl border border-zinc-800 p-5">
-      <h3 className="text-sm font-semibold text-zinc-300 mb-4">{t("profile.gamesByGenre")}</h3>
+    <div className="bg-vz-charcoal rounded-xl border border-slate-800 p-5">
+      <h3 className="text-sm font-semibold text-slate-300 mb-4">{t("profile.gamesByGenre")}</h3>
       <div className="space-y-2.5">
         {rows.map(([genre, count]) => (
           <div key={genre} className="flex items-center gap-3">
-            <span className="text-xs text-zinc-400 w-24 shrink-0 truncate" title={genre}>
+            <span className="text-xs text-slate-400 w-24 shrink-0 truncate" title={genre}>
               {genre}
             </span>
-            <div className="flex-1 h-5 bg-zinc-800/60 rounded-r">
+            <div className="flex-1 h-5 bg-slate-800/60 rounded-r">
               <div
                 className="h-5 bg-vz-lime rounded-r-[4px]"
                 style={{ width: `${(count / maxValue) * 100}%` }}
               />
             </div>
-            <span className="text-xs text-zinc-300 w-6 text-right shrink-0">{count}</span>
+            <span className="text-xs text-slate-300 w-6 text-right shrink-0">{count}</span>
           </div>
         ))}
       </div>

@@ -26,9 +26,9 @@ export default function GameCard({ game }: GameCardProps) {
     <Link
       to="/games/$id"
       params={{ id: String(game.id) }}
-      className="group bg-vz-charcoal rounded-xl overflow-hidden border border-zinc-800 hover:border-vz-lime hover:shadow-lg hover:shadow-vz-lime/10 hover:-translate-y-1 transition-all duration-200"
+      className="group bg-vz-charcoal rounded-xl overflow-hidden border border-slate-800 hover:border-vz-lime hover:shadow-lg hover:shadow-vz-lime/10 hover:-translate-y-1 transition-all duration-200"
     >
-      <div className="aspect-video bg-zinc-900 overflow-hidden relative">
+      <div className="aspect-video bg-slate-900 overflow-hidden relative">
         {game.headerImageUrl ? (
           <img
             src={game.headerImageUrl}
@@ -53,7 +53,7 @@ export default function GameCard({ game }: GameCardProps) {
           {displayName}
         </h3>
         {game.genres && game.genres.trim() !== "" && (
-          <span className="text-xs text-zinc-500 truncate block mt-1">
+          <span className="text-xs text-slate-500 truncate block mt-1">
             {game.genres.split(",").slice(0, 2).map(localizeGenre).join(" · ")}
           </span>
         )}

@@ -75,7 +75,7 @@ export default function LeaderboardPage() {
               className={`px-4 py-2 rounded-lg text-sm font-semibold transition-colors ${
                 scope === s
                   ? "bg-vz-lime text-vz-navy"
-                  : "bg-vz-charcoal border border-zinc-700 text-zinc-300 hover:border-vz-lime"
+                  : "bg-vz-charcoal border border-slate-700 text-slate-300 hover:border-vz-lime"
               }`}
             >
               {t(`leaderboard.scope.${s}`)}
@@ -86,7 +86,7 @@ export default function LeaderboardPage() {
         <select
           value={metric}
           onChange={(e) => updateSearch({ metric: e.target.value })}
-          className="bg-vz-charcoal border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-vz-lime"
+          className="bg-vz-charcoal border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-vz-lime"
         >
           {METRICS.map((m) => (
             <option key={m} value={m}>
@@ -96,7 +96,7 @@ export default function LeaderboardPage() {
         </select>
       </div>
 
-      {loading && <p className="text-zinc-400">{t("common.loading")}</p>}
+      {loading && <p className="text-slate-400">{t("common.loading")}</p>}
       {error && <p className="text-vz-pink">{error}</p>}
 
       {!loading && !error && data && (
@@ -111,12 +111,12 @@ export default function LeaderboardPage() {
               </div>
               <span className="flex-1 text-white font-semibold">{data.myEntry.username}</span>
               <span className="text-vz-lime font-bold">{formatValue(data.myEntry.value)}</span>
-              <span className="text-xs text-zinc-400">{t("leaderboard.you")}</span>
+              <span className="text-xs text-slate-400">{t("leaderboard.you")}</span>
             </div>
           )}
 
           {data.entries.length === 0 && (
-            <p className="text-zinc-400">{t("leaderboard.empty")}</p>
+            <p className="text-slate-400">{t("leaderboard.empty")}</p>
           )}
 
           <div className="flex flex-col gap-2">
@@ -126,17 +126,17 @@ export default function LeaderboardPage() {
                 className={`flex items-center gap-4 rounded-xl p-4 border ${
                   entry.userId === user.id
                     ? "bg-vz-charcoal border-vz-lime"
-                    : "bg-vz-charcoal border-zinc-800"
+                    : "bg-vz-charcoal border-slate-800"
                 }`}
               >
-                <span className="w-10 text-center font-display font-bold text-zinc-400">
+                <span className="w-10 text-center font-display font-bold text-slate-400">
                   #{entry.rank}
                 </span>
-                <div className="w-8 h-8 rounded-full bg-zinc-700 text-white flex items-center justify-center text-sm font-bold font-display">
+                <div className="w-8 h-8 rounded-full bg-slate-700 text-white flex items-center justify-center text-sm font-bold font-display">
                   {entry.username.charAt(0).toUpperCase()}
                 </div>
                 <span className="flex-1 text-white">{entry.username}</span>
-                <span className="text-zinc-300 font-semibold">{formatValue(entry.value)}</span>
+                <span className="text-slate-300 font-semibold">{formatValue(entry.value)}</span>
               </div>
             ))}
           </div>
@@ -146,17 +146,17 @@ export default function LeaderboardPage() {
               <button
                 disabled={page <= 0}
                 onClick={() => updateSearch({ page: page - 1 })}
-                className="px-3 py-1.5 rounded-lg border border-zinc-700 text-zinc-300 disabled:opacity-40 hover:border-vz-lime transition-colors"
+                className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300 disabled:opacity-40 hover:border-vz-lime transition-colors"
               >
                 {t("leaderboard.prev")}
               </button>
-              <span className="text-sm text-zinc-400">
+              <span className="text-sm text-slate-400">
                 {t("leaderboard.page", { current: page + 1, total: data.totalPages })}
               </span>
               <button
                 disabled={page + 1 >= data.totalPages}
                 onClick={() => updateSearch({ page: page + 1 })}
-                className="px-3 py-1.5 rounded-lg border border-zinc-700 text-zinc-300 disabled:opacity-40 hover:border-vz-lime transition-colors"
+                className="px-3 py-1.5 rounded-lg border border-slate-700 text-slate-300 disabled:opacity-40 hover:border-vz-lime transition-colors"
               >
                 {t("leaderboard.next")}
               </button>
