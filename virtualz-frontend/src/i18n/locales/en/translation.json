@@ -15,7 +15,7 @@
   },
   "auth": {
     "login": "Log in",
-    "loginSubtitle": "Welcome back to VirtualZ",
+    "loginSubtitle": "Enter your credentials to sign in",
     "loggingIn": "Logging in…",
     "registerHere": "Register",
     "usernamePlaceholder": "Enter your username",
@@ -59,9 +59,13 @@
     "sortPriceAsc": "Price: low to high",
     "sortPriceDesc": "Price: high to low",
     "sortRatingDesc": "Rating",
+    "sortPopularity": "Most popular",
     "sortNewest": "Newest",
     "os": "Operating system",
     "vrOnly": "VR games only",
+    "userRating": "User rating",
+    "userRatingAny": "Any rating",
+    "userRatingAndUp": "{{value}}+ stars",
     "showMature": "Show 18+ games",
     "comingSoon": "Coming soon",
     "reset": "Reset filters",
@@ -90,7 +94,8 @@
     "reviewPlaceholder": "What do you think of this game? (optional)",
     "submitReview": "Post",
     "removeReview": "Remove your review",
-    "noReviews": "No reviews yet. Be the first!"
+    "noReviews": "No reviews yet. Be the first!",
+    "descriptionBadge": "EN · Original description"
   },
   "library": {
     "title": "My Library",

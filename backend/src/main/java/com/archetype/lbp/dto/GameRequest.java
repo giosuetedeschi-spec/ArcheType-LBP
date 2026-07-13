@@ -39,4 +39,7 @@ public class GameRequest {
     private Boolean mac = false;
     private Boolean linux = false;
     private Boolean mature = false;
+
+    @Min(value = 0, message = "Estimated owners cannot be negative")
+    private Integer estimatedOwners = 0;
 }
