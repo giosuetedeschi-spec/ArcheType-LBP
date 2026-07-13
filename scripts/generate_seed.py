@@ -9,9 +9,11 @@ no-image, adult) e scrive:
 Da eseguire UNA volta: l'output alimenta il repopulate e il pg_dump che
 diventa il seed versionato del progetto.
 """
-import csv, re, sys
+import csv, os, re, sys
 
-SRC, DST, REJ = "/data/games.csv", "/out/games_clean.csv", "/out/rejected.csv"
+SRC = os.getenv("STEAM_DATASET_PATH", "/data/games.csv")
+DST = os.getenv("GAMES_CLEAN_PATH", "/out/games_clean.csv")
+REJ = os.getenv("REJECTED_ROWS_PATH", "/out/rejected.csv")
 ADULT_KW = ("hentai", "sexual content", "nudity", "nsfw", "adults only")
 DATE_RE = re.compile(r"^[A-Z][a-z]{2}\s+\d{1,2},\s+\d{4}$")  # "Apr 5, 2023"
 
