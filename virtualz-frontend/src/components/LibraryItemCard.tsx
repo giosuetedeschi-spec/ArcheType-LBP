@@ -107,9 +107,11 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
         )}
         <button
           onClick={() => onRemove(item.id)}
-          className="text-xs px-3 py-1 rounded-full text-zinc-500 hover:text-vz-pink"
+          aria-label={t("library.remove")}
+          title={t("library.remove")}
+          className="ml-auto flex items-center justify-center w-6 h-6 rounded-full text-zinc-500 hover:text-vz-pink hover:bg-vz-pink/10 transition-colors leading-none"
         >
-          {t("library.remove")}
+          ✕
         </button>
       </div>
     </div>

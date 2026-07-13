@@ -3,7 +3,7 @@ import { useParams } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
 import { getGameById } from "../services/gamesApi";
-import { addToLibrary, getLibrary } from "../services/libraryApi";
+import { addToLibrary, getLibrary, removeFromLibrary } from "../services/libraryApi";
 import { getGameReviews, addOrUpdateReview, removeReview } from "../services/reviewsApi";
 import { useAuth } from "../context/AuthContext";
 import StarRating from "../components/StarRating";
@@ -80,6 +80,7 @@ export default function GameDetailPage() {
   }, [id, t, fetchReviews, fetchLibrary]);
 
   const ownedEntry = game ? library.find((i) => i.game.id === game.id && i.status !== "wishlist") : undefined;
+  const wishlistEntry = game ? library.find((i) => i.game.id === game.id && i.status === "wishlist") : undefined;
 
   // Precompila il form quando arriva/cambia la propria recensione esistente.
   useEffect(() => {
@@ -134,6 +135,23 @@ export default function GameDetailPage() {
     }
   }
 
+  /**
+   * Rimuove il gioco corrente dalla wishlist dell'utente (toggle del
+   * pulsante "Lista desideri" quando è già stato aggiunto).
+   */
+  async function handleRemoveFromWishlist() {
+    if (!user || !wishlistEntry) return;
+    try {
+      await removeFromLibrary(user.id, wishlistEntry.id);
+      fetchLibrary();
+    } catch (err) {
+      const message = isAxiosError<{ message?: string }>(err)
+        ? err.response?.data?.message
+        : undefined;
+      setActionMessage(message || t("common.error"));
+    }
+  }
+
   if (loading) return <p className="text-zinc-400 text-center mt-16">{t("common.loading")}</p>;
   if (error || !game) return <p className="text-vz-pink text-center mt-16">{error || t("common.error")}</p>;
 
@@ -181,8 +199,12 @@ export default function GameDetailPage() {
         <div className="flex gap-3 mb-6 flex-wrap">
           {!ownedEntry && (
             <button
-              onClick={() => handleAdd("wishlist")}
-              className="px-4 py-2 rounded-full border border-vz-pink text-vz-pink hover:bg-vz-pink/10 transition-colors text-sm font-medium"
+              onClick={() => (wishlistEntry ? handleRemoveFromWishlist() : handleAdd("wishlist"))}
+              className={
+                wishlistEntry
+                  ? "px-4 py-2 rounded-full bg-vz-pink text-white hover:opacity-90 transition-colors text-sm font-medium"
+                  : "px-4 py-2 rounded-full border border-vz-pink text-vz-pink hover:bg-vz-pink/10 transition-colors text-sm font-medium"
+              }
             >
               ♥ {t("game.addToWishlist")}
             </button>

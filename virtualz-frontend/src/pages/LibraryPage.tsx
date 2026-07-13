@@ -128,7 +128,9 @@ export default function LibraryPage() {
 
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
-      <h1 className="text-3xl font-display font-bold text-white mb-6">{t("library.title")}</h1>
+      <h1 className="text-3xl font-display font-bold text-white mb-6">
+        {statusFilter === "wishlist" ? t("library.wishlistSection") : t("library.title")}
+      </h1>
 
       {/* Filtro per stato — la ricerca testuale è stata rimossa: l'endpoint
           /backlog/search non esiste nel backend ArcheType-LBP */}
