@@ -17,3 +17,7 @@ gunzip -c "$SEED_FILE" | psql -U "$POSTGRES_USER" -d "$POSTGRES_DB"
 
 touch "$SENTINEL"
 echo "=== [02] Seed completato ==="
+
+echo "=== [02] pg_prewarm: precarico tabella games in memoria ==="
+psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -c "SELECT pg_prewarm('games');" 2>/dev/null || echo "pg_prewarm non disponibile, skip"
+echo "=== [02] prewarm completato ==="
