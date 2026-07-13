@@ -1,5 +1,6 @@
 import { createContext, useContext, useState, useCallback, type ReactNode } from "react";
 import * as authApi from "../services/authApi";
+import { getStoredUserJson, persistSession as storeSession, clearSession } from "../services/tokenStorage";
 import type { AuthResponse, LoginPayload, RegisterPayload } from "@/types/api";
 
 // Utente minimale salvato in sessione (non il DTO completo del backend)
@@ -11,7 +12,9 @@ interface User {
 // Forma del valore esposto da useAuth() a tutti i componenti
 interface AuthContextValue {
   user: User | null;
-  login: (credentials: LoginPayload) => Promise<AuthResponse>;
+  // remember: true = resta connesso tra riavvii del browser (localStorage),
+  // false = solo finché la scheda resta aperta (sessionStorage) — issue #35.
+  login: (credentials: LoginPayload, remember: boolean) => Promise<AuthResponse>;
   register: (payload: RegisterPayload) => Promise<AuthResponse>;
   logout: () => void;
   isAuthenticated: boolean;
@@ -20,46 +23,48 @@ interface AuthContextValue {
 const AuthContext = createContext<AuthContextValue | null>(null);
 
 // AuthProvider — gestisce sessione utente (login/logout/registrazione),
-// persistita in localStorage. Va montato in routes/__root.tsx, sopra Navbar.
+// persistita in localStorage o sessionStorage (vedi tokenStorage.ts). Va
+// montato in routes/__root.tsx, sopra Navbar.
 export function AuthProvider({ children }: { children: ReactNode }) {
-  // Stato utente: ripristinato da localStorage al primo render (sopravvive al refresh)
+  // Stato utente: ripristinato al primo render (sopravvive al refresh),
+  // da localStorage o sessionStorage a seconda di dove login() l'ha salvato.
   const [user, setUser] = useState<User | null>(() => {
-    const stored = localStorage.getItem("virtualz_user");
+    const stored = getStoredUserJson();
     return stored ? (JSON.parse(stored) as User) : null;
   });
 
   // Salva token + dati utente dopo login/registrazione riusciti
-  const persistSession = useCallback((authResponse: AuthResponse) => {
-    localStorage.setItem("virtualz_token", authResponse.token);
+  const persistSession = useCallback((authResponse: AuthResponse, remember: boolean) => {
     const userData: User = { id: authResponse.userId, username: authResponse.username };
-    localStorage.setItem("virtualz_user", JSON.stringify(userData));
+    storeSession(authResponse.token, JSON.stringify(userData), remember);
     setUser(userData);
   }, []);
 
-  // Login: chiama il backend, poi salva la sessione
+  // Login: chiama il backend, poi salva la sessione dove richiesto dall'utente
   const login = useCallback(
-    async (credentials: LoginPayload) => {
+    async (credentials: LoginPayload, remember: boolean) => {
       const response = await authApi.login(credentials);
-      persistSession(response);
+      persistSession(response, remember);
       return response;
     },
     [persistSession]
   );
 
-  // Registrazione: stesso flusso del login, account nuovo
+  // Registrazione: stesso flusso del login, account nuovo. Nessuna scelta
+  // "resta connesso" qui (checkbox solo su LoginPage) — comportamento
+  // precedente invariato, sempre ricordata.
   const register = useCallback(
     async (payload: RegisterPayload) => {
       const response = await authApi.register(payload);
-      persistSession(response);
+      persistSession(response, true);
       return response;
     },
     [persistSession]
   );
 
-  // Logout: pulisce token e dati utente, sia da localStorage che dallo stato
+  // Logout: pulisce token e dati utente da entrambi gli storage
   const logout = useCallback(() => {
-    localStorage.removeItem("virtualz_token");
-    localStorage.removeItem("virtualz_user");
+    clearSession();
     setUser(null);
   }, []);
 

@@ -20,7 +20,7 @@ const STAT_CARDS: { key: StatKey; color: string }[] = [
   { key: "totalGames", color: "text-white" },
   { key: "inProgress", color: "text-blue-300" },
   { key: "finished", color: "text-vz-lime" },
-  { key: "abandoned", color: "text-zinc-400" },
+  { key: "abandoned", color: "text-slate-400" },
   { key: "wishlistCount", color: "text-vz-pink" },
 ];
 
@@ -121,33 +121,33 @@ export default function ProfilePage() {
         </div>
         <div>
           <h1 className="text-2xl font-display font-bold text-white">{user.username}</h1>
-          <p className="text-sm text-zinc-400">{t("stats.title")}</p>
+          <p className="text-sm text-slate-400">{t("stats.title")}</p>
         </div>
       </div>
 
-      {loading && <p className="text-zinc-400">{t("common.loading")}</p>}
+      {loading && <p className="text-slate-400">{t("common.loading")}</p>}
       {error && <p className="text-vz-pink">{error}</p>}
 
       {!loading && !error && (
         <>
           <div className="grid grid-cols-2 sm:grid-cols-5 gap-4 mb-8">
             {STAT_CARDS.map(({ key, color }) => (
-              <div key={key} className="bg-vz-charcoal rounded-xl border border-zinc-800 p-4 text-center">
+              <div key={key} className="bg-vz-charcoal rounded-xl border border-slate-800 p-4 text-center">
                 <p className={`text-3xl font-bold font-display ${color}`}>{stats[key]}</p>
-                <p className="text-xs text-zinc-500 mt-1">{t(`stats.${key}`)}</p>
+                <p className="text-xs text-slate-500 mt-1">{t(`stats.${key}`)}</p>
               </div>
             ))}
           </div>
 
           {owned > 0 && (
-            <div className="bg-vz-charcoal rounded-xl border border-zinc-800 p-5">
+            <div className="bg-vz-charcoal rounded-xl border border-slate-800 p-5">
               <div className="flex justify-between text-sm mb-2">
-                <span className="text-zinc-300">
+                <span className="text-slate-300">
                   {t("stats.finished")} / {t("nav.library")}
                 </span>
                 <span className="text-vz-lime font-semibold">{completionRate}%</span>
               </div>
-              <div className="h-2 rounded-full bg-zinc-800 overflow-hidden">
+              <div className="h-2 rounded-full bg-slate-800 overflow-hidden">
                 <div
                   className="h-full bg-vz-lime rounded-full transition-all"
                   style={{ width: `${completionRate}%` }}
@@ -179,7 +179,7 @@ export default function ProfilePage() {
                 </Link>
               </div>
 
-              <div className="bg-vz-charcoal rounded-xl border border-zinc-800 divide-y divide-zinc-800">
+              <div className="bg-vz-charcoal rounded-xl border border-slate-800 divide-y divide-slate-800">
                 {leaderboard.myEntry && (
                   <div className="flex items-center gap-3 p-3 bg-vz-lime/5">
                     <span className="w-8 text-center font-display font-bold text-vz-lime text-sm">
@@ -188,7 +188,7 @@ export default function ProfilePage() {
                     <span className="flex-1 text-white font-medium truncate">
                       {leaderboard.myEntry.username}
                     </span>
-                    <span className="text-xs text-zinc-400">{t("leaderboard.you")}</span>
+                    <span className="text-xs text-slate-400">{t("leaderboard.you")}</span>
                     <span className="text-vz-lime font-semibold text-sm w-14 text-right">
                       {Math.round(leaderboard.myEntry.value / 60)}h
                     </span>
@@ -200,11 +200,11 @@ export default function ProfilePage() {
                   .filter((entry) => entry.userId !== leaderboard.myEntry?.userId)
                   .map((entry) => (
                   <div key={entry.userId} className="flex items-center gap-3 p-3">
-                    <span className="w-8 text-center font-display font-bold text-zinc-400 text-sm">
+                    <span className="w-8 text-center font-display font-bold text-slate-400 text-sm">
                       #{entry.rank}
                     </span>
-                    <span className="flex-1 text-zinc-200 truncate">{entry.username}</span>
-                    <span className="text-zinc-300 font-semibold text-sm w-14 text-right">
+                    <span className="flex-1 text-slate-200 truncate">{entry.username}</span>
+                    <span className="text-slate-300 font-semibold text-sm w-14 text-right">
                       {Math.round(entry.value / 60)}h
                     </span>
                   </div>
@@ -218,7 +218,7 @@ export default function ProfilePage() {
               {t("profile.ownedGames")}
             </h2>
             {ownedGames.length === 0 ? (
-              <p className="text-zinc-400">{t("profile.emptyOwnedGames")}</p>
+              <p className="text-slate-400">{t("profile.emptyOwnedGames")}</p>
             ) : (
               <div className="grid sm:grid-cols-2 gap-4">
                 {ownedGames.map((item) => (
@@ -244,18 +244,18 @@ export default function ProfilePage() {
                     key={review.id}
                     to="/games/$id"
                     params={{ id: String(review.gameId) }}
-                    className="flex items-center gap-3 bg-vz-charcoal rounded-xl border border-zinc-800 p-3 hover:border-vz-lime transition-colors"
+                    className="flex items-center gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-3 hover:border-vz-lime transition-colors"
                   >
                     <img
                       src={review.gameHeaderImageUrl || "https://placehold.co/120x67/111827/ffffff?text=No+Image"}
                       alt={review.gameName}
-                      className="w-20 h-11 object-cover rounded-lg bg-zinc-900 shrink-0"
+                      className="w-20 h-11 object-cover rounded-lg bg-slate-900 shrink-0"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-medium truncate">{review.gameName}</p>
                       <StarRating value={review.rating} />
                       {review.comment && (
-                        <p className="text-xs text-zinc-500 truncate mt-0.5">{review.comment}</p>
+                        <p className="text-xs text-slate-500 truncate mt-0.5">{review.comment}</p>
                       )}
                     </div>
                   </Link>
@@ -269,7 +269,7 @@ export default function ProfilePage() {
               {t("profile.wishlist")}
             </h2>
             {wishlistGames.length === 0 ? (
-              <p className="text-zinc-400">{t("profile.emptyWishlist")}</p>
+              <p className="text-slate-400">{t("profile.emptyWishlist")}</p>
             ) : (
               <div className="grid sm:grid-cols-2 gap-4">
                 {wishlistGames.map((item) => (
@@ -294,7 +294,7 @@ export default function ProfilePage() {
               </Link>
             </div>
             {friends.length === 0 ? (
-              <p className="text-zinc-400">{t("friends.noFriends")}</p>
+              <p className="text-slate-400">{t("friends.noFriends")}</p>
             ) : (
               <div className="grid sm:grid-cols-2 gap-4">
                 {friends.map((friend) => {
@@ -303,7 +303,7 @@ export default function ProfilePage() {
                   return (
                     <div
                       key={friend.friendId}
-                      className="flex items-center gap-3 bg-vz-charcoal rounded-xl border border-zinc-800 p-3"
+                      className="flex items-center gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-3"
                     >
                       <div className="w-10 h-10 rounded-full bg-vz-lime text-vz-navy flex items-center justify-center font-bold font-display shrink-0">
                         {friend.username.charAt(0).toUpperCase()}
@@ -311,7 +311,7 @@ export default function ProfilePage() {
                       <div className="min-w-0">
                         <p className="text-white font-medium truncate">{friend.username}</p>
                         {stats && (
-                          <p className="text-xs text-zinc-500">
+                          <p className="text-xs text-slate-500">
                             {t("friends.ownedGames")}: {friendOwned} · {t("friends.playingNow")}:{" "}
                             {stats.playingCount}
                           </p>
