@@ -20,7 +20,7 @@ Legenda: ✅ Fatta · 🟠 A metà/parziale · ⏳ Non iniziata
 | 👤 Profilo | ✅ | Giochi posseduti, statistiche + grafici, sezione wishlist dedicata, sezione amici, riassunto classifica (posizione + top 3), sezione "Le mie recensioni" con link al gioco |
 | 🎨 Modalità colorblind | ✅ | Presente |
 | 🌐 Multilingua | ✅ | it/en/fr/es; chiavi mancanti (`game.releaseDate`/`game.rating`, mostravano la chiave grezza) e incoerenze IT (loanword non tradotti, refuso "Confirma") corrette il 2026-07-09 |
-| 🔐 Login immediato | ✅ | JWT funzionante, checkbox conferma maggiore età aggiunta (PR #151); redesign grafico da mockup fatto (PR #170) — i bottoni "Continua con Steam/Google" restano placeholder disabilitati, OAuth vero e proprio non ancora implementato |
+| 🔐 Login immediato | ✅ | JWT funzionante, checkbox conferma maggiore età aggiunta (PR #151); redesign grafico da mockup fatto (PR #170); checkbox "Resta connesso" aggiunta (issue #35, PR #211) — sessione in localStorage se spuntata, sessionStorage se no — i bottoni "Continua con Steam/Google" restano placeholder disabilitati, OAuth vero e proprio non ancora implementato |
 
 ## Altri problemi/richieste aperte (da issue GitHub)
 

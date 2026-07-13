@@ -32,6 +32,7 @@
     "haveAccount": "Vous avez déjà un compte ?",
     "loginError": "Identifiants invalides",
     "registerError": "Une erreur est survenue lors de l'inscription",
+    "rememberMe": "Rester connecté",
     "ageConfirm": "Je confirme avoir plus de 18 ans",
     "ageRequired": "Vous devez confirmer avoir plus de 18 ans pour vous inscrire.",
     "orContinueWith": "ou continuer avec",

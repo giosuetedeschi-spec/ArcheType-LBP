@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import LeaderboardPage from '@/pages/LeaderboardPage'
+import { getToken } from '@/services/tokenStorage'
 
 interface LeaderboardSearch {
   scope?: string
@@ -15,7 +16,7 @@ export const Route = createFileRoute('/leaderboard')({
   }),
   // Richiede login, come /library — vedi routes/library.tsx.
   beforeLoad: () => {
-    const token = localStorage.getItem('virtualz_token')
+    const token = getToken()
     if (!token) {
       throw redirect({ to: '/login' })
     }

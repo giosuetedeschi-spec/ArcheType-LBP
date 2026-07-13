@@ -32,6 +32,7 @@
     "haveAccount": "Already have an account?",
     "loginError": "Invalid credentials",
     "registerError": "Something went wrong while signing up",
+    "rememberMe": "Stay logged in",
     "ageConfirm": "I confirm that I am over 18 years old",
     "ageRequired": "You must confirm you are over 18 to sign up.",
     "orContinueWith": "or continue with",

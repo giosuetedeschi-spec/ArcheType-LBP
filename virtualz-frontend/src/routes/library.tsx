@@ -1,5 +1,6 @@
 import { createFileRoute, redirect } from '@tanstack/react-router'
 import LibraryPage from '@/pages/LibraryPage'
+import { getToken } from '@/services/tokenStorage'
 
 interface LibrarySearch {
   status?: string
@@ -10,7 +11,7 @@ export const Route = createFileRoute('/library')({
     status: typeof search.status === 'string' ? search.status : undefined,
   }),
   beforeLoad: () => {
-    const token = localStorage.getItem('virtualz_token')
+    const token = getToken()
     if (!token) {
       throw redirect({ to: '/login' })
     }

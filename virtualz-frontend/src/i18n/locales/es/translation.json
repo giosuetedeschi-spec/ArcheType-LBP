@@ -32,6 +32,7 @@
     "haveAccount": "¿Ya tienes una cuenta?",
     "loginError": "Credenciales no válidas",
     "registerError": "Ocurrió un error durante el registro",
+    "rememberMe": "Mantener sesión iniciada",
     "ageConfirm": "Confirmo que soy mayor de 18 años",
     "ageRequired": "Debes confirmar que eres mayor de 18 años para registrarte.",
     "orContinueWith": "o continúa con",
