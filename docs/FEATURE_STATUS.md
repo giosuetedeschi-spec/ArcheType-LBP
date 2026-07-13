@@ -27,11 +27,10 @@ Legenda: ✅ Fatta · 🟠 A metà/parziale · ⏳ Non iniziata
 **UI da rifare secondo mockup**:
 - #102 Login/Register: redesign visivo fatto (PR #170); i bottoni Steam/Google restano placeholder disabilitati — l'integrazione OAuth vera e propria resta da fare
 
-**Backend**:
-- #101 Molti giochi seed hanno `headerImageUrl` null (fallback grafico già aggiunto lato frontend: `GameCoverPlaceholder`, gradiente animato con la palette del brand invece di un riquadro statico "No Image") — resta comunque data-quality del dataset Steam, non un bug di codice
-
 ---
 *Ultimo aggiornamento: 2026-07-10 — chiusa #182: `HeroSection.tsx` ora sceglie a caso uno tra 3 video gameplay in whitelist (ELDEN RING, Baldur's Gate 3, Grand Theft Auto V — tutti verificati embeddabili via oEmbed YouTube, nessun trailer con loghi/testo), invece del singolo video hardcoded (che tra l'altro non era nemmeno di un gioco del catalogo). Scelta persistita in `sessionStorage` così non cambia a ogni render/tornando sulla home nella stessa sessione. Fallback su embed fallito (PR #165) generalizzato per funzionare con qualunque video della whitelist, non solo quello hardcoded prima. Curare/ampliare la whitelist resta una decisione di contenuto, fuori scope qui:*
+
+*Precedente (stesso giorno) — chiusa #101: aggiunti gli URL header image reali (CDN Steam `shared.akamai.steamstatic.com`, stesso host usato dai dati importati da `populate_db.py`) ai 5 giochi seed hardcoded in `init.sql` (Counter-Strike 2, Baldur's Gate 3, ELDEN RING, GTA V, Dota 2) — erano NULL e lo sarebbero rimasti per sempre anche dopo un populate reale, perché il reimport CSV fa `ON CONFLICT DO UPDATE` solo su windows/mac/linux, mai su `header_image_url`. Serve un `docker compose down -v` + rebuild per i DB dev già popolati con le vecchie righe NULL:*
 
 *Precedente (stesso giorno) — sostituiti i tre fallback statici per `headerImageUrl` null (SVG "No Image" grigio in `GameCard`/`LibraryItemCard`, dipendenza esterna `placehold.co` in `GameDetailPage`) con un unico componente condiviso `GameCoverPlaceholder` (gradiente animato coi colori del brand — navy/pink/lime —, iniziale del nome, `role="img"`/`aria-label` per l'accessibilità, `prefers-reduced-motion` rispettato, e nessuna chiamata a servizi esterni); chiuse anche #140/#19 su GitHub (già risolte da PR #176/#178, mancava solo lo stato "Done" sulla issue) — vedi changelog del giorno precedente:*
 
