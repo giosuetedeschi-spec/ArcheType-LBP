@@ -29,6 +29,8 @@ export interface Game {
   windows: boolean;
   mac: boolean;
   linux: boolean;
+  /** Età minima consigliata (0 = nessuna restrizione), da "Required age" Steam. */
+  requiredAge: number;
   createdAt: string;
 }
 
