@@ -29,8 +29,8 @@ export interface Game {
   windows: boolean;
   mac: boolean;
   linux: boolean;
-  /** Età minima consigliata (0 = nessuna restrizione), da "Required age" Steam. */
-  requiredAge: number;
+  /** true se contenuto per adulti (da "Required age" Steam >= 18). */
+  mature: boolean;
   createdAt: string;
 }
 
@@ -47,6 +47,8 @@ export interface CatalogSearchParams {
   os?: string[];
   /** true = solo giochi con supporto VR (categorie Steam dedicate). */
   vr?: boolean;
+  /** true = solo giochi 18+ (games.mature). */
+  mature?: boolean;
   sortBy?: string;
   sortDir?: "asc" | "desc";
 }
