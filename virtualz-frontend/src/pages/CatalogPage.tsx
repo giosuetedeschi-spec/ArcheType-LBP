@@ -16,6 +16,9 @@
  *                  sull'oggetto Game (colonne Windows/Mac/Linux del dataset Steam).
  *  - VR          → funzionante (checkbox singola). Riusa le categorie Steam
  *                  già importate ("VR Support"/"VR Only"/ecc.), non un campo dedicato.
+ *  - Voto utenti → funzionante (minUserRating). Media delle recensioni scritte dagli
+ *                  utenti sulla piattaforma (tabella reviews), distinta dal rating Steam
+ *                  del dataset importato.
  *  - 18+         → funzionante (checkbox singola, "Mostra giochi 18+"). games.mature
  *                  (Required age >= 18, genere Nudity/Sexual Content/Gore/Violent, o
  *                  "hentai" nel nome — vedi populate_db.py) è nascosto di default dal
@@ -50,9 +53,15 @@ const CURATED_GENRES = ["Action", "Adventure", "RPG", "Strategy", "Indie"];
 // selettore, e nei risultati, solo con "Mostra giochi 18+" attivo.
 const ADULT_GENRE_NAMES = ["Nudity", "Sexual Content", "Gore", "Violent"];
 
-// Ordinamento: value = "campo:direzione" (vuoto = nessun ordinamento / rilevanza).
+// Ordinamento: value = "campo:direzione" (vuoto = nessun ordinamento / rilevanza,
+// che lato backend ora corrisponde comunque a estimatedOwners:desc di default —
+// vedi GameFilterRequest.java — quindi "Rilevanza" e "Più famosi" coincidono).
+// "rating:desc" lasciato per compatibilità ma di fatto un no-op in questo
+// dataset: zero giochi su 122.611 hanno un rating diverso da 0 (vedi
+// populate_db.py._parse_estimated_owners per il dettaglio).
 const SORT_OPTIONS = [
   { value: "", labelKey: "catalog.sortRelevance" },
+  { value: "estimatedOwners:desc", labelKey: "catalog.sortPopularity" },
   { value: "name:asc", labelKey: "catalog.sortNameAsc" },
   { value: "name:desc", labelKey: "catalog.sortNameDesc" },
   { value: "price:asc", labelKey: "catalog.sortPriceAsc" },
@@ -75,6 +84,7 @@ interface FilterState {
   maxPrice: string;
   os: string[];
   vr: boolean;
+  minUserRating: string;
   mature: boolean;
   sort: string; // "campo:direzione" oppure ""
 }
@@ -86,9 +96,13 @@ const EMPTY_FILTERS: FilterState = {
   maxPrice: "",
   os: [],
   vr: false,
+  minUserRating: "",
   mature: false,
-  sort: "rating:desc",
+  sort: "estimatedOwners:desc",
 };
+
+// Valori dello <select> voto minimo utenti (scala reviews.rating, 1-5).
+const MIN_USER_RATING_OPTIONS = ["3", "4", "4.5"] as const;
 
 export default function CatalogPage() {
   const { t } = useTranslation();
@@ -143,6 +157,7 @@ export default function CatalogPage() {
       if (filters.maxPrice) params.maxPrice = Number(filters.maxPrice);
       if (filters.os.length) params.os = filters.os;
       if (filters.vr) params.vr = true;
+      if (filters.minUserRating) params.minUserRating = Number(filters.minUserRating);
       if (filters.mature) params.mature = true;
       if (filters.sort) {
         const [sortBy, sortDir] = filters.sort.split(":");
@@ -208,6 +223,7 @@ export default function CatalogPage() {
     filters.maxPrice !== "" ||
     filters.os.length > 0 ||
     filters.vr ||
+    filters.minUserRating !== "" ||
     filters.mature ||
     filters.sort !== "";
 
@@ -305,6 +321,25 @@ export default function CatalogPage() {
                   {t("catalog.vrOnly")}
                 </label>
               </div>
+            </div>
+
+            {/* --- Voto utenti --- */}
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">
+                {t("catalog.userRating")}
+              </h3>
+              <select
+                value={filters.minUserRating}
+                onChange={(e) => handleFilterChange("minUserRating", e.target.value)}
+                className={`${inputClass} w-full`}
+              >
+                <option value="">{t("catalog.userRatingAny")}</option>
+                {MIN_USER_RATING_OPTIONS.map((value) => (
+                  <option key={value} value={value}>
+                    {t("catalog.userRatingAndUp", { value })}
+                  </option>
+                ))}
+              </select>
             </div>
 
             {/* --- 18+ --- */}
