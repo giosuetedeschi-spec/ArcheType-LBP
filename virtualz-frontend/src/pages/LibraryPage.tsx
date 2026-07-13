@@ -40,9 +40,14 @@ function isValidStatus(value: string | undefined): value is LibraryStatus {
 }
 
 /**
- * LibraryPage — backlog personale dell'utente, con filtro per stato
- * tramite query string (?status=...), gestito da TanStack Router
- * (vedi routes/library.tsx, validateSearch).
+ * LibraryPage — unica pagina "Libreria" (backlog + wishlist insieme),
+ * con filtro per stato tramite query string (?status=...), gestito da
+ * TanStack Router (vedi routes/library.tsx, validateSearch).
+ *
+ * Il filtro è mostrato come barra di tab sotto il titolo (stile
+ * "Tutti / Lista dei desideri / In corso / Finito / Abbandonato"),
+ * non più come <select> a tendina né come pagina separata: la wishlist
+ * è semplicemente uno dei quattro stati filtrabili qui.
  *
  * Route protetta: routes/library.tsx reindirizza a /login se manca il
  * token, quindi in condizioni normali `user` da useAuth() non dovrebbe
@@ -117,7 +122,7 @@ export default function LibraryPage() {
    * TanStack Router, invece di tenerlo solo in stato locale: così il
    * filtro attivo resta condiviso/bookmarkabile via URL.
    *
-   * @param value - stato selezionato dalla select, o stringa vuota per
+   * @param value - stato selezionato dalla tab, o stringa vuota per
    *   "tutti" (rimuove il parametro dall'URL invece di impostarlo vuoto).
    */
   function handleStatusFilterChange(value: string) {
@@ -128,25 +133,40 @@ export default function LibraryPage() {
     }
   }
 
+  // Tab del filtro, nell'ordine richiesto: Tutti, Lista dei desideri,
+  // In corso, Finito, Abbandonato.
+  const tabs: { value: string; label: string }[] = [
+    { value: "", label: t("library.all") },
+    { value: "wishlist", label: t("library.wishlistSection") },
+    { value: "playing", label: t("library.status.playing") },
+    { value: "finished", label: t("library.status.finished") },
+    { value: "abandoned", label: t("library.status.abandoned") },
+  ];
+
   return (
     <div className="max-w-5xl mx-auto px-4 py-8">
       <h1 className="text-3xl font-display font-bold text-white mb-6">{t("library.title")}</h1>
 
-      {/* Filtro per stato — la ricerca testuale è stata rimossa: l'endpoint
-          /backlog/search non esiste nel backend ArcheType-LBP */}
-      <div className="flex flex-wrap gap-3 mb-6">
-        <select
-          value={statusFilter}
-          onChange={(e) => handleStatusFilterChange(e.target.value)}
-          className="bg-vz-charcoal border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-vz-lime"
-        >
-          <option value="">{t("library.all")}</option>
-          {STATUSES.map((s) => (
-            <option key={s} value={s}>
-              {t(`library.status.${s}`)}
-            </option>
+      {/* Barra di tab per il filtro di stato, sotto il titolo — sostituisce
+          il vecchio <select> a tendina. La ricerca testuale è stata
+          rimossa: l'endpoint /backlog/search non esiste nel backend
+          ArcheType-LBP. */}
+      <div className="border-b border-slate-800 mb-6">
+        <nav className="flex flex-wrap gap-6 text-sm">
+          {tabs.map((tab) => (
+            <button
+              key={tab.value || "all"}
+              onClick={() => handleStatusFilterChange(tab.value)}
+              className={`pb-3 -mb-px border-b-2 transition-colors ${
+                statusFilter === tab.value
+                  ? "border-vz-lime text-vz-lime font-semibold"
+                  : "border-transparent text-slate-400 hover:text-white"
+              }`}
+            >
+              {tab.label}
+            </button>
           ))}
-        </select>
+        </nav>
       </div>
 
       {loading && <p className="text-slate-400">{t("common.loading")}</p>}
