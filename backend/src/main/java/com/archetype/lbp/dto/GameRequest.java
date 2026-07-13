@@ -38,4 +38,5 @@ public class GameRequest {
     private Boolean windows = false;
     private Boolean mac = false;
     private Boolean linux = false;
+    private Boolean mature = false;
 }

@@ -231,7 +231,12 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
         "header image": "header_image_url",
         "header_image": "header_image_url",
         "header_image_url": "header_image_url",
+        "required age": "required_age",
+        "required_age": "required_age",
     }
+    # NOTA: "required_age" qui è solo un nome di colonna intermedio (il
+    # valore grezzo del CSV, es. 17/18); insert_games() lo riduce subito a
+    # un booleano "mature" (>= 18) con _parse_mature(), vedi commento lì.
     df = df.rename(columns={k: v for k, v in column_map.items() if k in df.columns})
 
     if "name" not in df.columns:
@@ -465,6 +470,60 @@ def _parse_bool(value) -> bool:
     return str(value).strip().lower() in {"true", "1", "yes"}
 
 
+ADULT_GENRE_NAMES = {"Nudity", "Sexual Content", "Gore", "Violent"}
+
+
+def _parse_mature(required_age_value, genres: list, name: str) -> bool:
+    """Deriva il flag unico "contenuto sensibile/per adulti" da tre segnali del dataset.
+
+    Nessuno dei tre segnali da solo copre abbastanza giochi per essere
+    affidabile, quindi si combinano in un solo booleano (OR):
+
+    1. "Required age" Steam >= 18 (il campo age-rating vero e proprio, ma
+       presente per meno dell'1% dei giochi).
+    2. Genere "Nudity", "Sexual Content", "Gore" o "Violent" (issue #87,
+       poi esteso a Gore/Violent su richiesta esplicita — 257 giochi Gore,
+       414 Violent nel dataset reale, ~569 dei quali non ancora coperti
+       dagli altri due segnali).
+    3. Il nome del gioco contiene "hentai" (case-insensitive). Verificato sul
+       dataset reale: 807 giochi hanno "hentai" nel nome, di cui solo 9 sono
+       già coperti dai due segnali sopra — gli altri 798 sfuggirebbero del
+       tutto altrimenti. Nessun segnale aggiuntivo utile trovato nella
+       colonna "Tags" del CSV (mai importata finora): dove valorizzata,
+       contiene solo "Nudity"/"Sexual Content" con gli stessi identici
+       conteggi già presenti in "Genres", nessun tag "Hentai"/"NSFW" a sé.
+       Euristica sul nome scelta perché ad alta precisione (un titolo con
+       "hentai" esplicito è quasi sempre davvero contenuto per adulti) — non
+       si usano altre parole più ambigue (es. "adult", "mature") per evitare
+       falsi positivi su titoli legittimi.
+
+    Args:
+        required_age_value: valore grezzo dalla colonna required_age
+            (numero, stringa, o NaN/None).
+        genres: lista di nomi di genere già estratta per questa riga (vedi
+            _parse_genres) — evita un secondo parsing del campo CSV.
+        name: nome del gioco già pulito (vedi _clean_text).
+
+    Returns:
+        bool: True se almeno uno dei tre segnali indica contenuto per
+        adulti, False altrimenti.
+    """
+    if not pd.isna(required_age_value):
+        text = str(required_age_value).strip()
+        if text and text.lower() not in {"nan", "none"}:
+            match = re.search(r"(\d+)", text)
+            if match and int(match.group(1)) >= 18:
+                return True
+
+    if genres and ADULT_GENRE_NAMES.intersection(genres):
+        return True
+
+    if name and "hentai" in name.lower():
+        return True
+
+    return False
+
+
 def _ensure_lookup(cur, table_name: str, values: list) -> dict:
     """Upsert di valori unici in una tabella lookup (id, name) e ritorna la mappa.
 
@@ -510,7 +569,7 @@ def _ensure_lookup(cur, table_name: str, values: list) -> dict:
 
 
 def _ensure_os_columns(cur) -> None:
-    """Aggiunge le colonne windows/mac/linux a "games" se non esistono già.
+    """Aggiunge a "games" le colonne windows/mac/linux/mature se mancanti.
 
     init.sql viene eseguito da Postgres solo alla creazione del volume dati:
     su un database già esistente (creato prima dell'introduzione di queste
@@ -519,6 +578,11 @@ def _ensure_os_columns(cur) -> None:
     script per portare lo schema a livello, senza comandi SQL manuali. Se le
     colonne esistono già (database creato dopo l'introduzione di init.sql
     aggiornato, o script già rilanciato in precedenza), non ha alcun effetto.
+
+    Include anche il DROP di "required_age": una versione precedente di
+    questo script teneva l'età numerica esatta in una colonna a parte, poi
+    sostituita dal solo booleano "mature" (>= 18) perché il valore
+    granulare non serviva a nessuna feature reale.
 
     Args:
         cur: cursore psycopg2 su una connessione già aperta.
@@ -530,7 +594,9 @@ def _ensure_os_columns(cur) -> None:
         ALTER TABLE games
           ADD COLUMN IF NOT EXISTS windows BOOLEAN NOT NULL DEFAULT FALSE,
           ADD COLUMN IF NOT EXISTS mac BOOLEAN NOT NULL DEFAULT FALSE,
-          ADD COLUMN IF NOT EXISTS linux BOOLEAN NOT NULL DEFAULT FALSE
+          ADD COLUMN IF NOT EXISTS linux BOOLEAN NOT NULL DEFAULT FALSE,
+          ADD COLUMN IF NOT EXISTS mature BOOLEAN NOT NULL DEFAULT FALSE,
+          DROP COLUMN IF EXISTS required_age
     """)
 
 
@@ -566,7 +632,8 @@ def insert_games(df: pd.DataFrame) -> None:
             "steam_app_id", "name", "release_date", "developer",
             "publisher", "price", "rating", "description",
             "header_image_url", "genres", "categories", "windows", "mac",
-            "linux" (quelle assenti
+            "linux", "required_age" (quest'ultima ridotta al booleano
+            "mature" — vedi _parse_mature) (quelle assenti
             vengono trattate come mancanti riga per riga, senza sollevare
             errori).
 
@@ -604,6 +671,8 @@ def insert_games(df: pd.DataFrame) -> None:
         if publisher:
             publisher_names.append(publisher)
 
+        name = _clean_text(row.get("name")) or ""
+
         genres = _parse_genres(row.get("genres"))
         all_genre_names.extend(genres)
 
@@ -614,7 +683,7 @@ def insert_games(df: pd.DataFrame) -> None:
 
         parsed_rows.append({
             "appid": app_id,
-            "name": _clean_text(row.get("name")) or "",
+            "name": name,
             "release_date": _parse_date(row.get("release_date")),
             "developer": developer,
             "publisher": publisher,
@@ -627,6 +696,7 @@ def insert_games(df: pd.DataFrame) -> None:
             "windows": _parse_bool(row.get("windows")),
             "mac": _parse_bool(row.get("mac")),
             "linux": _parse_bool(row.get("linux")),
+            "mature": _parse_mature(row.get("required_age"), genres, name),
         })
 
     if skipped:
@@ -654,21 +724,23 @@ def insert_games(df: pd.DataFrame) -> None:
             item["windows"],
             item["mac"],
             item["linux"],
+            item["mature"],
         ))
 
-    # Su conflitto (gioco già esistente) si aggiornano solo windows/mac/linux:
-    # permette di rilanciare lo script per fare il backfill di questi campi su
-    # un database già popolato (es. dopo l'aggiunta delle colonne via ALTER
-    # TABLE) senza toccare gli altri campi né duplicare righe.
+    # Su conflitto (gioco già esistente) si aggiornano solo windows/mac/linux/
+    # mature: permette di rilanciare lo script per fare il backfill di
+    # questi campi su un database già popolato (es. dopo l'aggiunta delle
+    # colonne via ALTER TABLE) senza toccare gli altri campi né duplicare righe.
     sql = """
         INSERT INTO games (appid, name, release_date, developer_id, publisher_id,
                           price, rating, description, header_image_url,
-                          windows, mac, linux)
+                          windows, mac, linux, mature)
         VALUES %s
         ON CONFLICT (appid) DO UPDATE SET
             windows = EXCLUDED.windows,
             mac = EXCLUDED.mac,
-            linux = EXCLUDED.linux
+            linux = EXCLUDED.linux,
+            mature = EXCLUDED.mature
     """
 
     for i in tqdm(range(0, len(game_records), BATCH_SIZE), desc="Inserting"):
