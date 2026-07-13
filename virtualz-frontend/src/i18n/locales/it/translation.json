@@ -15,7 +15,7 @@
   },
   "auth": {
     "login": "Accedi",
-    "loginSubtitle": "Bentornato su VirtualZ",
+    "loginSubtitle": "Inserisci le tue credenziali per accedere",
     "loggingIn": "Accesso in corso…",
     "registerHere": "Registrati",
     "usernamePlaceholder": "Inserisci il tuo nome utente",
@@ -32,6 +32,7 @@
     "haveAccount": "Hai già un account?",
     "loginError": "Credenziali non valide",
     "registerError": "Errore durante la registrazione",
+    "rememberMe": "Resta connesso",
     "ageConfirm": "Confermo di avere più di 18 anni",
     "ageRequired": "Devi confermare di avere più di 18 anni per registrarti.",
     "orContinueWith": "oppure continua con",
@@ -58,9 +59,13 @@
     "sortPriceAsc": "Prezzo crescente",
     "sortPriceDesc": "Prezzo decrescente",
     "sortRatingDesc": "Valutazione",
+    "sortPopularity": "Più famosi",
     "sortNewest": "Più recenti",
     "os": "Sistema operativo",
     "vrOnly": "Solo giochi VR",
+    "userRating": "Voto utenti",
+    "userRatingAny": "Qualsiasi voto",
+    "userRatingAndUp": "{{value}}+ stelle",
     "showMature": "Mostra giochi 18+",
     "comingSoon": "In arrivo",
     "reset": "Azzera filtri",
@@ -89,7 +94,8 @@
     "reviewPlaceholder": "Cosa ne pensi di questo gioco? (opzionale)",
     "submitReview": "Pubblica",
     "removeReview": "Rimuovi la tua recensione",
-    "noReviews": "Nessuna recensione ancora. Scrivi la prima!"
+    "noReviews": "Nessuna recensione ancora. Scrivi la prima!",
+    "descriptionBadge": "EN · Descrizione originale"
   },
   "library": {
     "title": "Libreria",

@@ -2,10 +2,13 @@ package com.archetype.lbp.repository;
 
 import com.archetype.lbp.model.Game;
 import com.archetype.lbp.model.Genre;
+import com.archetype.lbp.model.Review;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
+import jakarta.persistence.criteria.Root;
+import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.domain.Page;
@@ -55,7 +58,7 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
                                             BigDecimal minPrice, BigDecimal maxPrice,
                                             BigDecimal minRating, LocalDate releasedAfter,
                                             LocalDate releasedBefore, List<String> os, Boolean vr,
-                                            Boolean mature) {
+                                            Boolean mature, BigDecimal minUserRating) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -124,6 +127,21 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
             // per farli ricomparire, senza restringere ai soli 18+.
             if (!Boolean.TRUE.equals(mature)) {
                 predicates.add(cb.isFalse(root.get("mature")));
+            }
+
+            if (minUserRating != null) {
+                // Media delle recensioni utente (reviews.rating), non il
+                // rating Steam del dataset (quello è già filtrato sopra da
+                // minRating). Subquery scalare correlata sul game corrente,
+                // stesso pattern della sottoquery di esclusione adulti sopra
+                // ma con AVG invece di EXISTS: un gioco senza recensioni ha
+                // AVG NULL, quindi non passa >= minUserRating (corretto,
+                // "nessuna recensione" non deve soddisfare un voto minimo).
+                Subquery<Double> avgRatingSubquery = query.subquery(Double.class);
+                Root<Review> reviewRoot = avgRatingSubquery.from(Review.class);
+                avgRatingSubquery.select(cb.avg(reviewRoot.get("rating")));
+                avgRatingSubquery.where(cb.equal(reviewRoot.get("game"), root));
+                predicates.add(cb.greaterThanOrEqualTo(avgRatingSubquery, minUserRating.doubleValue()));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));

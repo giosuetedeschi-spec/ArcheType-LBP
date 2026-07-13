@@ -24,19 +24,19 @@ export default function Navbar() {
 
   const navLinks = (
     <>
-      <Link to="/" className="text-zinc-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
+      <Link to="/" className="text-slate-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
         {t("nav.home")}
       </Link>
-      <Link to="/catalog" className="text-zinc-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
+      <Link to="/catalog" className="text-slate-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
         {t("nav.catalog")}
       </Link>
-      <Link to="/library" className="text-zinc-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
+      <Link to="/library" className="text-slate-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
         {t("nav.library")}
       </Link>
-      <Link to="/leaderboard" className="text-zinc-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
+      <Link to="/leaderboard" className="text-slate-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
         {t("nav.leaderboard")}
       </Link>
-      <Link to="/friends" className="text-zinc-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
+      <Link to="/friends" className="text-slate-300 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
         {t("nav.friends")}
       </Link>
     </>
@@ -45,12 +45,12 @@ export default function Navbar() {
   const sessionControls = (
     isAuthenticated ? (
       <div className="flex items-center gap-3">
-        <Link to="/profile" className="text-sm text-zinc-400 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
+        <Link to="/profile" className="text-sm text-slate-400 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
           {user?.username}
         </Link>
         <button
           onClick={handleLogout}
-          className="text-sm px-3 py-1.5 rounded-full border border-zinc-700 text-zinc-300 hover:border-vz-pink hover:text-vz-pink transition-colors"
+          className="text-sm px-3 py-1.5 rounded-full border border-slate-700 text-slate-300 hover:border-vz-pink hover:text-vz-pink transition-colors"
         >
           {t("nav.logout")}
         </button>
@@ -59,7 +59,7 @@ export default function Navbar() {
       <div className="flex items-center gap-2">
         <Link
           to="/login"
-          className="text-sm px-3 py-1.5 rounded-full text-zinc-300 hover:text-vz-lime transition-colors"
+          className="text-sm px-3 py-1.5 rounded-full text-slate-300 hover:text-vz-lime transition-colors"
           onClick={() => setMenuOpen(false)}
         >
           {t("nav.login")}
@@ -76,15 +76,13 @@ export default function Navbar() {
   );
 
   return (
-    <header className="bg-vz-charcoal/80 backdrop-blur-md border-b border-zinc-800 sticky top-0 z-20">
+    <header className="bg-vz-navy-deep/80 backdrop-blur-md border-b border-white/5 sticky top-0 z-20">
       <nav className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
 
         {/* Logo + payoff, sempre cliccabile verso la home */}
-        <Link to="/" className="flex flex-col items-start group">
-          <Logo className="text-xl group-hover:scale-105 transition-transform" />
-          <span className="text-[10px] uppercase tracking-widest text-zinc-500 -mt-1">
-            {t("nav.tagline")}
-          </span>
+        {/* Logo, sempre cliccabile verso la home */}
+        <Link to="/" className="group">
+          <Logo size={64} className="group-hover:scale-105 transition-transform" />
         </Link>
 
         {/* Menu di navigazione principale — visibile da lg in su, indipendentemente dal login */}
@@ -99,7 +97,7 @@ export default function Navbar() {
           <select
             value={mode}
             onChange={(e) => setMode(e.target.value as ColorblindMode)}
-            className="bg-vz-charcoal border border-zinc-700 rounded-lg px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-vz-lime"
+            className="bg-vz-charcoal border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-vz-lime"
           >
             {MODES.map((m) => (
               <option key={m} value={m}>{t(`colorblind.${m}`)}</option>
@@ -117,7 +115,7 @@ export default function Navbar() {
           onClick={() => setMenuOpen((open) => !open)}
           aria-label={t("nav.toggleMenu")}
           aria-expanded={menuOpen}
-          className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg border border-zinc-700 text-zinc-300 hover:border-vz-lime hover:text-vz-lime transition-colors"
+          className="lg:hidden flex items-center justify-center w-9 h-9 rounded-lg border border-slate-700 text-slate-300 hover:border-vz-lime hover:text-vz-lime transition-colors"
         >
           {menuOpen ? "✕" : "☰"}
         </button>
@@ -125,16 +123,16 @@ export default function Navbar() {
 
       {/* Pannello mobile/tablet — sotto lg, mostra tutto impilato quando aperto */}
       {menuOpen && (
-        <div className="lg:hidden border-t border-zinc-800 px-4 py-4 space-y-4">
+        <div className="lg:hidden border-t border-slate-800 px-4 py-4 space-y-4">
           <div className="flex flex-col gap-3 text-sm">
             {navLinks}
           </div>
 
-          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-zinc-800">
+          <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-800">
             <select
               value={mode}
               onChange={(e) => setMode(e.target.value as ColorblindMode)}
-              className="bg-vz-charcoal border border-zinc-700 rounded-lg px-2 py-1 text-xs text-zinc-300 focus:outline-none focus:ring-2 focus:ring-vz-lime"
+              className="bg-vz-charcoal border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-vz-lime"
             >
               {MODES.map((m) => (
                 <option key={m} value={m}>{t(`colorblind.${m}`)}</option>
@@ -144,7 +142,7 @@ export default function Navbar() {
             <LanguageSwitcher />
           </div>
 
-          <div className="pt-2 border-t border-zinc-800">
+          <div className="pt-2 border-t border-slate-800">
             {sessionControls}
           </div>
         </div>

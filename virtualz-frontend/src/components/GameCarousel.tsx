@@ -31,9 +31,11 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
   const [scrollIndex, setScrollIndex] = useState(0);
   const gamesPerView = 4;
 
+  // sortBy/sortDir espliciti per mostrare i titoli più diffusi del genere,
+  // non i primi in ordine alfabetico — stesso motivo di HomePage.tsx.
   const { data, isLoading } = useQuery({
     queryKey: ["games", "genre", genre],
-    queryFn: () => searchCatalog({ page: 0, size: 20, genre }),
+    queryFn: () => searchCatalog({ page: 0, size: 20, genre, sortBy: "estimatedOwners", sortDir: "desc" }),
   });
 
   const games: Game[] = data?.content ?? [];
@@ -70,7 +72,7 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
         {scrollIndex > 0 && (
           <button
             onClick={handlePrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-vz-charcoal/90 border border-zinc-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
+            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
           >
             <ChevronLeft className="w-6 h-6 text-white" />
           </button>
@@ -92,7 +94,7 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
         {scrollIndex < maxIndex && (
           <button
             onClick={handleNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-vz-charcoal/90 border border-zinc-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
+            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
           >
             <ChevronRight className="w-6 h-6 text-white" />
           </button>

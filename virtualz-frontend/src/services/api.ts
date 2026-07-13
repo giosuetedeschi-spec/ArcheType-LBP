@@ -1,4 +1,5 @@
 import axios from "axios";
+import { getToken, clearSession } from "./tokenStorage";
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
@@ -7,7 +8,7 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use((config) => {
-  const token = localStorage.getItem("virtualz_token");
+  const token = getToken();
   if (token) {
     config.headers.Authorization = `Bearer ${token}`;
   }
@@ -42,8 +43,7 @@ api.interceptors.response.use(
   },
   (error) => {
     if (error.response?.status === 401) {
-      localStorage.removeItem("virtualz_token");
-      localStorage.removeItem("virtualz_user");
+      clearSession();
     }
     return Promise.reject(error);
   }

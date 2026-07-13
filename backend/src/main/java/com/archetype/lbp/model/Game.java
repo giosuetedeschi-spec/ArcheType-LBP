@@ -100,6 +100,15 @@ public class Game {
     @Column(name = "mature", nullable = false)
     private Boolean mature = false;
 
+    // Punto medio della fascia "Estimated owners" Steam (es. "0 - 20000" ->
+    // 10000) — segnale di popolarità/diffusione. Introdotta perché "rating"
+    // (da "User score") è priva di segnale: zero giochi su 122.611 hanno uno
+    // User score diverso da 0 nel dataset reale, quindi ordinare per rating
+    // equivale a nessun ordinamento. Usata come sort di default del
+    // catalogo al posto di "name" (vedi GameFilterRequest).
+    @Column(name = "estimated_owners", nullable = false)
+    private Integer estimatedOwners = 0;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 

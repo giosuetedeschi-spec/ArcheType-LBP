@@ -22,5 +22,6 @@ public class GameResponse {
     private Boolean mac;
     private Boolean linux;
     private Boolean mature;
+    private Integer estimatedOwners;
     private LocalDateTime createdAt;
 }

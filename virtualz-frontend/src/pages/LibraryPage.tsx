@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { getLibrary, updateLibraryStatus, removeFromLibrary } from "../services/libraryApi";
 import { useAuth } from "../context/AuthContext";
 import LibraryItemCard from "../components/LibraryItemCard";
@@ -64,6 +65,7 @@ export default function LibraryPage() {
   const [items, setItems] = useState<LibraryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [listRef] = useAutoAnimate();
 
   /**
    * Carica le voci di backlog dell'utente, filtrate per stato se
@@ -149,7 +151,7 @@ export default function LibraryPage() {
           il vecchio <select> a tendina. La ricerca testuale è stata
           rimossa: l'endpoint /backlog/search non esiste nel backend
           ArcheType-LBP. */}
-      <div className="border-b border-zinc-800 mb-6">
+      <div className="border-b border-slate-800 mb-6">
         <nav className="flex flex-wrap gap-6 text-sm">
           {tabs.map((tab) => (
             <button
@@ -158,7 +160,7 @@ export default function LibraryPage() {
               className={`pb-3 -mb-px border-b-2 transition-colors ${
                 statusFilter === tab.value
                   ? "border-vz-lime text-vz-lime font-semibold"
-                  : "border-transparent text-zinc-400 hover:text-white"
+                  : "border-transparent text-slate-400 hover:text-white"
               }`}
             >
               {tab.label}
@@ -167,15 +169,15 @@ export default function LibraryPage() {
         </nav>
       </div>
 
-      {loading && <p className="text-zinc-400">{t("common.loading")}</p>}
+      {loading && <p className="text-slate-400">{t("common.loading")}</p>}
       {error && <p className="text-vz-pink">{error}</p>}
       {!loading && !error && items.length === 0 && (
-        <p className="text-zinc-400">
+        <p className="text-slate-400">
           {statusFilter === "wishlist" ? t("library.emptyWishlist") : t("library.emptyBacklog")}
         </p>
       )}
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div ref={listRef} className="grid sm:grid-cols-2 gap-4">
         {items.map((item) => (
           <LibraryItemCard
             key={item.id}

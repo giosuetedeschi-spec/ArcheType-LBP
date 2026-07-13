@@ -56,7 +56,8 @@ public class GameService {
                         filter.getReleasedBefore(),
                         filter.getOs(),
                         filter.getVr(),
-                        filter.getMature()
+                        filter.getMature(),
+                        filter.getMinUserRating()
                 ),
                 pageable
         );
@@ -140,6 +141,7 @@ public class GameService {
         game.setMac(req.getMac() != null ? req.getMac() : false);
         game.setLinux(req.getLinux() != null ? req.getLinux() : false);
         game.setMature(req.getMature() != null ? req.getMature() : false);
+        game.setEstimatedOwners(req.getEstimatedOwners() != null ? req.getEstimatedOwners() : 0);
     }
 
     /**
@@ -198,6 +200,7 @@ public class GameService {
         r.setMac(game.getMac());
         r.setLinux(game.getLinux());
         r.setMature(game.getMature());
+        r.setEstimatedOwners(game.getEstimatedOwners());
         r.setCreatedAt(game.getCreatedAt());
         return r;
     }
