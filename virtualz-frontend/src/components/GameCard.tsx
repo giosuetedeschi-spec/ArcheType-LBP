@@ -22,11 +22,17 @@ export default function GameCard({ game }: GameCardProps) {
     return t(`genres.${slug}`, { defaultValue: name });
   };
 
+  const isMature = game.requiredAge >= 18;
+
   return (
     <Link
       to="/games/$id"
       params={{ id: String(game.id) }}
-      className="group bg-vz-charcoal rounded-xl overflow-hidden border border-zinc-800 hover:border-vz-lime hover:shadow-lg hover:shadow-vz-lime/10 hover:-translate-y-1 transition-all duration-200"
+      className={`group bg-vz-charcoal rounded-xl overflow-hidden border transition-all duration-200 hover:-translate-y-1 ${
+        isMature
+          ? "border-red-500/70 shadow-[0_0_16px_rgba(239,68,68,0.35)] hover:shadow-[0_0_22px_rgba(239,68,68,0.55)]"
+          : "border-zinc-800 hover:border-vz-lime hover:shadow-lg hover:shadow-vz-lime/10"
+      }`}
     >
       <div className="aspect-video bg-zinc-900 overflow-hidden relative">
         {game.headerImageUrl ? (
