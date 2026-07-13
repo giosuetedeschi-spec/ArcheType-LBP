@@ -89,7 +89,8 @@
     "reviewPlaceholder": "Que pensez-vous de ce jeu ? (facultatif)",
     "submitReview": "Publier",
     "removeReview": "Retirer votre avis",
-    "noReviews": "Aucun avis pour le moment. Soyez le premier !"
+    "noReviews": "Aucun avis pour le moment. Soyez le premier !",
+    "descriptionBadge": "EN · Description originale"
   },
   "library": {
     "title": "Ma bibliothèque",
