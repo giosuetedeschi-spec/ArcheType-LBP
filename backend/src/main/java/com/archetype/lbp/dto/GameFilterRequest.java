@@ -37,6 +37,13 @@ public class GameFilterRequest {
     @DecimalMax(value = "5.0", message = "minUserRating deve essere tra 1 e 5")
     private BigDecimal minUserRating;
 
+    // Se false/null (default), i giochi con games.mature=true (età >= 18,
+    // genere Nudity/Sexual Content, o "hentai" nel nome — vedi
+    // populate_db.py) sono esclusi dai risultati. Se true, ricompaiono
+    // insieme agli altri (non è un "mostra SOLO 18+" come vr, è un opt-in a
+    // vederli anche) — checkbox "Mostra giochi 18+" lato UI.
+    private Boolean mature;
+
     private String sortBy = "name";
     private String sortDir = "asc";
 

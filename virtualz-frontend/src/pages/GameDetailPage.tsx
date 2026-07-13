@@ -160,6 +160,12 @@ export default function GameDetailPage() {
         />
       )}
 
+      {game.mature && (
+        <span className="inline-block text-xs font-bold px-3 py-1 rounded-full mb-4 bg-red-500/15 border border-red-500 text-red-400">
+          {t("game.mature")}
+        </span>
+      )}
+
       <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
         <h1 className="text-3xl font-display font-bold text-white">{game.name}</h1>
         <span className="text-2xl font-bold text-vz-lime">

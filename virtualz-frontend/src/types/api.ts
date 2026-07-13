@@ -29,6 +29,8 @@ export interface Game {
   windows: boolean;
   mac: boolean;
   linux: boolean;
+  /** true se contenuto per adulti (da "Required age" Steam >= 18). */
+  mature: boolean;
   createdAt: string;
 }
 
@@ -47,6 +49,8 @@ export interface CatalogSearchParams {
   vr?: boolean;
   /** Media minima delle recensioni utente (tabella reviews, scala 1-5). */
   minUserRating?: number;
+  /** true = solo giochi 18+ (games.mature). */
+  mature?: boolean;
   sortBy?: string;
   sortDir?: "asc" | "desc";
 }

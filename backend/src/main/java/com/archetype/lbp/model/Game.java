@@ -92,6 +92,14 @@ public class Game {
     @Column(nullable = false)
     private Boolean linux = false;
 
+    // Contenuto per adulti (derivato dal campo "Required age" del dataset
+    // Steam: true se >= 18). Solo l'1% circa dei giochi ha un "Required age"
+    // diverso da zero, quindi si tiene solo il booleano utile al filtro/UI
+    // 18+, non il valore numerico esatto (che per la stragrande maggioranza
+    // dei giochi non esiste comunque).
+    @Column(name = "mature", nullable = false)
+    private Boolean mature = false;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 

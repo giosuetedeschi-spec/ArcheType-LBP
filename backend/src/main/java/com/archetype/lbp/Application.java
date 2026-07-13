@@ -30,7 +30,7 @@ public class Application {
         int failures = 0;
 
         // === GameRepository.withFilters() ===
-        var spec = GameRepository.withFilters("counter", null, null, null, null, null, null, null, null, null, null);
+        var spec = GameRepository.withFilters("counter", null, null, null, null, null, null, null, null, null, null, null);
         if (spec == null) { System.err.println("FAIL: withFilters returns null"); failures++; }
 
         // === GameRequest validation ===
