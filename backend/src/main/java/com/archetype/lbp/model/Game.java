@@ -92,6 +92,12 @@ public class Game {
     @Column(nullable = false)
     private Boolean linux = false;
 
+    // Età minima consigliata (campo "Required age" del dataset Steam,
+    // es. 0/13/16/17/18) — importata da populate_db.py, non ancora
+    // sfruttata prima d'ora nonostante fosse già nel CSV sorgente.
+    @Column(name = "required_age", nullable = false)
+    private Integer requiredAge = 0;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 
