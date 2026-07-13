@@ -19,7 +19,7 @@ interface LibraryCompositionBarProps {
 const SEGMENTS: { key: LibraryStatus; barClass: string; dotClass: string }[] = [
   { key: "playing", barClass: "bg-blue-500", dotClass: "bg-blue-500" },
   { key: "finished", barClass: "bg-vz-lime", dotClass: "bg-vz-lime" },
-  { key: "abandoned", barClass: "bg-zinc-500", dotClass: "bg-zinc-500" },
+  { key: "abandoned", barClass: "bg-slate-500", dotClass: "bg-slate-500" },
   { key: "wishlist", barClass: "bg-vz-pink", dotClass: "bg-vz-pink" },
 ];
 
@@ -36,8 +36,8 @@ export default function LibraryCompositionBar({
   if (total === 0) return null;
 
   return (
-    <div className="bg-vz-charcoal rounded-xl border border-zinc-800 p-5">
-      <h3 className="text-sm font-semibold text-zinc-300 mb-4">{t("profile.libraryComposition")}</h3>
+    <div className="bg-vz-charcoal rounded-xl border border-slate-800 p-5">
+      <h3 className="text-sm font-semibold text-slate-300 mb-4">{t("profile.libraryComposition")}</h3>
 
       <div className="flex gap-0.5 h-5 rounded-full overflow-hidden bg-vz-charcoal">
         {SEGMENTS.filter(({ key }) => counts[key] > 0).map(({ key, barClass }) => (
@@ -49,8 +49,8 @@ export default function LibraryCompositionBar({
         {SEGMENTS.map(({ key, dotClass }) => (
           <div key={key} className="flex items-center gap-1.5 text-xs">
             <span className={`w-2 h-2 rounded-full ${dotClass} shrink-0`} />
-            <span className="text-zinc-400">{t(`library.status.${key}`)}</span>
-            <span className="text-zinc-300 font-medium">{counts[key]}</span>
+            <span className="text-slate-400">{t(`library.status.${key}`)}</span>
+            <span className="text-slate-300 font-medium">{counts[key]}</span>
           </div>
         ))}
       </div>

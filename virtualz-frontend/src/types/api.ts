@@ -31,6 +31,8 @@ export interface Game {
   linux: boolean;
   /** true se contenuto per adulti (da "Required age" Steam >= 18). */
   mature: boolean;
+  /** Punto medio della fascia "Estimated owners" Steam — segnale di popolarità. */
+  estimatedOwners: number;
   createdAt: string;
 }
 
@@ -47,6 +49,8 @@ export interface CatalogSearchParams {
   os?: string[];
   /** true = solo giochi con supporto VR (categorie Steam dedicate). */
   vr?: boolean;
+  /** Media minima delle recensioni utente (tabella reviews, scala 1-5). */
+  minUserRating?: number;
   /** true = solo giochi 18+ (games.mature). */
   mature?: boolean;
   sortBy?: string;

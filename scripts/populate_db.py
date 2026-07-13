@@ -233,6 +233,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
         "header_image_url": "header_image_url",
         "required age": "required_age",
         "required_age": "required_age",
+        "estimated owners": "estimated_owners",
+        "estimated_owners": "estimated_owners",
     }
     # NOTA: "required_age" qui è solo un nome di colonna intermedio (il
     # valore grezzo del CSV, es. 17/18); insert_games() lo riduce subito a
@@ -355,20 +357,28 @@ def _parse_price(value) -> float:
 
 
 def _parse_rating(value):
-    """Estrae e normalizza il rating su una scala 0-9.99 (vincolo colonna DB).
+    """Estrae e normalizza il rating su una scala 0-5 (coerente con
+    Game.rating, @DecimalMax(5.00)).
 
     Il dataset può esprimere il voto su scale diverse (es. 0-5 stelle oppure
     0-100 come "User score" percentuale): questa funzione riconosce la scala
     in base al valore letto (>5 implica una scala più ampia, tipicamente
-    0-100) e la riporta a un intervallo unico compatibile con la colonna
-    `rating DECIMAL(3,2)` del database, il cui massimo rappresentabile è
-    9.99 — da cui il cap finale con min(result, 9.99).
+    0-100) e la riporta a 0-5.
+
+    Bug corretto: la versione precedente divideva per 10 invece che per 20
+    per normalizzare una scala 0-100 a 0-5, e il cap finale era min(x, 9.99)
+    invece di min(x, 5.0) — coerente solo con la capacità grezza della
+    colonna DECIMAL(3,2), non con la scala 0-5 realmente prevista. Risultato:
+    un "User score" del 99% diventava rating 9.9 invece di 4.95, producendo
+    valori fuori scala (fino a 9.99) per un piccolo sottoinsieme di righe —
+    per lo più titoli con testo insolito in altri campi, che finivano in
+    cima a qualunque ordinamento per rating decrescente.
 
     Args:
         value: valore grezzo dalla colonna rating/user score.
 
     Returns:
-        float | None: rating normalizzato in [0, 9.99], oppure None se il
+        float | None: rating normalizzato in [0, 5.0], oppure None se il
         valore è mancante o non contiene alcun numero riconoscibile.
     """
     if pd.isna(value):
@@ -380,8 +390,47 @@ def _parse_rating(value):
     if not match:
         return None
     value_num = float(match.group(1))
-    result = value_num if value_num <= 5 else round(value_num / 10, 2)
-    return min(result, 9.99)
+    result = value_num if value_num <= 5 else round(value_num / 20, 2)
+    return min(result, 5.0)
+
+
+def _parse_estimated_owners(value) -> int:
+    """Converte la fascia "Estimated owners" di Steam in un numero ordinabile.
+
+    Il campo arriva come intervallo testuale (es. "0 - 20000", "100000000 -
+    200000000"), lo stesso formato SteamSpy-style. Si usa il punto medio
+    dell'intervallo come singolo valore numerico: basta per ordinare per
+    popolarità/diffusione, che è l'unico uso di questo campo — non serve
+    precisione oltre il bucket già fornito dal dataset.
+
+    Introdotto perché la colonna "rating" (da "User score") si è rivelata
+    priva di segnale: su tutto il dataset reale (122.611 giochi), *zero*
+    hanno uno User score diverso da 0, quindi ordinare per rating equivale a
+    nessun ordinamento. "Positive"/"Negative" (recensioni) sono risultati
+    inaffidabili nello stesso dataset (il gioco con più recensioni positive
+    ne ha solo 100, e i primi risultati per quel campo sono tutti giochi
+    hentai — quasi certamente colonne disallineate in questo export). Solo
+    "Estimated owners" è risultato ben popolato (100.970 giochi su 122.611
+    con un valore reale) e con una distribuzione credibile.
+
+    Args:
+        value: valore grezzo dalla colonna estimated_owners (stringa tipo
+            "min - max", o NaN/None se il campo manca per quella riga).
+
+    Returns:
+        int: punto medio della fascia, 0 se il valore è mancante, non
+        contiene due numeri riconoscibili, o è la fascia "0 - 0".
+    """
+    if pd.isna(value):
+        return 0
+    text = str(value).strip()
+    if not text or text.lower() in {"nan", "none"}:
+        return 0
+    numbers = re.findall(r"\d+", text)
+    if len(numbers) < 2:
+        return 0
+    low, high = int(numbers[0]), int(numbers[1])
+    return (low + high) // 2
 
 
 def _parse_date(value):
@@ -569,7 +618,7 @@ def _ensure_lookup(cur, table_name: str, values: list) -> dict:
 
 
 def _ensure_os_columns(cur) -> None:
-    """Aggiunge a "games" le colonne windows/mac/linux/mature se mancanti.
+    """Aggiunge a "games" le colonne windows/mac/linux/mature/estimated_owners se mancanti.
 
     init.sql viene eseguito da Postgres solo alla creazione del volume dati:
     su un database già esistente (creato prima dell'introduzione di queste
@@ -596,6 +645,7 @@ def _ensure_os_columns(cur) -> None:
           ADD COLUMN IF NOT EXISTS mac BOOLEAN NOT NULL DEFAULT FALSE,
           ADD COLUMN IF NOT EXISTS linux BOOLEAN NOT NULL DEFAULT FALSE,
           ADD COLUMN IF NOT EXISTS mature BOOLEAN NOT NULL DEFAULT FALSE,
+          ADD COLUMN IF NOT EXISTS estimated_owners INTEGER NOT NULL DEFAULT 0,
           DROP COLUMN IF EXISTS required_age
     """)
 
@@ -632,8 +682,9 @@ def insert_games(df: pd.DataFrame) -> None:
             "steam_app_id", "name", "release_date", "developer",
             "publisher", "price", "rating", "description",
             "header_image_url", "genres", "categories", "windows", "mac",
-            "linux", "required_age" (quest'ultima ridotta al booleano
-            "mature" — vedi _parse_mature) (quelle assenti
+            "linux", "required_age" (ridotta al booleano "mature" — vedi
+            _parse_mature), "estimated_owners" (ridotta al punto medio della
+            fascia — vedi _parse_estimated_owners) (quelle assenti
             vengono trattate come mancanti riga per riga, senza sollevare
             errori).
 
@@ -697,6 +748,7 @@ def insert_games(df: pd.DataFrame) -> None:
             "mac": _parse_bool(row.get("mac")),
             "linux": _parse_bool(row.get("linux")),
             "mature": _parse_mature(row.get("required_age"), genres, name),
+            "estimated_owners": _parse_estimated_owners(row.get("estimated_owners")),
         })
 
     if skipped:
@@ -725,22 +777,29 @@ def insert_games(df: pd.DataFrame) -> None:
             item["mac"],
             item["linux"],
             item["mature"],
+            item["estimated_owners"],
         ))
 
     # Su conflitto (gioco già esistente) si aggiornano solo windows/mac/linux/
-    # mature: permette di rilanciare lo script per fare il backfill di
-    # questi campi su un database già popolato (es. dopo l'aggiunta delle
-    # colonne via ALTER TABLE) senza toccare gli altri campi né duplicare righe.
+    # mature/estimated_owners/rating: permette di rilanciare lo script per
+    # fare il backfill di questi campi su un database già popolato (es. dopo
+    # l'aggiunta delle colonne via ALTER TABLE, o dopo il fix di _parse_rating
+    # sotto) senza toccare gli altri campi né duplicare righe. rating incluso
+    # qui apposta: senza, un FORCE_REPOPULATE su un DB già popolato prima del
+    # fix di _parse_rating (divideva per 10 invece che per 20, cap a 9.99
+    # invece che 5.0) lascerebbe i valori fuori scala già scritti intatti.
     sql = """
         INSERT INTO games (appid, name, release_date, developer_id, publisher_id,
                           price, rating, description, header_image_url,
-                          windows, mac, linux, mature)
+                          windows, mac, linux, mature, estimated_owners)
         VALUES %s
         ON CONFLICT (appid) DO UPDATE SET
             windows = EXCLUDED.windows,
             mac = EXCLUDED.mac,
             linux = EXCLUDED.linux,
-            mature = EXCLUDED.mature
+            mature = EXCLUDED.mature,
+            estimated_owners = EXCLUDED.estimated_owners,
+            rating = EXCLUDED.rating
     """
 
     for i in tqdm(range(0, len(game_records), BATCH_SIZE), desc="Inserting"):

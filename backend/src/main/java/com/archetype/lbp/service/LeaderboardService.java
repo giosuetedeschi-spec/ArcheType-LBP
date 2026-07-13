@@ -19,6 +19,11 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+/**
+ * Service per la generazione della classifica (leaderboard) degli utenti.
+ * Supporta diversi scope (global/friends) e metriche (hours/games/friends).
+ * Issue #58: aggiunto JavaDoc per documentare le operazioni disponibili.
+ */
 @Service
 @RequiredArgsConstructor
 @Transactional(readOnly = true)
@@ -27,6 +32,10 @@ public class LeaderboardService {
     private final UserGameRepository userGameRepo;
     private final FriendRepository friendRepo;
 
+    /**
+     * Genera la classifica degli utenti in base ai filtri specificati.
+     * @return classifica paginata con la posizione dell'utente corrente
+     */
     public LeaderboardResponse getLeaderboard(LeaderboardFilterRequest filter) {
         User viewer = userRepo.findById(filter.getUserId())
                 .orElseThrow(() -> new ResourceNotFoundException("User", "id", filter.getUserId()));
@@ -56,6 +65,10 @@ public class LeaderboardService {
         return paginate(ranked, filter.getPage(), filter.getSize(), myEntry);
     }
 
+    /**
+     * Risolve lo scope della classifica (global o friends).
+     * @return set di ID utenti da includere nella classifica
+     */
     private Set<Long> resolveScope(String scope, User viewer) {
         if ("friends".equals(scope)) {
             Set<Long> ids = friendRepo.findByUser_IdAndStatus(viewer.getId(), "accepted").stream()
@@ -70,6 +83,10 @@ public class LeaderboardService {
         throw new IllegalArgumentException("Scope non valido: " + scope);
     }
 
+    /**
+     * Risolve la metrica della classifica (hours, games, friends).
+     * @return mappa userId -> valore metrica
+     */
     private Map<Long, Double> resolveMetric(String metric) {
         List<Object[]> raw = switch (metric) {
             case "hours" -> userGameRepo.sumPlayTimeMinByUser();
@@ -83,6 +100,7 @@ public class LeaderboardService {
         ));
     }
 
+    /** Impagina la classifica e aggiunge la posizione dell'utente corrente. */
     private LeaderboardResponse paginate(List<LeaderboardEntryResponse> ranked, int page, int size,
                                           LeaderboardEntryResponse myEntry) {
         int safePage = Math.max(page, 0);
