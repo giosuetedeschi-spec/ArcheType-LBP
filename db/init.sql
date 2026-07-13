@@ -2,6 +2,21 @@
 
 CREATE EXTENSION IF NOT EXISTS "pgcrypto";
 
+-- Issue #21: abilita pg_prewarm per precaricare tabelle grandi (es. games con 122k+ righe)
+-- in memoria RAM all'avvio. Migliora le performance delle query successive evitando letture da disco.
+-- In un DO block con gestione eccezioni: questo script gira con ON_ERROR_STOP=1
+-- (entrypoint ufficiale dell'immagine postgres), quindi un CREATE EXTENSION che
+-- fallisce (es. modulo contrib non installato su un Postgres gestito/minimale)
+-- interromperebbe l'intero init.sql prima ancora di creare le tabelle sotto,
+-- invece di degradare correttamente (il prewarm da Python è già opzionale,
+-- vedi scripts/populate_db.py::prewarm_games_table).
+DO $$
+BEGIN
+    CREATE EXTENSION IF NOT EXISTS pg_prewarm;
+EXCEPTION WHEN OTHERS THEN
+    RAISE WARNING 'pg_prewarm non disponibile, skip (il prewarm allo startup sarà un no-op): %', SQLERRM;
+END $$;
+
 CREATE TABLE IF NOT EXISTS users (
     id BIGSERIAL PRIMARY KEY,
     username VARCHAR(50) UNIQUE NOT NULL,
