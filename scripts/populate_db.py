@@ -231,6 +231,8 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
         "header image": "header_image_url",
         "header_image": "header_image_url",
         "header_image_url": "header_image_url",
+        "required age": "required_age",
+        "required_age": "required_age",
     }
     df = df.rename(columns={k: v for k, v in column_map.items() if k in df.columns})
 
@@ -465,6 +467,32 @@ def _parse_bool(value) -> bool:
     return str(value).strip().lower() in {"true", "1", "yes"}
 
 
+def _parse_required_age(value) -> int:
+    """Estrae l'età minima consigliata dalla colonna "Required age" di Steam.
+
+    Il campo è presente nel CSV sorgente fin dall'inizio ma non era mai stato
+    mappato né inserito in "games" (veniva letto solo per correggere
+    l'allineamento delle intestazioni, poi scartato). La stragrande
+    maggioranza dei giochi ha 0 (nessuna restrizione); i valori diversi da 0
+    osservati nel dataset reale sono soprattutto 13/16/17/18.
+
+    Args:
+        value: valore grezzo dalla colonna required_age (numero, stringa, o
+            NaN/None se il campo manca per quella riga).
+
+    Returns:
+        int: età minima come intero non negativo. 0 se il valore è mancante
+        o non contiene alcun numero riconoscibile.
+    """
+    if pd.isna(value):
+        return 0
+    text = str(value).strip()
+    if not text or text.lower() in {"nan", "none"}:
+        return 0
+    match = re.search(r"(\d+)", text)
+    return int(match.group(1)) if match else 0
+
+
 def _ensure_lookup(cur, table_name: str, values: list) -> dict:
     """Upsert di valori unici in una tabella lookup (id, name) e ritorna la mappa.
 
@@ -510,7 +538,7 @@ def _ensure_lookup(cur, table_name: str, values: list) -> dict:
 
 
 def _ensure_os_columns(cur) -> None:
-    """Aggiunge le colonne windows/mac/linux a "games" se non esistono già.
+    """Aggiunge a "games" le colonne windows/mac/linux/required_age se mancanti.
 
     init.sql viene eseguito da Postgres solo alla creazione del volume dati:
     su un database già esistente (creato prima dell'introduzione di queste
@@ -530,7 +558,8 @@ def _ensure_os_columns(cur) -> None:
         ALTER TABLE games
           ADD COLUMN IF NOT EXISTS windows BOOLEAN NOT NULL DEFAULT FALSE,
           ADD COLUMN IF NOT EXISTS mac BOOLEAN NOT NULL DEFAULT FALSE,
-          ADD COLUMN IF NOT EXISTS linux BOOLEAN NOT NULL DEFAULT FALSE
+          ADD COLUMN IF NOT EXISTS linux BOOLEAN NOT NULL DEFAULT FALSE,
+          ADD COLUMN IF NOT EXISTS required_age INTEGER NOT NULL DEFAULT 0
     """)
 
 
@@ -566,7 +595,7 @@ def insert_games(df: pd.DataFrame) -> None:
             "steam_app_id", "name", "release_date", "developer",
             "publisher", "price", "rating", "description",
             "header_image_url", "genres", "categories", "windows", "mac",
-            "linux" (quelle assenti
+            "linux", "required_age" (quelle assenti
             vengono trattate come mancanti riga per riga, senza sollevare
             errori).
 
@@ -627,6 +656,7 @@ def insert_games(df: pd.DataFrame) -> None:
             "windows": _parse_bool(row.get("windows")),
             "mac": _parse_bool(row.get("mac")),
             "linux": _parse_bool(row.get("linux")),
+            "required_age": _parse_required_age(row.get("required_age")),
         })
 
     if skipped:
@@ -654,21 +684,23 @@ def insert_games(df: pd.DataFrame) -> None:
             item["windows"],
             item["mac"],
             item["linux"],
+            item["required_age"],
         ))
 
-    # Su conflitto (gioco già esistente) si aggiornano solo windows/mac/linux:
-    # permette di rilanciare lo script per fare il backfill di questi campi su
-    # un database già popolato (es. dopo l'aggiunta delle colonne via ALTER
-    # TABLE) senza toccare gli altri campi né duplicare righe.
+    # Su conflitto (gioco già esistente) si aggiornano solo windows/mac/linux/
+    # required_age: permette di rilanciare lo script per fare il backfill di
+    # questi campi su un database già popolato (es. dopo l'aggiunta delle
+    # colonne via ALTER TABLE) senza toccare gli altri campi né duplicare righe.
     sql = """
         INSERT INTO games (appid, name, release_date, developer_id, publisher_id,
                           price, rating, description, header_image_url,
-                          windows, mac, linux)
+                          windows, mac, linux, required_age)
         VALUES %s
         ON CONFLICT (appid) DO UPDATE SET
             windows = EXCLUDED.windows,
             mac = EXCLUDED.mac,
-            linux = EXCLUDED.linux
+            linux = EXCLUDED.linux,
+            required_age = EXCLUDED.required_age
     """
 
     for i in tqdm(range(0, len(game_records), BATCH_SIZE), desc="Inserting"):
