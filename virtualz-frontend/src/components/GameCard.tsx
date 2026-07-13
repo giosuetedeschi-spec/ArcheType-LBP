@@ -22,17 +22,11 @@ export default function GameCard({ game }: GameCardProps) {
     return t(`genres.${slug}`, { defaultValue: name });
   };
 
-  const isMature = game.requiredAge >= 18;
-
   return (
     <Link
       to="/games/$id"
       params={{ id: String(game.id) }}
-      className={`group bg-vz-charcoal rounded-xl overflow-hidden border transition-all duration-200 hover:-translate-y-1 ${
-        isMature
-          ? "border-red-500/70 shadow-[0_0_16px_rgba(239,68,68,0.35)] hover:shadow-[0_0_22px_rgba(239,68,68,0.55)]"
-          : "border-zinc-800 hover:border-vz-lime hover:shadow-lg hover:shadow-vz-lime/10"
-      }`}
+      className="group bg-vz-charcoal rounded-xl overflow-hidden border border-zinc-800 hover:border-vz-lime hover:shadow-lg hover:shadow-vz-lime/10 hover:-translate-y-1 transition-all duration-200"
     >
       <div className="aspect-video bg-zinc-900 overflow-hidden relative">
         {game.headerImageUrl ? (
@@ -44,6 +38,11 @@ export default function GameCard({ game }: GameCardProps) {
           />
         ) : (
           <GameCoverPlaceholder name={displayName} seed={game.id} className="w-full h-full" />
+        )}
+        {game.mature && (
+          <span className="absolute top-2 left-2 text-xs font-bold px-2 py-1 rounded-full bg-red-500/90 backdrop-blur text-white">
+            18+
+          </span>
         )}
         <span className="absolute top-2 right-2 text-xs font-bold px-2 py-1 rounded-full bg-vz-navy/90 backdrop-blur text-vz-lime">
           {game.price > 0 ? `€${Number(game.price).toFixed(2)}` : t("common.free")}
