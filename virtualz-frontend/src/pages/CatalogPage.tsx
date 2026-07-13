@@ -212,7 +212,7 @@ export default function CatalogPage() {
     filters.sort !== "";
 
   const inputClass =
-    "bg-vz-charcoal border border-zinc-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime focus:border-transparent transition-shadow";
+    "bg-vz-charcoal border border-slate-700 rounded-lg px-3 py-2 text-sm text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-vz-lime focus:border-transparent transition-shadow";
 
   return (
     <div className="max-w-7xl mx-auto px-4 py-10">
@@ -234,7 +234,7 @@ export default function CatalogPage() {
               {hasActiveFilters && (
                 <button
                   onClick={resetFilters}
-                  className="text-xs text-zinc-400 hover:text-vz-pink transition-colors"
+                  className="text-xs text-slate-400 hover:text-vz-pink transition-colors"
                 >
                   {t("catalog.reset")}
                 </button>
@@ -243,7 +243,7 @@ export default function CatalogPage() {
 
             {/* --- Genere --- */}
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
                 {t("catalog.genre")}
               </h3>
               <ul className="space-y-1">
@@ -257,7 +257,7 @@ export default function CatalogPage() {
                         className={`w-full text-left px-3 py-1.5 rounded-lg text-sm transition-colors ${
                           active
                             ? "bg-vz-lime/15 text-vz-lime font-medium"
-                            : "text-zinc-300 hover:text-white hover:bg-vz-charcoal/60"
+                            : "text-slate-300 hover:text-white hover:bg-vz-charcoal/60"
                         }`}
                       >
                         {t(`genres.${g.toLowerCase()}`, { defaultValue: g })}
@@ -270,7 +270,7 @@ export default function CatalogPage() {
 
             {/* --- Sistema operativo --- */}
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
                 {t("catalog.os")}
               </h3>
               <ul className="space-y-2">
@@ -281,9 +281,9 @@ export default function CatalogPage() {
                       id={`os-${os.value}`}
                       checked={filters.os.includes(os.value)}
                       onChange={() => toggleOs(os.value)}
-                      className="h-4 w-4 rounded border-zinc-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
+                      className="h-4 w-4 rounded border-slate-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
                     />
-                    <label htmlFor={`os-${os.value}`} className="text-sm text-zinc-300 cursor-pointer">
+                    <label htmlFor={`os-${os.value}`} className="text-sm text-slate-300 cursor-pointer">
                       {os.label}
                     </label>
                   </li>
@@ -299,9 +299,9 @@ export default function CatalogPage() {
                   id="vr-filter"
                   checked={filters.vr}
                   onChange={toggleVr}
-                  className="h-4 w-4 rounded border-zinc-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
+                  className="h-4 w-4 rounded border-slate-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
                 />
-                <label htmlFor="vr-filter" className="text-sm text-zinc-300 cursor-pointer">
+                <label htmlFor="vr-filter" className="text-sm text-slate-300 cursor-pointer">
                   {t("catalog.vrOnly")}
                 </label>
               </div>
@@ -325,7 +325,7 @@ export default function CatalogPage() {
 
             {/* --- Prezzo --- */}
             <div>
-              <h3 className="text-xs font-semibold uppercase tracking-wider text-zinc-400 mb-3">
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
                 {t("catalog.price")}
               </h3>
               <div className="flex items-center gap-2">
@@ -337,7 +337,7 @@ export default function CatalogPage() {
                   onChange={(e) => handleFilterChange("minPrice", e.target.value)}
                   className={`${inputClass} w-full`}
                 />
-                <span className="text-zinc-500">–</span>
+                <span className="text-slate-500">–</span>
                 <input
                   type="number"
                   min={0}
@@ -356,7 +356,7 @@ export default function CatalogPage() {
           {/* Barra: ricerca + ordinamento */}
           <div className="flex flex-col sm:flex-row gap-3 mb-6">
             <div className="relative flex-1">
-              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-zinc-500">🔍</span>
+              <span className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">🔍</span>
               <input
                 type="text"
                 placeholder={t("catalog.searchPlaceholder")}
@@ -366,7 +366,7 @@ export default function CatalogPage() {
               />
             </div>
             <label className="flex items-center gap-2 shrink-0">
-              <span className="text-sm text-zinc-400 hidden sm:inline">
+              <span className="text-sm text-slate-400 hidden sm:inline">
                 {t("catalog.sortBy")}
               </span>
               <select
@@ -385,7 +385,7 @@ export default function CatalogPage() {
 
           {/* Contatore risultati */}
           {!loading && !error && (
-            <p className="text-sm text-zinc-500 mb-4">
+            <p className="text-sm text-slate-500 mb-4">
               {t("catalog.results", { count: totalElements })}
             </p>
           )}
@@ -417,7 +417,7 @@ export default function CatalogPage() {
           {!loading && !error && games.length === 0 && (
             <div className="text-center py-16 animate-fade-in-up">
               <div className="text-5xl mb-4">🔍</div>
-              <p className="text-zinc-400 mb-4">{t("catalog.noResults")}</p>
+              <p className="text-slate-400 mb-4">{t("catalog.noResults")}</p>
               {hasActiveFilters && (
                 <button
                   onClick={resetFilters}
@@ -454,7 +454,7 @@ export default function CatalogPage() {
                   className={`w-9 h-9 rounded-full text-sm transition-colors ${
                     i === page
                       ? "bg-vz-lime text-vz-navy font-semibold"
-                      : "text-zinc-400 hover:text-white hover:bg-vz-charcoal"
+                      : "text-slate-400 hover:text-white hover:bg-vz-charcoal"
                   }`}
                 >
                   {i + 1}

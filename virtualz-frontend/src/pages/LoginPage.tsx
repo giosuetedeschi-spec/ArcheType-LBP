@@ -39,12 +39,12 @@ export default function LoginPage() {
 
   return (
     <div className="max-w-md mx-auto mt-16 px-4 animate-fade-in-up">
-      <div className="bg-vz-charcoal/60 backdrop-blur border border-zinc-800 rounded-2xl p-8">
+      <div className="bg-vz-charcoal/60 backdrop-blur border border-slate-800 rounded-2xl p-8">
         <div className="flex items-center justify-center mb-1">
-          <Logo className="text-2xl" />
+          <Logo className="text-2xl" variant="text" />
         </div>
         <h1 className="text-xl font-display font-bold text-white mb-1 text-center">{t("auth.loginTitle")}</h1>
-        <p className="text-sm text-zinc-400 mb-6 text-center">{t("auth.loginSubtitle")}</p>
+        <p className="text-sm text-slate-400 mb-6 text-center">{t("auth.loginSubtitle")}</p>
 
         <form onSubmit={handleSubmit} className="space-y-4">
           <input
@@ -53,7 +53,7 @@ export default function LoginPage() {
             value={form.username}
             onChange={(e) => setForm({ ...form, username: e.target.value })}
             required
-            className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
+            className="w-full bg-vz-charcoal border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
           />
           <PasswordInput
             placeholder={t("auth.passwordPlaceholder")}
@@ -75,7 +75,7 @@ export default function LoginPage() {
 
         <OAuthButtons />
 
-        <p className="text-sm text-zinc-400 mt-6 text-center">
+        <p className="text-sm text-slate-400 mt-6 text-center">
           {t("auth.noAccount")}{" "}
           <Link to="/register" className="text-vz-lime hover:underline">
             {t("auth.registerHere")}
