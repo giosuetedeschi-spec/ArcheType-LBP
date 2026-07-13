@@ -15,7 +15,7 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link to="/friends" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.community.friends")}</Link></li>
               <li><Link to="/leaderboard" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.community.leaderboard")}</Link></li>
-              <li><a href="#" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.community.discord")}</a></li>
+              <li><a href="https://discord.gg" target="_blank" rel="noopener noreferrer" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.community.discord")}</a></li>
             </ul>
           </div>
           <div>
@@ -23,23 +23,23 @@ export default function Footer() {
             <ul className="space-y-2">
               <li><Link to="/catalog" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.platform.catalog")}</Link></li>
               <li><Link to="/library" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.platform.library")}</Link></li>
-              <li><a href="#" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.platform.analytics")}</a></li>
+              <li><Link to="/profile" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.platform.analytics")}</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="font-display font-semibold text-white mb-4">{t("footer.shop.title")}</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.shop.offers")}</a></li>
-              <li><a href="#" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.shop.giftCards")}</a></li>
-              <li><a href="#" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.shop.redeem")}</a></li>
+              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.shop.offers")}</Link></li>
+              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.shop.giftCards")}</Link></li>
+              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.shop.redeem")}</Link></li>
             </ul>
           </div>
           <div>
             <h3 className="font-display font-semibold text-white mb-4">{t("footer.support.title")}</h3>
             <ul className="space-y-2">
-              <li><a href="#" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.help")}</a></li>
-              <li><a href="#" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.contact")}</a></li>
-              <li><a href="#" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.privacy")}</a></li>
+              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.help")}</Link></li>
+              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.contact")}</Link></li>
+              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.privacy")}</Link></li>
             </ul>
           </div>
         </div>
