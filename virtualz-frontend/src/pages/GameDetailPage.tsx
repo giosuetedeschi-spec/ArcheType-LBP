@@ -134,7 +134,7 @@ export default function GameDetailPage() {
     }
   }
 
-  if (loading) return <p className="text-zinc-400 text-center mt-16">{t("common.loading")}</p>;
+  if (loading) return <p className="text-slate-400 text-center mt-16">{t("common.loading")}</p>;
   if (error || !game) return <p className="text-vz-pink text-center mt-16">{error || t("common.error")}</p>;
 
   // Il campo genres arriva dal backend come stringa CSV (es. "Action,RPG"),
@@ -150,7 +150,7 @@ export default function GameDetailPage() {
         <img
           src={game.headerImageUrl}
           alt={game.name}
-          className="w-full rounded-xl mb-6 bg-zinc-900 aspect-[16/6] object-cover"
+          className="w-full rounded-xl mb-6 bg-slate-900 aspect-[16/6] object-cover"
         />
       ) : (
         <GameCoverPlaceholder
@@ -176,7 +176,7 @@ export default function GameDetailPage() {
       {genres.length > 0 && (
         <div className="flex gap-2 mb-6 flex-wrap">
           {genres.map((g) => (
-            <span key={g} className="text-xs px-3 py-1 rounded-full bg-vz-navy border border-zinc-700 text-zinc-300">
+            <span key={g} className="text-xs px-3 py-1 rounded-full bg-vz-navy border border-slate-700 text-slate-300">
               {g}
             </span>
           ))}
@@ -214,7 +214,7 @@ export default function GameDetailPage() {
                 href={`https://store.steampowered.com/app/${game.steamAppId}`}
                 target="_blank"
                 rel="noreferrer"
-                className="px-4 py-2 rounded-full border border-zinc-600 text-zinc-300 hover:text-white transition-colors text-sm"
+                className="px-4 py-2 rounded-full border border-slate-600 text-slate-300 hover:text-white transition-colors text-sm"
               >
                 {t("game.viewOnSteam")} ↗
               </a>
@@ -227,27 +227,34 @@ export default function GameDetailPage() {
 
       <div className="grid sm:grid-cols-2 gap-4 mt-8 text-sm">
         <div>
-          <span className="text-zinc-500">{t("game.developers")}: </span>
-          <span className="text-zinc-200">{game.developer || "—"}</span>
+          <span className="text-slate-500">{t("game.developers")}: </span>
+          <span className="text-slate-200">{game.developer || "—"}</span>
         </div>
         <div>
-          <span className="text-zinc-500">{t("game.publishers")}: </span>
-          <span className="text-zinc-200">{game.publisher || "—"}</span>
+          <span className="text-slate-500">{t("game.publishers")}: </span>
+          <span className="text-slate-200">{game.publisher || "—"}</span>
         </div>
         <div>
-          <span className="text-zinc-500">{t("game.releaseDate")}: </span>
-          <span className="text-zinc-200">{game.releaseDate || "—"}</span>
+          <span className="text-slate-500">{t("game.releaseDate")}: </span>
+          <span className="text-slate-200">{game.releaseDate || "—"}</span>
         </div>
         <div>
-          <span className="text-zinc-500">{t("game.rating")}: </span>
-          <span className="text-zinc-200">{game.rating != null ? `${Number(game.rating).toFixed(1)}/5` : "—"}</span>
+          <span className="text-slate-500">{t("game.rating")}: </span>
+          <span className="text-slate-200">{game.rating != null ? `${Number(game.rating).toFixed(1)}/5` : "—"}</span>
         </div>
       </div>
 
       {game.description && (
-        <div className="mt-8 rounded-xl border border-zinc-800 bg-zinc-950/70 p-4">
+        <div className="mt-8 rounded-xl border border-slate-800 bg-slate-950/70 p-4">
           <h2 className="text-lg font-semibold text-white mb-3">{t("game.description")}</h2>
-          <p className="text-zinc-300 leading-relaxed whitespace-pre-line">{game.description}</p>
+          <div className="flex items-center gap-2 mb-2 text-xs">
+            <span className="inline-flex items-center gap-1 px-2 py-0.5 bg-vz-lime/10 border border-vz-lime/20 rounded font-medium text-vz-lime">
+              <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" className="w-3 h-3"><circle cx="12" cy="12" r="10"></circle><line x1="2" y1="12" x2="22" y2="12"></line><path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path></svg>
+              EN
+            </span>
+            <span className="text-slate-400">{t("game.descriptionBadge")}</span>
+          </div>
+          <p className="text-slate-300 leading-relaxed whitespace-pre-line">{game.description}</p>
         </div>
       )}
 
@@ -255,7 +262,7 @@ export default function GameDetailPage() {
         <div className="flex items-center gap-3 mb-4">
           <h2 className="text-lg font-semibold text-white">{t("game.reviews")}</h2>
           {reviews.length > 0 && (
-            <span className="text-sm text-zinc-400">
+            <span className="text-sm text-slate-400">
               ★ {(reviews.reduce((sum, r) => sum + r.rating, 0) / reviews.length).toFixed(1)} ·{" "}
               {t("game.reviewsCount", { count: reviews.length })}
             </span>
@@ -263,8 +270,8 @@ export default function GameDetailPage() {
         </div>
 
         {isAuthenticated && (
-          <div className="rounded-xl border border-zinc-800 bg-zinc-950/70 p-4 mb-4">
-            <p className="text-sm text-zinc-400 mb-2">
+          <div className="rounded-xl border border-slate-800 bg-slate-950/70 p-4 mb-4">
+            <p className="text-sm text-slate-400 mb-2">
               {myReview ? t("game.editYourReview") : t("game.writeReview")}
             </p>
             <StarRating value={reviewRating} onChange={setReviewRating} size="md" />
@@ -273,7 +280,7 @@ export default function GameDetailPage() {
               onChange={(e) => setReviewComment(e.target.value)}
               placeholder={t("game.reviewPlaceholder")}
               rows={3}
-              className="w-full mt-3 bg-vz-charcoal border border-zinc-700 rounded-lg px-3 py-2 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime resize-none"
+              className="w-full mt-3 bg-vz-charcoal border border-slate-700 rounded-lg px-3 py-2 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-vz-lime resize-none"
             />
             {reviewError && <p className="text-vz-pink text-sm mt-2">{reviewError}</p>}
             <div className="flex gap-2 mt-3">
@@ -287,7 +294,7 @@ export default function GameDetailPage() {
               {myReview && (
                 <button
                   onClick={handleRemoveReview}
-                  className="px-4 py-2 rounded-full text-zinc-500 hover:text-vz-pink transition-colors text-sm"
+                  className="px-4 py-2 rounded-full text-slate-500 hover:text-vz-pink transition-colors text-sm"
                 >
                   {t("game.removeReview")}
                 </button>
@@ -297,16 +304,16 @@ export default function GameDetailPage() {
         )}
 
         {reviews.length === 0 ? (
-          <p className="text-zinc-400 text-sm">{t("game.noReviews")}</p>
+          <p className="text-slate-400 text-sm">{t("game.noReviews")}</p>
         ) : (
           <div className="space-y-3">
             {reviews.map((r) => (
-              <div key={r.id} className="rounded-xl border border-zinc-800 bg-vz-charcoal p-4">
+              <div key={r.id} className="rounded-xl border border-slate-800 bg-vz-charcoal p-4">
                 <div className="flex items-center justify-between gap-3 mb-1">
                   <span className="text-white font-medium">{r.username}</span>
                   <StarRating value={r.rating} />
                 </div>
-                {r.comment && <p className="text-zinc-300 text-sm mt-1">{r.comment}</p>}
+                {r.comment && <p className="text-slate-300 text-sm mt-1">{r.comment}</p>}
               </div>
             ))}
           </div>

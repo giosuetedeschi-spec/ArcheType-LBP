@@ -15,7 +15,7 @@
   },
   "auth": {
     "login": "Log in",
-    "loginSubtitle": "Welcome back to VirtualZ",
+    "loginSubtitle": "Enter your credentials to sign in",
     "loggingIn": "Logging in…",
     "registerHere": "Register",
     "usernamePlaceholder": "Enter your username",
@@ -90,7 +90,8 @@
     "reviewPlaceholder": "What do you think of this game? (optional)",
     "submitReview": "Post",
     "removeReview": "Remove your review",
-    "noReviews": "No reviews yet. Be the first!"
+    "noReviews": "No reviews yet. Be the first!",
+    "descriptionBadge": "EN · Original description"
   },
   "library": {
     "title": "My Library",
