@@ -1,6 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useNavigate, useSearch } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { useAutoAnimate } from "@formkit/auto-animate/react";
 import { getLibrary, updateLibraryStatus, removeFromLibrary } from "../services/libraryApi";
 import { useAuth } from "../context/AuthContext";
 import LibraryItemCard from "../components/LibraryItemCard";
@@ -59,6 +60,7 @@ export default function LibraryPage() {
   const [items, setItems] = useState<LibraryItem[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [listRef] = useAutoAnimate();
 
   /**
    * Carica le voci di backlog dell'utente, filtrate per stato se
@@ -155,7 +157,7 @@ export default function LibraryPage() {
         </p>
       )}
 
-      <div className="grid sm:grid-cols-2 gap-4">
+      <div ref={listRef} className="grid sm:grid-cols-2 gap-4">
         {items.map((item) => (
           <LibraryItemCard
             key={item.id}
