@@ -50,9 +50,15 @@ const CURATED_GENRES = ["Action", "Adventure", "RPG", "Strategy", "Indie"];
 // selettore, e nei risultati, solo con "Mostra giochi 18+" attivo.
 const ADULT_GENRE_NAMES = ["Nudity", "Sexual Content", "Gore", "Violent"];
 
-// Ordinamento: value = "campo:direzione" (vuoto = nessun ordinamento / rilevanza).
+// Ordinamento: value = "campo:direzione" (vuoto = nessun ordinamento / rilevanza,
+// che lato backend ora corrisponde comunque a estimatedOwners:desc di default —
+// vedi GameFilterRequest.java — quindi "Rilevanza" e "Più famosi" coincidono).
+// "rating:desc" lasciato per compatibilità ma di fatto un no-op in questo
+// dataset: zero giochi su 122.611 hanno un rating diverso da 0 (vedi
+// populate_db.py._parse_estimated_owners per il dettaglio).
 const SORT_OPTIONS = [
   { value: "", labelKey: "catalog.sortRelevance" },
+  { value: "estimatedOwners:desc", labelKey: "catalog.sortPopularity" },
   { value: "name:asc", labelKey: "catalog.sortNameAsc" },
   { value: "name:desc", labelKey: "catalog.sortNameDesc" },
   { value: "price:asc", labelKey: "catalog.sortPriceAsc" },
@@ -87,7 +93,7 @@ const EMPTY_FILTERS: FilterState = {
   os: [],
   vr: false,
   mature: false,
-  sort: "rating:desc",
+  sort: "estimatedOwners:desc",
 };
 
 export default function CatalogPage() {
