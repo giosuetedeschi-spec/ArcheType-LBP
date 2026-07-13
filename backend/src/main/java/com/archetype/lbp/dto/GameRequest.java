@@ -38,4 +38,7 @@ public class GameRequest {
     private Boolean windows = false;
     private Boolean mac = false;
     private Boolean linux = false;
+
+    @Min(value = 0, message = "Required age cannot be negative")
+    private Integer requiredAge = 0;
 }
