@@ -58,6 +58,7 @@
     "sortPriceAsc": "Price: low to high",
     "sortPriceDesc": "Price: high to low",
     "sortRatingDesc": "Rating",
+    "sortPopularity": "Most popular",
     "sortNewest": "Newest",
     "os": "Operating system",
     "vrOnly": "VR games only",

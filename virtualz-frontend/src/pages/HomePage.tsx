@@ -37,10 +37,14 @@ export default function HomePage() {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
 
-  // Fetch latest games for the "Featured" section
+  // Fetch latest games for the "Featured" section. sortBy/sortDir espliciti
+  // (invece di lasciare il default lato backend) per mostrare i giochi più
+  // diffusi, non i primi in ordine alfabetico — vedi GameFilterRequest.java
+  // per il perché "estimatedOwners" e non "rating" (privo di segnale nel
+  // dataset reale).
   const { data, isLoading } = useQuery({
     queryKey: ["games", "featured"],
-    queryFn: () => searchCatalog({ page: 0, size: 6 }),
+    queryFn: () => searchCatalog({ page: 0, size: 6, sortBy: "estimatedOwners", sortDir: "desc" }),
   });
 
   const games = data?.content ?? [];
