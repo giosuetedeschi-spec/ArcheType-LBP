@@ -6,7 +6,6 @@ import com.archetype.lbp.model.Genre;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
@@ -34,18 +33,11 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
             "VR Support", "VR Only", "VR Supported", "SteamVR Collectibles"
     );
 
-    // Nomi esatti (case-sensitive) dei generi Steam usati per contenuti per
-    // adulti, verificati sul dataset reale importato da populate_db.py
-    // (colonna "Genres", non "Categories" — nel dataset questi due tag non
-    // compaiono mai tra le categorie). Esclusi sempre dai risultati di
-    // withFilters (non dietro un parametro opt-in): la home e le ricerche
-    // non devono mai mostrarli, vedi issue #87.
-    List<String> ADULT_GENRE_NAMES = List.of("Nudity", "Sexual Content");
-
     static Specification<Game> withFilters(String name, String genre, String developer,
                                             BigDecimal minPrice, BigDecimal maxPrice,
                                             BigDecimal minRating, LocalDate releasedAfter,
-                                            LocalDate releasedBefore, List<String> os, Boolean vr) {
+                                            LocalDate releasedBefore, List<String> os, Boolean vr,
+                                            Boolean mature) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -96,18 +88,6 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
                     predicates.add(cb.or(osPredicates.toArray(new Predicate[0])));
                 }
             }
-            // Esclusione sempre attiva, non condizionata da un parametro:
-            // sottoquery correlata invece di un altro join su "genres" per
-            // non interferire col filtro `genre` sopra (join diverso,
-            // stessa relazione) e per esprimere correttamente "nessuno dei
-            // generi di questo gioco è tra quelli per adulti" su una
-            // relazione N:N.
-            Subquery<Long> adultGenreSubquery = query.subquery(Long.class);
-            var adultGenreRoot = adultGenreSubquery.correlate(root);
-            Join<Object, Object> adultGenreJoin = adultGenreRoot.join("genres", JoinType.INNER);
-            adultGenreSubquery.select(cb.literal(1L)).where(adultGenreJoin.get("name").in(ADULT_GENRE_NAMES));
-            predicates.add(cb.not(cb.exists(adultGenreSubquery)));
-
             if (Boolean.TRUE.equals(vr)) {
                 // Stesso pattern del join su "genres" sopra: un gioco può
                 // avere più categorie VR contemporaneamente, quindi serve
@@ -115,6 +95,17 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
                 query.distinct(true);
                 Join<Object, Object> categoryJoin = root.join("categories", JoinType.LEFT);
                 predicates.add(categoryJoin.get("name").in(VR_CATEGORY_NAMES));
+            }
+
+            // "mature" qui significa "includi anche i contenuti per adulti",
+            // non "mostra SOLO quelli" (a differenza di vr): di default i
+            // giochi con games.mature=true (età >= 18, genere Nudity/Sexual
+            // Content, o "hentai" nel nome — vedi populate_db.py) restano
+            // nascosti da catalogo/home/ricerche (issue #87); il chiamante
+            // passa mature=true (checkbox "Mostra giochi 18+" lato UI) solo
+            // per farli ricomparire, senza restringere ai soli 18+.
+            if (!Boolean.TRUE.equals(mature)) {
+                predicates.add(cb.isFalse(root.get("mature")));
             }
 
             return cb.and(predicates.toArray(new Predicate[0]));
