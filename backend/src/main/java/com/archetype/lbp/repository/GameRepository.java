@@ -6,8 +6,10 @@ import com.archetype.lbp.model.Genre;
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
 import jakarta.persistence.criteria.Predicate;
-import jakarta.persistence.criteria.Subquery;
 import org.springframework.data.jpa.domain.Specification;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.stereotype.Repository;
@@ -16,36 +18,44 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository per la gestione delle entità {@link Game}.
+ * Issue #58: aggiunto JavaDoc per documentare le operazioni disponibili.
+ */
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificationExecutor<Game> {
+    
+    /** Trova un gioco tramite il suo Steam App ID. */
     Game findBySteamAppId(Integer steamAppId);
+    
+    /** Trova tutti i giochi il cui nome contiene la stringa specificata (case-insensitive). */
     List<Game> findByNameContainingIgnoreCase(String name);
+
+    /**
+     * Trova tutti i giochi che hanno almeno un genere il cui nome contiene la stringa specificata.
+     * Naviga la relazione N:N con {@link Genre}.
+     */
+    List<Game> findByGenres_NameContainingIgnoreCase(String genreName);
 
     // Sostituisce il vecchio findByGenresContainingIgnoreCase(String) che
     // presupponeva "genres" come stringa: ora è una relazione N:N, quindi
     // si naviga tramite la entity Genre.
-    List<Game> findByGenres_NameContainingIgnoreCase(String genreName);
 
-    // Nomi esatti (case-sensitive, così come importati da populate_db.py
-    // dalla colonna "Categories" del dataset Steam) delle categorie che
-    // indicano supporto VR — un gioco con almeno una di queste passa il
-    // filtro vr=true.
+    /** Nomi esatti (case-sensitive) delle categorie che indicano supporto VR. */
     List<String> VR_CATEGORY_NAMES = List.of(
             "VR Support", "VR Only", "VR Supported", "SteamVR Collectibles"
     );
 
-    // Nomi esatti (case-sensitive) dei generi Steam usati per contenuti per
-    // adulti, verificati sul dataset reale importato da populate_db.py
-    // (colonna "Genres", non "Categories" — nel dataset questi due tag non
-    // compaiono mai tra le categorie). Esclusi sempre dai risultati di
-    // withFilters (non dietro un parametro opt-in): la home e le ricerche
-    // non devono mai mostrarli, vedi issue #87.
-    List<String> ADULT_GENRE_NAMES = List.of("Nudity", "Sexual Content");
-
+    /**
+     * Costruisce una Specification dinamica per filtrare i giochi in base a criteri multipli opzionali.
+     * I contenuti per adulti (games.mature=true) restano esclusi a meno che il chiamante non passi
+     * mature=true esplicitamente (vedi il parametro più sotto).
+     */
     static Specification<Game> withFilters(String name, String genre, String developer,
                                             BigDecimal minPrice, BigDecimal maxPrice,
                                             BigDecimal minRating, LocalDate releasedAfter,
-                                            LocalDate releasedBefore, List<String> os, Boolean vr) {
+                                            LocalDate releasedBefore, List<String> os, Boolean vr,
+                                            Boolean mature) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -96,18 +106,6 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
                     predicates.add(cb.or(osPredicates.toArray(new Predicate[0])));
                 }
             }
-            // Esclusione sempre attiva, non condizionata da un parametro:
-            // sottoquery correlata invece di un altro join su "genres" per
-            // non interferire col filtro `genre` sopra (join diverso,
-            // stessa relazione) e per esprimere correttamente "nessuno dei
-            // generi di questo gioco è tra quelli per adulti" su una
-            // relazione N:N.
-            Subquery<Long> adultGenreSubquery = query.subquery(Long.class);
-            var adultGenreRoot = adultGenreSubquery.correlate(root);
-            Join<Object, Object> adultGenreJoin = adultGenreRoot.join("genres", JoinType.INNER);
-            adultGenreSubquery.select(cb.literal(1L)).where(adultGenreJoin.get("name").in(ADULT_GENRE_NAMES));
-            predicates.add(cb.not(cb.exists(adultGenreSubquery)));
-
             if (Boolean.TRUE.equals(vr)) {
                 // Stesso pattern del join su "genres" sopra: un gioco può
                 // avere più categorie VR contemporaneamente, quindi serve
@@ -117,7 +115,22 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
                 predicates.add(categoryJoin.get("name").in(VR_CATEGORY_NAMES));
             }
 
+            // "mature" qui significa "includi anche i contenuti per adulti",
+            // non "mostra SOLO quelli" (a differenza di vr): di default i
+            // giochi con games.mature=true (età >= 18, genere Nudity/Sexual
+            // Content, o "hentai" nel nome — vedi populate_db.py) restano
+            // nascosti da catalogo/home/ricerche (issue #87); il chiamante
+            // passa mature=true (checkbox "Mostra giochi 18+" lato UI) solo
+            // per farli ricomparire, senza restringere ai soli 18+.
+            if (!Boolean.TRUE.equals(mature)) {
+                predicates.add(cb.isFalse(root.get("mature")));
+            }
+
             return cb.and(predicates.toArray(new Predicate[0]));
         };
     }
+
+    /** Trova i giochi con un header image url valido (non nullo/vuoto), paginati. */
+    @Query("SELECT g FROM Game g WHERE g.headerImageUrl IS NOT NULL AND g.headerImageUrl <> ''")
+    Page<Game> findValidGames(Pageable pageable);
 }
