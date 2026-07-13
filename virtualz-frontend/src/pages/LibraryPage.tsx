@@ -138,7 +138,7 @@ export default function LibraryPage() {
         <select
           value={statusFilter}
           onChange={(e) => handleStatusFilterChange(e.target.value)}
-          className="bg-vz-charcoal border border-zinc-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-vz-lime"
+          className="bg-vz-charcoal border border-slate-700 rounded-lg px-3 py-2 text-white focus:outline-none focus:ring-2 focus:ring-vz-lime"
         >
           <option value="">{t("library.all")}</option>
           {STATUSES.map((s) => (
@@ -149,10 +149,10 @@ export default function LibraryPage() {
         </select>
       </div>
 
-      {loading && <p className="text-zinc-400">{t("common.loading")}</p>}
+      {loading && <p className="text-slate-400">{t("common.loading")}</p>}
       {error && <p className="text-vz-pink">{error}</p>}
       {!loading && !error && items.length === 0 && (
-        <p className="text-zinc-400">
+        <p className="text-slate-400">
           {statusFilter === "wishlist" ? t("library.emptyWishlist") : t("library.emptyBacklog")}
         </p>
       )}

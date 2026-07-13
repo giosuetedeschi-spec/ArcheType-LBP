@@ -72,13 +72,13 @@ export default function HomePage() {
           ].map(({ Icon, titleKey, descKey }, i) => (
             <div
               key={titleKey}
-              className="bg-vz-charcoal/70 backdrop-blur border border-zinc-800 rounded-2xl p-6 hover:border-vz-lime/40 hover:-translate-y-1 transition-all"
+              className="bg-vz-charcoal/70 backdrop-blur border border-slate-800 rounded-2xl p-6 hover:border-vz-lime/40 hover:-translate-y-1 transition-all"
             >
               <Icon className="h-8 w-8 mb-3 text-vz-lime" />
               <h3 className="font-display font-semibold text-lg text-white mb-2">
                 {t(titleKey)}
               </h3>
-              <p className="text-sm text-zinc-400 leading-relaxed">
+              <p className="text-sm text-slate-400 leading-relaxed">
                 {t(descKey)}
               </p>
             </div>
@@ -108,7 +108,7 @@ export default function HomePage() {
         </div>
 
         {isLoading && (
-          <p className="text-zinc-400 text-center py-8">{t("common.loading")}</p>
+          <p className="text-slate-400 text-center py-8">{t("common.loading")}</p>
         )}
 
         {!isLoading && games.length > 0 && (
@@ -129,8 +129,8 @@ export default function HomePage() {
  */
 function StatCard({ label, value, color }: { label: string; value: number; color: string }) {
   return (
-    <div className="bg-vz-charcoal/70 border border-zinc-800 rounded-xl p-4">
-      <p className="text-xs uppercase tracking-wider text-zinc-500 mb-1">{label}</p>
+    <div className="bg-vz-charcoal/70 border border-slate-800 rounded-xl p-4">
+      <p className="text-xs uppercase tracking-wider text-slate-500 mb-1">{label}</p>
       <p className={`text-3xl font-display font-bold ${color}`}>{value}</p>
     </div>
   );
