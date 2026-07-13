@@ -15,12 +15,46 @@ import { Link } from "@tanstack/react-router";
 import { useAuth } from "../context/AuthContext";
 import Logo from "./Logo";
 
-const HERO_VIDEO_ID = "_BcBikeJhTk";
+interface HeroVideo {
+  videoId: string;
+  gameName: string;
+}
+
+// Whitelist curata: embed consentito, nessun age-gate/region-lock, gameplay
+// reale (non trailer con loghi/testo in sovraimpressione) — vedi issue #182.
+// Curare/estendere questa lista è una decisione di contenuto, non di codice.
+const HERO_VIDEOS: HeroVideo[] = [
+  { videoId: "E3Huy2cdih0", gameName: "ELDEN RING" },
+  { videoId: "B9hU6UJX_pc", gameName: "Baldur's Gate 3" },
+  { videoId: "N-xHcvug3WI", gameName: "Grand Theft Auto V" },
+];
+
+const HERO_VIDEO_SESSION_KEY = "vz-hero-video-id";
+
+// Un video a caso per sessione (non a ogni render/navigazione di ritorno
+// sulla home): scelto una volta e ricordato in sessionStorage finché la
+// scheda resta aperta. sessionStorage può essere non disponibile (es.
+// private browsing rigido) — in quel caso si sceglie comunque un video
+// a caso, solo senza persistenza.
+function pickHeroVideo(): HeroVideo {
+  try {
+    const storedId = sessionStorage.getItem(HERO_VIDEO_SESSION_KEY);
+    const stored = HERO_VIDEOS.find((v) => v.videoId === storedId);
+    if (stored) return stored;
+
+    const picked = HERO_VIDEOS[Math.floor(Math.random() * HERO_VIDEOS.length)];
+    sessionStorage.setItem(HERO_VIDEO_SESSION_KEY, picked.videoId);
+    return picked;
+  } catch {
+    return HERO_VIDEOS[Math.floor(Math.random() * HERO_VIDEOS.length)];
+  }
+}
 
 export default function HeroSection() {
   const { t } = useTranslation();
   const { isAuthenticated } = useAuth();
   const [videoFailed, setVideoFailed] = useState(false);
+  const [heroVideo] = useState(pickHeroVideo);
 
   // Carica l'IFrame Player API di YouTube per intercettare gli errori di embed.
   // Se il video è stato rimosso o ha l'embed disabilitato, onError scatta e
@@ -62,7 +96,7 @@ export default function HeroSection() {
         <div className="absolute inset-0">
           <iframe
             id="hero-video"
-            src={`https://www.youtube.com/embed/${HERO_VIDEO_ID}?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=${HERO_VIDEO_ID}&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+            src={`https://www.youtube.com/embed/${heroVideo.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=${heroVideo.videoId}&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
             className="absolute top-1/2 left-1/2 min-w-full min-h-full"
             style={{
               width: "100vw",
@@ -72,7 +106,7 @@ export default function HeroSection() {
               transform: "translate(-50%, -50%)",
               pointerEvents: "none",
             }}
-            title="Hero Background Video"
+            title={`Hero Background Video — ${heroVideo.gameName}`}
             allow="autoplay; encrypted-media"
             allowFullScreen={false}
           />

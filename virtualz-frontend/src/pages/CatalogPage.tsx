@@ -16,6 +16,13 @@
  *                  sull'oggetto Game (colonne Windows/Mac/Linux del dataset Steam).
  *  - VR          → funzionante (checkbox singola). Riusa le categorie Steam
  *                  già importate ("VR Support"/"VR Only"/ecc.), non un campo dedicato.
+ *  - 18+         → funzionante (checkbox singola, "Mostra giochi 18+"). games.mature
+ *                  (Required age >= 18, genere Nudity/Sexual Content/Gore/Violent, o
+ *                  "hentai" nel nome — vedi populate_db.py) è nascosto di default dal
+ *                  catalogo; la checkbox è un opt-in per farlo ricomparire, non un
+ *                  "solo 18+" come VR. Quando attiva, quei generi ricompaiono anche
+ *                  come opzioni nel filtro Genere (richiesta lista genere con
+ *                  getGenres(true), altrimenti il backend le nasconde comunque).
  *  - Ordinamento → funzionante (sortBy + sortDir, già previsti da CatalogSearchParams).
  *
  * NOTA ricerca: il parametro inviato è `name` (come documentato in CatalogSearchParams),
@@ -37,6 +44,11 @@ import type { CatalogSearchParams, Game } from "@/types/api";
 // genere), quindi non è mai stato incluso: qualunque gioco reale non lo avrebbe mai
 // avuto tra i suoi generi.
 const CURATED_GENRES = ["Action", "Adventure", "RPG", "Strategy", "Indie"];
+
+// Stessi nomi esatti (case-sensitive) di ADULT_GENRE_NAMES lato backend
+// (GenreController.java / populate_db.py) — generi che compaiono nel
+// selettore, e nei risultati, solo con "Mostra giochi 18+" attivo.
+const ADULT_GENRE_NAMES = ["Nudity", "Sexual Content", "Gore", "Violent"];
 
 // Ordinamento: value = "campo:direzione" (vuoto = nessun ordinamento / rilevanza).
 const SORT_OPTIONS = [
@@ -63,6 +75,7 @@ interface FilterState {
   maxPrice: string;
   os: string[];
   vr: boolean;
+  mature: boolean;
   sort: string; // "campo:direzione" oppure ""
 }
 
@@ -73,6 +86,7 @@ const EMPTY_FILTERS: FilterState = {
   maxPrice: "",
   os: [],
   vr: false,
+  mature: false,
   sort: "rating:desc",
 };
 
@@ -87,19 +101,35 @@ export default function CatalogPage() {
   const [totalElements, setTotalElements] = useState(0);
   const [genres, setGenres] = useState<string[]>(CURATED_GENRES);
 
-  // Carica l'elenco generi una sola volta all'ingresso nella pagina: alla lista
-  // curata aggiunge eventuali generi reali dal backend non già presenti
+  // Carica l'elenco generi alla lista curata aggiunge eventuali generi reali
+  // dal backend non già presenti. Dipende da filters.mature: quando la
+  // checkbox "Mostra giochi 18+" è spuntata, il backend include anche
+  // Nudity/Sexual Content nell'elenco (altrimenti restano nascosti, coerente
+  // con l'esclusione di games.mature dai risultati — vedi GenreController).
   useEffect(() => {
-    getGenres()
+    getGenres(filters.mature)
       .then((result) => {
-        if (!result?.length) return;
+        if (!result?.length) {
+          setGenres(CURATED_GENRES);
+          return;
+        }
         const extra = result.filter((g) => !CURATED_GENRES.includes(g));
-        if (extra.length) setGenres([...CURATED_GENRES, ...extra]);
+        setGenres(extra.length ? [...CURATED_GENRES, ...extra] : CURATED_GENRES);
       })
       .catch(() => {
         // GET /genres non raggiungibile: resta la lista curata già impostata
       });
-  }, []);
+  }, [filters.mature]);
+
+  // Se l'utente disattiva "Mostra giochi 18+" mentre ha selezionato un
+  // genere che ricompare solo con quel toggle attivo (Nudity/Sexual
+  // Content), il filtro genere resterebbe "agganciato" a un valore non più
+  // proponibile nella lista — lo si azzera per evitare un filtro fantasma.
+  useEffect(() => {
+    if (!filters.mature && ADULT_GENRE_NAMES.includes(filters.genre)) {
+      setFilters((f) => ({ ...f, genre: "" }));
+    }
+  }, [filters.mature, filters.genre]);
 
   // Carica i giochi in base ai filtri correnti e alla pagina
   const fetchGames = useCallback(async () => {
@@ -113,6 +143,7 @@ export default function CatalogPage() {
       if (filters.maxPrice) params.maxPrice = Number(filters.maxPrice);
       if (filters.os.length) params.os = filters.os;
       if (filters.vr) params.vr = true;
+      if (filters.mature) params.mature = true;
       if (filters.sort) {
         const [sortBy, sortDir] = filters.sort.split(":");
         params.sortBy = sortBy;
@@ -160,6 +191,11 @@ export default function CatalogPage() {
     setFilters((f) => ({ ...f, vr: !f.vr }));
   }
 
+  function toggleMature() {
+    setPage(0);
+    setFilters((f) => ({ ...f, mature: !f.mature }));
+  }
+
   function resetFilters() {
     setPage(0);
     setFilters(EMPTY_FILTERS);
@@ -172,6 +208,7 @@ export default function CatalogPage() {
     filters.maxPrice !== "" ||
     filters.os.length > 0 ||
     filters.vr ||
+    filters.mature ||
     filters.sort !== "";
 
   const inputClass =
@@ -266,6 +303,22 @@ export default function CatalogPage() {
                 />
                 <label htmlFor="vr-filter" className="text-sm text-slate-300 cursor-pointer">
                   {t("catalog.vrOnly")}
+                </label>
+              </div>
+            </div>
+
+            {/* --- 18+ --- */}
+            <div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="mature-filter"
+                  checked={filters.mature}
+                  onChange={toggleMature}
+                  className="h-4 w-4 rounded border-zinc-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
+                />
+                <label htmlFor="mature-filter" className="text-sm text-zinc-300 cursor-pointer">
+                  {t("catalog.showMature")}
                 </label>
               </div>
             </div>

@@ -39,6 +39,11 @@ export default function GameCard({ game }: GameCardProps) {
         ) : (
           <GameCoverPlaceholder name={displayName} seed={game.id} className="w-full h-full" />
         )}
+        {game.mature && (
+          <span className="absolute top-2 left-2 text-xs font-bold px-2 py-1 rounded-full bg-red-500/90 backdrop-blur text-white">
+            18+
+          </span>
+        )}
         <span className="absolute top-2 right-2 text-xs font-bold px-2 py-1 rounded-full bg-vz-navy/90 backdrop-blur text-vz-lime">
           {game.price > 0 ? `€${Number(game.price).toFixed(2)}` : t("common.free")}
         </span>
