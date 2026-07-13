@@ -29,6 +29,13 @@ public class AuthController {
     private final JwtUtils jwtUtils;
     private final UserService userService;
 
+    /**
+     * Effettua il login di un utente esistente.
+     * Issue #15: aggiunto log INFO per tracciare il login riuscito.
+     *
+     * @param req credenziali dell'utente (username e password)
+     * @return ResponseEntity con il token JWT e i dati utente
+     */
     @PostMapping("/login")
     public ResponseEntity<ApiResponse<AuthResponse>> login(@Valid @RequestBody AuthRequest req) {
         try {
@@ -37,6 +44,8 @@ public class AuthController {
 
             String token = jwtUtils.generateToken(req.getUsername());
             User user = userService.findByUsername(req.getUsername());
+
+            log.info("User logged in successfully - Username: '{}', UserID: {}", req.getUsername(), user.getId());
 
             return ResponseEntity.ok(ApiResponse.ok(
                     new AuthResponse(token, user.getId(), user.getUsername(), user.getEmail()),
@@ -48,10 +57,19 @@ public class AuthController {
         }
     }
 
+    /**
+     * Registra un nuovo utente e genera il token JWT.
+     * Issue #15: aggiunto log INFO per tracciare la registrazione riuscita.
+     *
+     * @param req dati dell'utente da registrare
+     * @return ResponseEntity con il token JWT e i dati utente
+     */
     @PostMapping("/register")
     public ResponseEntity<ApiResponse<AuthResponse>> register(@Valid @RequestBody UserRequest req) {
         UserResponse created = userService.register(req);
         String token = jwtUtils.generateToken(created.getUsername());
+
+        log.info("User registered successfully via auth - UserID: {}, Username: '{}'", created.getId(), created.getUsername());
 
         // L'email non è più su UserResponse (non va esposta pubblicamente
         // via GET /api/users/{id} ad altri utenti), ma qui è legittimo:
