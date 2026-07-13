@@ -3,14 +3,8 @@ name: Frontend Typecheck
 on:
   push:
     branches: [main]
-    paths:
-      - "virtualz-frontend/**"
-      - ".github/workflows/frontend-typecheck.yml"
   pull_request:
     branches: [main]
-    paths:
-      - "virtualz-frontend/**"
-      - ".github/workflows/frontend-typecheck.yml"
 
 jobs:
   typecheck:
