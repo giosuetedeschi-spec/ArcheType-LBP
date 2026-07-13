@@ -1,5 +1,7 @@
 package com.archetype.lbp.dto;
 
+import jakarta.validation.constraints.DecimalMax;
+import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import lombok.Data;
@@ -27,6 +29,13 @@ public class GameFilterRequest {
     // "VR Only" / "VR Supported" / "SteamVR Collectibles" — vedi
     // GameRepository.withFilters per l'elenco esatto).
     private Boolean vr;
+
+    // Media delle recensioni utente (tabella reviews, scala 1-5) — distinta
+    // da minRating sopra, che filtra il rating Steam del dataset, non le
+    // recensioni scritte dagli utenti sulla piattaforma.
+    @DecimalMin(value = "1.0", message = "minUserRating deve essere tra 1 e 5")
+    @DecimalMax(value = "5.0", message = "minUserRating deve essere tra 1 e 5")
+    private BigDecimal minUserRating;
 
     // Se false/null (default), i giochi con games.mature=true (età >= 18,
     // genere Nudity/Sexual Content, o "hentai" nel nome — vedi

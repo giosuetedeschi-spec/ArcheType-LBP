@@ -56,7 +56,8 @@ public class GameService {
                         filter.getReleasedBefore(),
                         filter.getOs(),
                         filter.getVr(),
-                        filter.getMature()
+                        filter.getMature(),
+                        filter.getMinUserRating()
                 ),
                 pageable
         );
