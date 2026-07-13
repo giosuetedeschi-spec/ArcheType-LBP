@@ -826,6 +826,16 @@ def main() -> None:
     """
     log.info("=== Popolamento Database ArcheType ===")
 
+    # Issue #21: precarica la tabella games in RAM per migliorare le performance
+    # delle query successive. Va fatto qui, prima dei return sotto, perché lo
+    # shared_buffers di Postgres si svuota ad ogni riavvio del container: sul
+    # path normale (DB già popolato, si salta il reimport) è questo l'unico
+    # punto in cui il prewarm gira, altrimenti non sarebbe mai chiamato dopo
+    # il primissimo avvio. Sul primissimo avvio la tabella è ancora vuota qui
+    # (l'import avviene sotto): innocuo, pg_prewarm su una tabella vuota non
+    # fa nulla di dannoso, solo di inutile una tantum.
+    prewarm_games_table()
+
     if not FORCE_REPOPULATE:
         existing = _count_games()
         if existing > SEED_GAME_COUNT_THRESHOLD:
@@ -846,11 +856,7 @@ def main() -> None:
     df = load_dataset(DATASET_PATH)
     df = clean_data(df)
     insert_games(df)
-    
-    # Issue #21: precarica la tabella games in RAM per migliorare le performance
-    # delle query successive (specialmente le prime dopo l'avvio del container)
-    prewarm_games_table()
-    
+
     log.info("=== Completato ===")
 
 
