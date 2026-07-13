@@ -21,5 +21,6 @@ public class GameResponse {
     private Boolean windows;
     private Boolean mac;
     private Boolean linux;
+    private Integer requiredAge;
     private LocalDateTime createdAt;
 }
