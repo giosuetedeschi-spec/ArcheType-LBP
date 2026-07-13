@@ -24,9 +24,14 @@ export async function getGameById(id: number): Promise<Game> {
   return data;
 }
 
-/** @returns elenco generi distinti presenti a catalogo, ordinati alfabeticamente */
-export async function getGenres(): Promise<string[]> {
-  const { data } = await api.get<string[]>("/genres");
+/**
+ * @param mature true = includi anche i generi per adulti (Nudity/Sexual
+ *   Content), coerente con il flag equivalente di searchCatalog — di
+ *   default restano fuori dalla lista, vedi GenreController lato backend.
+ * @returns elenco generi distinti presenti a catalogo, ordinati alfabeticamente
+ */
+export async function getGenres(mature = false): Promise<string[]> {
+  const { data } = await api.get<string[]>("/genres", { params: mature ? { mature: true } : {} });
   return data;
 }
 
