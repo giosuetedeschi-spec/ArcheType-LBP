@@ -160,6 +160,18 @@ export default function GameDetailPage() {
         />
       )}
 
+      {game.requiredAge > 0 && (
+        <span
+          className={`inline-block text-xs font-bold px-3 py-1 rounded-full mb-4 ${
+            game.requiredAge >= 18
+              ? "bg-red-500/15 border border-red-500 text-red-400"
+              : "bg-vz-navy border border-zinc-700 text-zinc-300"
+          }`}
+        >
+          {t("game.ageRating")}: {game.requiredAge}+
+        </span>
+      )}
+
       <div className="flex flex-wrap items-start justify-between gap-4 mb-4">
         <h1 className="text-3xl font-display font-bold text-white">{game.name}</h1>
         <span className="text-2xl font-bold text-vz-lime">
