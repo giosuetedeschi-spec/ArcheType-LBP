@@ -62,3 +62,4 @@ db/*.sql.gz
 .playwright-mcp/
 out/
 .tanstack/
+db/seed_games.sql.gz
