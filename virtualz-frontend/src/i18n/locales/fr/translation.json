@@ -15,7 +15,7 @@
   },
   "auth": {
     "login": "Se connecter",
-    "loginSubtitle": "Bon retour sur VirtualZ",
+    "loginSubtitle": "Entrez vos identifiants pour vous connecter",
     "loggingIn": "Connexion en cours…",
     "registerHere": "Inscrivez-vous",
     "usernamePlaceholder": "Entrez votre nom d'utilisateur",
@@ -58,6 +58,7 @@
     "sortPriceAsc": "Prix croissant",
     "sortPriceDesc": "Prix décroissant",
     "sortRatingDesc": "Note",
+    "sortPopularity": "Les plus populaires",
     "sortNewest": "Plus récents",
     "os": "Système d'exploitation",
     "vrOnly": "Jeux VR uniquement",
@@ -92,7 +93,8 @@
     "reviewPlaceholder": "Que pensez-vous de ce jeu ? (facultatif)",
     "submitReview": "Publier",
     "removeReview": "Retirer votre avis",
-    "noReviews": "Aucun avis pour le moment. Soyez le premier !"
+    "noReviews": "Aucun avis pour le moment. Soyez le premier !",
+    "descriptionBadge": "EN · Description originale"
   },
   "library": {
     "title": "Ma bibliothèque",

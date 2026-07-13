@@ -8,20 +8,33 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository per la gestione delle entità {@link Friend} (relazioni di amicizia).
+ * Issue #58: aggiunto JavaDoc per documentare le operazioni disponibili.
+ */
 @Repository
 public interface FriendRepository extends JpaRepository<Friend, Long> {
+    
+    /** Trova tutte le relazioni di amicizia di un utente con uno specifico stato. */
     List<Friend> findByUser_IdAndStatus(Long userId, String status);
 
-    // Richieste ricevute: righe dove l'utente è il DESTINATARIO (colonna
-    // friend_id), non il mittente — vedi nota in FriendService.getPending().
+    /**
+     * Trova le richieste di amicizia RICEVUTE da un utente (dove l'utente è il destinatario).
+     * Vedi nota in FriendService.getPending().
+     */
     List<Friend> findByFriend_IdAndStatus(Long friendId, String status);
 
+    /** Verifica se esiste una relazione di amicizia tra due utenti. */
     boolean existsByUser_IdAndFriend_Id(Long userId, Long friendId);
+    
+    /** Trova una specifica relazione di amicizia tra due utenti. */
     Optional<Friend> findByUser_IdAndFriend_Id(Long userId, Long friendId);
 
-    // Aggregato per la leaderboard (metrica "friends"): una query GROUP BY
-    // su tutti gli utenti invece di una query per utente.
-    // Object[] = { userId (Long), numero amici accettati (Long) }.
+    /**
+     * Conta il numero di amicizie accettate per ogni utente.
+     * Usato per la leaderboard (metrica "friends").
+     * @return lista di array [userId, numeroAmiciAccettati]
+     */
     @Query("SELECT f.user.id, COUNT(f) FROM Friend f WHERE f.status = 'accepted' GROUP BY f.user.id")
     List<Object[]> countAcceptedByUser();
 }

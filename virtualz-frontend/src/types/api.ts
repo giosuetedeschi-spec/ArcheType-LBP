@@ -31,6 +31,8 @@ export interface Game {
   linux: boolean;
   /** true se contenuto per adulti (da "Required age" Steam >= 18). */
   mature: boolean;
+  /** Punto medio della fascia "Estimated owners" Steam — segnale di popolarità. */
+  estimatedOwners: number;
   createdAt: string;
 }
 

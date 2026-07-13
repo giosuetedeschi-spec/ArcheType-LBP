@@ -9,10 +9,10 @@ export default function OAuthButtons() {
 
   return (
     <div className="mt-6">
-      <div className="flex items-center gap-3 text-xs text-zinc-500 uppercase tracking-wide">
-        <div className="h-px flex-1 bg-zinc-800" />
+      <div className="flex items-center gap-3 text-xs text-slate-500 uppercase tracking-wide">
+        <div className="h-px flex-1 bg-slate-800" />
         {t("auth.orContinueWith")}
-        <div className="h-px flex-1 bg-zinc-800" />
+        <div className="h-px flex-1 bg-slate-800" />
       </div>
 
       <div className="mt-4 space-y-2">
@@ -28,7 +28,7 @@ export default function OAuthButtons() {
           type="button"
           disabled
           title={t("auth.comingSoon")}
-          className="w-full flex items-center justify-center gap-3 rounded-lg border border-zinc-700 bg-vz-charcoal px-4 py-2.5 text-sm font-medium text-zinc-300 opacity-50 cursor-not-allowed"
+          className="w-full flex items-center justify-center gap-3 rounded-lg border border-slate-700 bg-vz-charcoal px-4 py-2.5 text-sm font-medium text-slate-300 opacity-50 cursor-not-allowed"
         >
           🔍 {t("auth.continueWithGoogle")}
         </button>

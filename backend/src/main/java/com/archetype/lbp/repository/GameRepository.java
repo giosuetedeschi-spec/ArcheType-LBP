@@ -21,24 +21,39 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
+/**
+ * Repository per la gestione delle entità {@link Game}.
+ * Issue #58: aggiunto JavaDoc per documentare le operazioni disponibili.
+ */
 @Repository
 public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificationExecutor<Game> {
+    
+    /** Trova un gioco tramite il suo Steam App ID. */
     Game findBySteamAppId(Integer steamAppId);
+    
+    /** Trova tutti i giochi il cui nome contiene la stringa specificata (case-insensitive). */
     List<Game> findByNameContainingIgnoreCase(String name);
+
+    /**
+     * Trova tutti i giochi che hanno almeno un genere il cui nome contiene la stringa specificata.
+     * Naviga la relazione N:N con {@link Genre}.
+     */
+    List<Game> findByGenres_NameContainingIgnoreCase(String genreName);
 
     // Sostituisce il vecchio findByGenresContainingIgnoreCase(String) che
     // presupponeva "genres" come stringa: ora è una relazione N:N, quindi
     // si naviga tramite la entity Genre.
-    List<Game> findByGenres_NameContainingIgnoreCase(String genreName);
 
-    // Nomi esatti (case-sensitive, così come importati da populate_db.py
-    // dalla colonna "Categories" del dataset Steam) delle categorie che
-    // indicano supporto VR — un gioco con almeno una di queste passa il
-    // filtro vr=true.
+    /** Nomi esatti (case-sensitive) delle categorie che indicano supporto VR. */
     List<String> VR_CATEGORY_NAMES = List.of(
             "VR Support", "VR Only", "VR Supported", "SteamVR Collectibles"
     );
 
+    /**
+     * Costruisce una Specification dinamica per filtrare i giochi in base a criteri multipli opzionali.
+     * I contenuti per adulti (games.mature=true) restano esclusi a meno che il chiamante non passi
+     * mature=true esplicitamente (vedi il parametro più sotto).
+     */
     static Specification<Game> withFilters(String name, String genre, String developer,
                                             BigDecimal minPrice, BigDecimal maxPrice,
                                             BigDecimal minRating, LocalDate releasedAfter,
@@ -133,6 +148,7 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
         };
     }
 
-    @Query("SELECT g FROM Game g WHERE g.headerImageUrl IS NOT NULL AND g.headerImageUrl <> ''") 
+    /** Trova i giochi con un header image url valido (non nullo/vuoto), paginati. */
+    @Query("SELECT g FROM Game g WHERE g.headerImageUrl IS NOT NULL AND g.headerImageUrl <> ''")
     Page<Game> findValidGames(Pageable pageable);
 }

@@ -9,7 +9,7 @@ const STATUS_COLORS: Record<LibraryStatus, string> = {
   wishlist: "bg-vz-pink/20 text-vz-pink",
   playing: "bg-blue-500/20 text-blue-300",
   finished: "bg-vz-lime/20 text-vz-lime",
-  abandoned: "bg-zinc-700/40 text-zinc-400",
+  abandoned: "bg-slate-700/40 text-slate-400",
 };
 
 interface LibraryItemCardProps {
@@ -47,13 +47,13 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
   // proprio id, non per il gameId collegato. Passare game.id qui
   // modificherebbe/cancellerebbe la voce sbagliata.
   return (
-    <div className="bg-vz-charcoal rounded-xl border border-zinc-800 overflow-hidden">
+    <div className="bg-vz-charcoal rounded-xl border border-slate-800 overflow-hidden">
       <div className="flex gap-3 p-3">
         {item.game.headerImageUrl ? (
           <img
             src={item.game.headerImageUrl}
             alt={item.game.name}
-            className="w-24 h-14 object-cover rounded-lg bg-zinc-900 flex-shrink-0"
+            className="w-24 h-14 object-cover rounded-lg bg-slate-900 flex-shrink-0"
             loading="lazy"
           />
         ) : (
@@ -91,7 +91,7 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
             </button>
             <button
               onClick={() => onStatusChange(item.id, "abandoned")}
-              className="text-xs px-3 py-1 rounded-full border border-zinc-600 text-zinc-400"
+              className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
             >
               {t("library.markAsAbandoned")}
             </button>
@@ -107,7 +107,7 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
         )}
         <button
           onClick={() => onRemove(item.id)}
-          className="text-xs px-3 py-1 rounded-full text-zinc-500 hover:text-vz-pink"
+          className="text-xs px-3 py-1 rounded-full text-slate-500 hover:text-vz-pink"
         >
           {t("library.remove")}
         </button>

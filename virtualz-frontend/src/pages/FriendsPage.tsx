@@ -128,7 +128,7 @@ export default function FriendsPage() {
           value={searchQuery}
           onChange={(e) => setSearchQuery(e.target.value)}
           placeholder={t("friends.searchPlaceholder")}
-          className="w-full bg-vz-charcoal border border-zinc-700 rounded-lg px-4 py-2.5 text-white placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
+          className="w-full bg-vz-charcoal border border-slate-700 rounded-lg px-4 py-2.5 text-white placeholder:text-slate-500 focus:outline-none focus:ring-2 focus:ring-vz-lime"
         />
 
         {actionMessage && <p className="text-sm text-vz-lime mt-2">{actionMessage}</p>}
@@ -136,12 +136,12 @@ export default function FriendsPage() {
         {searchQuery.trim() !== "" && (
           <div className="mt-3 space-y-2">
             {searchResults.length === 0 ? (
-              <p className="text-sm text-zinc-500">{t("friends.searchNoResults")}</p>
+              <p className="text-sm text-slate-500">{t("friends.searchNoResults")}</p>
             ) : (
               searchResults.map((candidate) => (
                 <div
                   key={candidate.id}
-                  className="flex items-center justify-between gap-3 bg-vz-charcoal rounded-xl border border-zinc-800 p-3"
+                  className="flex items-center justify-between gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-3"
                 >
                   <div className="flex items-center gap-3 min-w-0">
                     <AvatarCircle username={candidate.username} />
@@ -160,7 +160,7 @@ export default function FriendsPage() {
         )}
       </div>
 
-      {loading && <p className="text-zinc-400">{t("common.loading")}</p>}
+      {loading && <p className="text-slate-400">{t("common.loading")}</p>}
       {error && <p className="text-vz-pink">{error}</p>}
 
       {!loading && !error && (
@@ -175,7 +175,7 @@ export default function FriendsPage() {
                 {pending.map((req) => (
                   <div
                     key={req.friendId}
-                    className="flex items-center justify-between gap-3 bg-vz-charcoal rounded-xl border border-zinc-800 p-3"
+                    className="flex items-center justify-between gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-3"
                   >
                     <div className="flex items-center gap-3 min-w-0">
                       <AvatarCircle username={req.username} />
@@ -190,7 +190,7 @@ export default function FriendsPage() {
                       </button>
                       <button
                         onClick={() => handleReject(req.friendId)}
-                        className="text-xs px-3 py-1.5 rounded-full border border-zinc-600 text-zinc-400 hover:text-white transition-colors"
+                        className="text-xs px-3 py-1.5 rounded-full border border-slate-600 text-slate-400 hover:text-white transition-colors"
                       >
                         {t("friends.reject")}
                       </button>
@@ -205,7 +205,7 @@ export default function FriendsPage() {
           <div>
             <h2 className="text-lg font-display font-semibold text-white mb-3">{t("friends.myFriends")}</h2>
             {friends.length === 0 ? (
-              <p className="text-zinc-400">{t("friends.noFriends")}</p>
+              <p className="text-slate-400">{t("friends.noFriends")}</p>
             ) : (
               <div className="space-y-2">
                 {friends.map((friend) => {
@@ -214,14 +214,14 @@ export default function FriendsPage() {
                   return (
                     <div
                       key={friend.friendId}
-                      className="flex items-center justify-between gap-3 bg-vz-charcoal rounded-xl border border-zinc-800 p-3"
+                      className="flex items-center justify-between gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-3"
                     >
                       <div className="flex items-center gap-3 min-w-0">
                         <AvatarCircle username={friend.username} />
                         <div className="min-w-0">
                           <p className="text-white font-medium truncate">{friend.username}</p>
                           {stats && (
-                            <p className="text-xs text-zinc-500">
+                            <p className="text-xs text-slate-500">
                               {t("friends.ownedGames")}: {owned} · {t("friends.playingNow")}: {stats.playingCount}
                             </p>
                           )}
@@ -229,7 +229,7 @@ export default function FriendsPage() {
                       </div>
                       <button
                         onClick={() => handleRemove(friend.friendId)}
-                        className="shrink-0 text-xs px-3 py-1.5 rounded-full text-zinc-500 hover:text-vz-pink transition-colors"
+                        className="shrink-0 text-xs px-3 py-1.5 rounded-full text-slate-500 hover:text-vz-pink transition-colors"
                       >
                         {t("friends.remove")}
                       </button>
