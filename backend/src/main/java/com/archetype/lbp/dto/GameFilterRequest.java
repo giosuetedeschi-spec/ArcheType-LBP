@@ -35,8 +35,11 @@ public class GameFilterRequest {
     // vederli anche) — checkbox "Mostra giochi 18+" lato UI.
     private Boolean mature;
 
-    private String sortBy = "name";
-    private String sortDir = "asc";
+    // Default: voto più alto per primo. Vale per ogni chiamata che non
+    // specifica un ordinamento esplicito (es. HomePage "Featured" e i
+    // GameCarousel per genere, che chiamano searchCatalog senza sortBy).
+    private String sortBy = "rating";
+    private String sortDir = "desc";
 
     @Min(value = 0, message = "page non può essere negativo")
     private int page = 0;
