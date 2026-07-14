@@ -205,6 +205,7 @@
     "openLibrary": "Ouvrir la bibliothèque"
   },
   "colorblind": {
+    "label": "Mode daltonisme",
     "normal": "Normal",
     "protanopia": "Protanopie",
     "deuteranopia": "Deutéranopie",

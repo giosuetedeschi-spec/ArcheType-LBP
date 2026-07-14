@@ -205,6 +205,7 @@
     "openLibrary": "Open Library"
   },
   "colorblind": {
+    "label": "Colorblind mode",
     "normal": "Normal",
     "protanopia": "Protanopia",
     "deuteranopia": "Deuteranopia",
