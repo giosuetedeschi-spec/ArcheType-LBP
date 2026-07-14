@@ -53,7 +53,7 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
           <img
             src={item.game.headerImageUrl}
             alt={item.game.name}
-            className="w-24 h-14 object-cover rounded-lg bg-slate-900 flex-shrink-0"
+            className="w-24 aspect-[92/43] object-cover rounded-lg bg-slate-900 flex-shrink-0"
             loading="lazy"
           />
         ) : (

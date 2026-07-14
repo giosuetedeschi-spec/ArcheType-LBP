@@ -249,7 +249,7 @@ export default function ProfilePage() {
                     <img
                       src={review.gameHeaderImageUrl || "https://placehold.co/120x67/111827/ffffff?text=No+Image"}
                       alt={review.gameName}
-                      className="w-20 h-11 object-cover rounded-lg bg-slate-900 shrink-0"
+                      className="w-20 aspect-[92/43] object-cover rounded-lg bg-slate-900 shrink-0"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-medium truncate">{review.gameName}</p>
