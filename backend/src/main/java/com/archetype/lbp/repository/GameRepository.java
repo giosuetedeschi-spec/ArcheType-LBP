@@ -129,6 +129,11 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
                 predicates.add(cb.isFalse(root.get("mature")));
             }
 
+            // Righe con nome vuoto/nullo sono dati sporchi del dataset Steam
+            // (mostrati in UI come "Untitled Game"), non giochi reali: escludi sempre.
+            predicates.add(cb.isNotNull(root.get("name")));
+            predicates.add(cb.notEqual(cb.trim(root.get("name")), ""));
+
             if (minUserRating != null) {
                 // Media delle recensioni utente (reviews.rating), non il
                 // rating Steam del dataset (quello è già filtrato sopra da
