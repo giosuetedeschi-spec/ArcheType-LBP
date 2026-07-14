@@ -150,13 +150,13 @@ export default function GameDetailPage() {
         <img
           src={game.headerImageUrl}
           alt={game.name}
-          className="w-full rounded-xl mb-6 bg-slate-900 aspect-[16/6] object-cover"
+          className="w-full rounded-xl mb-6 bg-slate-900 aspect-[92/43] object-cover"
         />
       ) : (
         <GameCoverPlaceholder
           name={game.name}
           seed={game.id}
-          className="w-full rounded-xl mb-6 aspect-[16/6]"
+          className="w-full rounded-xl mb-6 aspect-[92/43]"
         />
       )}
 
