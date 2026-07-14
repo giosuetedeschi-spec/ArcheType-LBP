@@ -27,6 +27,7 @@ const HERO_VIDEOS: HeroVideo[] = [
   { videoId: "E3Huy2cdih0", gameName: "ELDEN RING" },
   { videoId: "B9hU6UJX_pc", gameName: "Baldur's Gate 3" },
   { videoId: "N-xHcvug3WI", gameName: "Grand Theft Auto V" },
+  { videoId: "pEh2sa13XyU", gameName: "Euro Truck Simulator 2" },
 ];
 
 const HERO_VIDEO_SESSION_KEY = "vz-hero-video-id";
