@@ -12,7 +12,7 @@
  * @param title - Display title for the section
  */
 
-import { useState } from "react";
+import { useRef } from "react";
 import { useQuery } from "@tanstack/react-query";
 import { Link } from "@tanstack/react-router";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -26,10 +26,13 @@ interface GameCarouselProps {
   title: string;
 }
 
+// Larghezza card (w-64 = 256px) + gap-4 (16px), usata per far scorrere gli
+// scroll button di uno "step" coerente con lo scroll nativo touch.
+const CARD_STEP = 272;
+
 export default function GameCarousel({ genre, title }: GameCarouselProps) {
   const { t } = useTranslation();
-  const [scrollIndex, setScrollIndex] = useState(0);
-  const gamesPerView = 4;
+  const scrollerRef = useRef<HTMLDivElement>(null);
 
   // sortBy/sortDir espliciti per mostrare i titoli più diffusi del genere,
   // non i primi in ordine alfabetico — stesso motivo di HomePage.tsx.
@@ -39,10 +42,11 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
   });
 
   const games: Game[] = data?.content ?? [];
-  const maxIndex = Math.max(0, games.length - gamesPerView);
 
-  const handlePrev = () => setScrollIndex((prev) => Math.max(0, prev - 1));
-  const handleNext = () => setScrollIndex((prev) => Math.min(maxIndex, prev + 1));
+  // Scroll nativo (non più via transform): così su mobile/tablet lo swipe
+  // touch funziona anche se le frecce (hover-only) sono invisibili.
+  const handlePrev = () => scrollerRef.current?.scrollBy({ left: -CARD_STEP, behavior: "smooth" });
+  const handleNext = () => scrollerRef.current?.scrollBy({ left: CARD_STEP, behavior: "smooth" });
 
   if (isLoading) {
     return (
@@ -69,36 +73,35 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
       </div>
 
       <div className="relative group">
-        {scrollIndex > 0 && (
-          <button
-            onClick={handlePrev}
-            className="absolute left-2 top-1/2 -translate-y-1/2 z-10 bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
-          >
-            <ChevronLeft className="w-6 h-6 text-white" />
-          </button>
-        )}
+        <button
+          onClick={handlePrev}
+          aria-label={t("common.previous", { defaultValue: "Previous" })}
+          className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
+        >
+          <ChevronLeft className="w-6 h-6 text-white" />
+        </button>
 
-        <div className="flex gap-4 px-4 overflow-hidden">
-          <div
-            className="flex gap-4 transition-transform duration-300 ease-out"
-            style={{ transform: `translateX(-${scrollIndex * 272}px)` }}
-          >
-            {games.map((game) => (
-              <div key={game.id} className="w-64 flex-shrink-0">
-                <GameCard game={game} />
-              </div>
-            ))}
-          </div>
+        {/* Scroll nativo (swipe touch su mobile, drag/wheel su desktop) invece
+            di un transform pilotato da stato: le frecce sopra/sotto sono solo
+            uno shortcut per mouse, non l'unico modo di scorrere. */}
+        <div
+          ref={scrollerRef}
+          className="flex gap-4 px-4 overflow-x-auto snap-x snap-mandatory scroll-smooth [scrollbar-width:none] [&::-webkit-scrollbar]:hidden"
+        >
+          {games.map((game) => (
+            <div key={game.id} className="w-64 flex-shrink-0 snap-start">
+              <GameCard game={game} />
+            </div>
+          ))}
         </div>
 
-        {scrollIndex < maxIndex && (
-          <button
-            onClick={handleNext}
-            className="absolute right-2 top-1/2 -translate-y-1/2 z-10 bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
-          >
-            <ChevronRight className="w-6 h-6 text-white" />
-          </button>
-        )}
+        <button
+          onClick={handleNext}
+          aria-label={t("common.next", { defaultValue: "Next" })}
+          className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
+        >
+          <ChevronRight className="w-6 h-6 text-white" />
+        </button>
       </div>
     </section>
   );
