@@ -21,6 +21,18 @@ import GameCard from "./GameCard";
 import { searchCatalog } from "../services/gamesApi";
 import type { Game } from "@/types/api";
 
+/**
+ * Props per il componente GameCarousel.
+ *
+ * @property title - Titolo della sezione mostrato sopra il carosello.
+ * @property games - Lista di giochi da visualizzare come card scorrevoli.
+ */
+/**
+ * Props per il componente GameCarousel.
+ *
+ * @property title - Titolo della sezione mostrato sopra il carosello.
+ * @property games - Lista di giochi da visualizzare come card scorrevoli.
+ */
 interface GameCarouselProps {
   genre: string;
   title: string;
