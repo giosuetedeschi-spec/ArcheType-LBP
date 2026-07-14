@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { Eye } from "lucide-react";
 import { useAuth } from "../context/AuthContext";
 import LanguageSwitcher from "./LanguageSwitcher";
 import { useColorblind, type ColorblindMode } from "../context/ColorblindContext";
@@ -94,15 +95,21 @@ export default function Navbar() {
         <div className="hidden lg:flex items-center gap-4">
 
           {/* Selettore colorblind — cambia data-colorblind su <html>, letto da index.css */}
-          <select
-            value={mode}
-            onChange={(e) => setMode(e.target.value as ColorblindMode)}
-            className="bg-vz-charcoal border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-vz-lime"
-          >
-            {MODES.map((m) => (
-              <option key={m} value={m}>{t(`colorblind.${m}`)}</option>
-            ))}
-          </select>
+          <div className="colorblind-select-wrap" title={t("colorblind.label")}>
+            <div className="flex items-center gap-1.5 bg-vz-charcoal rounded-lg px-2 py-1">
+              <Eye size={14} className="text-slate-400 shrink-0" aria-hidden="true" />
+              <select
+                value={mode}
+                onChange={(e) => setMode(e.target.value as ColorblindMode)}
+                aria-label={t("colorblind.label")}
+                className="bg-transparent text-xs text-slate-300 focus:outline-none"
+              >
+                {MODES.map((m) => (
+                  <option key={m} value={m}>{t(`colorblind.${m}`)}</option>
+                ))}
+              </select>
+            </div>
+          </div>
 
           <LanguageSwitcher />
 
@@ -129,15 +136,21 @@ export default function Navbar() {
           </div>
 
           <div className="flex flex-wrap items-center gap-3 pt-2 border-t border-slate-800">
-            <select
-              value={mode}
-              onChange={(e) => setMode(e.target.value as ColorblindMode)}
-              className="bg-vz-charcoal border border-slate-700 rounded-lg px-2 py-1 text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-vz-lime"
-            >
-              {MODES.map((m) => (
-                <option key={m} value={m}>{t(`colorblind.${m}`)}</option>
-              ))}
-            </select>
+            <div className="colorblind-select-wrap" title={t("colorblind.label")}>
+              <div className="flex items-center gap-1.5 bg-vz-charcoal rounded-lg px-2 py-1">
+                <Eye size={14} className="text-slate-400 shrink-0" aria-hidden="true" />
+                <select
+                  value={mode}
+                  onChange={(e) => setMode(e.target.value as ColorblindMode)}
+                  aria-label={t("colorblind.label")}
+                  className="bg-transparent text-xs text-slate-300 focus:outline-none"
+                >
+                  {MODES.map((m) => (
+                    <option key={m} value={m}>{t(`colorblind.${m}`)}</option>
+                  ))}
+                </select>
+              </div>
+            </div>
 
             <LanguageSwitcher />
           </div>
