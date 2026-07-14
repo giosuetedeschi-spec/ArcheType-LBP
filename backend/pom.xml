@@ -96,6 +96,15 @@
             <artifactId>h2</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- FLYWAY: schema versionato e deterministico tra tutti gli sviluppatori -->
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.flywaydb</groupId>
+            <artifactId>flyway-database-postgresql</artifactId>
+        </dependency>
     </dependencies>
     <build>
         <plugins>

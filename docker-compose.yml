@@ -11,12 +11,14 @@ services:
       - "5432:5432"
     volumes:
       - pgdata:/var/lib/postgresql
-      - ./db/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
+      - ./db/initdb.d:/docker-entrypoint-initdb.d:ro
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U archetype -d archetype"]
+      test: ["CMD-SHELL", "pg_isready -U archetype -d archetype && (test ! -d /var/lib/postgresql/18 || test -f /var/lib/postgresql/seed_completed)"]
       interval: 10s
       timeout: 5s
-      retries: 5
+      retries: 30
+      start_period: 10s
+
   backend:
     build:
       context: ./backend
@@ -26,13 +28,10 @@ services:
     depends_on:
       db:
         condition: service_healthy
-      populate:
-        condition: service_completed_successfully
     environment:
       SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/archetype
       SPRING_DATASOURCE_USERNAME: archetype
       SPRING_DATASOURCE_PASSWORD: archetype_secret
-      SPRING_JPA_HIBERNATE_DDL_AUTO: validate
       CORS_ALLOWED_ORIGINS: http://localhost:5173,http://localhost:5174,http://localhost:5175,http://localhost:5177,http://127.0.0.1:5177,http://frontend:80
     ports:
       - "8080:8080"
@@ -49,31 +48,6 @@ services:
       - backend
     ports:
       - "5173:80"
-
-  # Popola il database dal dataset Steam. Gira ad ogni "docker compose up"
-  # ma si auto-salta (exit rapido) se il database e' gia' popolato, quindi
-  # non rallenta gli avvii successivi al primo. Il backend attende il suo
-  # completamento (vedi depends_on sopra) per non partire con un catalogo
-  # vuoto durante il primo import. Vedi scripts/populate_db.py per la
-  # logica di skip e FORCE_REPOPULATE.
-  populate:
-    build:
-      context: ./scripts
-      dockerfile: Dockerfile
-    container_name: archetype-populate
-    depends_on:
-      db:
-        condition: service_healthy
-    environment:
-      DB_HOST: db
-      DB_PORT: 5432
-      DB_NAME: archetype
-      DB_USER: archetype
-      DB_PASSWORD: archetype_secret
-      STEAM_DATASET_PATH: /data/games.csv
-      FORCE_REPOPULATE: ${FORCE_REPOPULATE:-false}
-    volumes:
-      - ./data:/data:ro
 
 volumes:
   pgdata:
