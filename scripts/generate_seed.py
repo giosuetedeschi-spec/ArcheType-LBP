@@ -2,8 +2,8 @@
 
 Legge /data/games.csv riga per riga (modulo csv, tollerante), scarta le
 righe malformate (numero campi inatteso, AppID non numerico, Name che è
-una data = riga slittata), applica i filtri di curation (no-name,
-no-image, adult) e scrive:
+una data = riga slittata), applica i filtri di curation (no-name, adult)
+e scrive:
   /out/games_clean.csv — dataset pulito, header canonico a 40 colonne
   /out/rejected.csv    — righe scartate con motivo (per audit)
 Da eseguire UNA volta: l'output alimenta il repopulate e il pg_dump che
@@ -33,7 +33,7 @@ def idx(n_fields: int) -> dict:
     """Mappa campo->indice; per righe a 39 campi gli indici dopo Price slittano di -1."""
     off = 0 if n_fields == 40 else -1
     return {"appid": 0, "name": 1, "age": 5,
-            "header": 13 + off, "notes": 28 + off, "tags": 37 + off}
+            "notes": 28 + off, "tags": 37 + off}
 
 def is_empty(v: str) -> bool:
     """True per vuoti impliciti: '', 'none', 'nan' (stessa semantica di _clean_text)."""
@@ -51,7 +51,7 @@ def is_adult(row, m) -> bool:
 
 def main():
     csv.field_size_limit(sys.maxsize)
-    s = {"totale": 0, "malformed": 0, "no_name": 0, "no_image": 0,
+    s = {"totale": 0, "malformed": 0, "no_name": 0,
          "adult": 0, "tenuti": 0}
     with open(SRC, newline="", encoding="utf-8") as fin, \
          open(DST, "w", newline="", encoding="utf-8") as fout, \
@@ -68,8 +68,6 @@ def main():
             m = idx(n)
             if is_empty(row[m["name"]]):
                 s["no_name"] += 1; wr.writerow(["no_name"] + row); continue
-            if is_empty(row[m["header"]]):
-                s["no_image"] += 1; wr.writerow(["no_image"] + row); continue
             if is_adult(row, m):
                 s["adult"] += 1; wr.writerow(["adult"] + row); continue
             if n == 39:  # riallinea a 40 colonne inserendo Discount vuoto
