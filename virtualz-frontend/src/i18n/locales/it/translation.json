@@ -159,7 +159,8 @@
     "noFriends": "Non hai ancora amici. Cercali qui sopra!",
     "ownedGames": "Giochi posseduti",
     "playingNow": "In corso",
-    "remove": "Rimuovi"
+    "remove": "Rimuovi",
+    "alreadyFriends": "Amici"
   },
   "profile": {
     "ownedGames": "Giochi posseduti",
@@ -205,6 +206,7 @@
     "openLibrary": "Apri libreria"
   },
   "colorblind": {
+    "label": "Modalità daltonismo",
     "normal": "Normale",
     "protanopia": "Protanopia",
     "deuteranopia": "Deuteranopia",

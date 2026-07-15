@@ -49,6 +49,10 @@ body {
   color: #f4f4f5;
   font-family: var(--font-body);
   -webkit-font-smoothing: antialiased;
+  /* Frecce dei GameCarousel sporgono leggermente fuori dal loro contenitore
+     su viewport <= max-w-7xl (nessun margine esterno naturale): evita che
+     quei pochi px generino uno scroll orizzontale indesiderato. */
+  overflow-x: hidden;
 }
 
 /* ============================================================
@@ -132,4 +136,29 @@ html[data-colorblind="deuteranopia"] {
 html[data-colorblind="tritanopia"] {
   --color-vz-lime: #f0c674;
   --color-vz-pink: #ff7a9e;
+}
+
+/* Colorblind mode selector — flowing gradient border reuses --color-vz-lime/
+   --color-vz-pink, which already differ per mode above, so the animation's
+   colors switch automatically with the selection. */
+.colorblind-select-wrap {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 0.5rem;
+  padding: 1px;
+  background: linear-gradient(120deg, var(--color-vz-pink), var(--color-vz-lime), var(--color-vz-pink));
+  background-size: 200% 200%;
+  animation: colorblind-gradient-flow 6s ease infinite;
+}
+
+@keyframes colorblind-gradient-flow {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .colorblind-select-wrap {
+    animation: none;
+  }
 }

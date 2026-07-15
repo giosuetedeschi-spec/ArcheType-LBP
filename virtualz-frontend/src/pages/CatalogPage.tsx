@@ -273,7 +273,7 @@ export default function CatalogPage() {
                         className={`w-full text-left px-3 py-1.5 rounded-lg text-sm transition-colors ${
                           active
                             ? "bg-vz-lime/15 text-vz-lime font-medium"
-                            : "text-slate-300 hover:text-white hover:bg-vz-charcoal/60"
+                            : "text-slate-200 hover:text-white hover:bg-vz-charcoal/60"
                         }`}
                       >
                         {t(`genres.${g.toLowerCase()}`, { defaultValue: g })}
@@ -299,7 +299,7 @@ export default function CatalogPage() {
                       onChange={() => toggleOs(os.value)}
                       className="h-4 w-4 rounded border-slate-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
                     />
-                    <label htmlFor={`os-${os.value}`} className="text-sm text-slate-300 cursor-pointer">
+                    <label htmlFor={`os-${os.value}`} className="text-sm text-slate-200 cursor-pointer">
                       {os.label}
                     </label>
                   </li>
@@ -317,7 +317,7 @@ export default function CatalogPage() {
                   onChange={toggleVr}
                   className="h-4 w-4 rounded border-slate-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
                 />
-                <label htmlFor="vr-filter" className="text-sm text-slate-300 cursor-pointer">
+                <label htmlFor="vr-filter" className="text-sm text-slate-200 cursor-pointer">
                   {t("catalog.vrOnly")}
                 </label>
               </div>
@@ -352,7 +352,7 @@ export default function CatalogPage() {
                   onChange={toggleMature}
                   className="h-4 w-4 rounded border-zinc-600 bg-vz-charcoal text-vz-lime focus:ring-vz-lime cursor-pointer"
                 />
-                <label htmlFor="mature-filter" className="text-sm text-zinc-300 cursor-pointer">
+                <label htmlFor="mature-filter" className="text-sm text-zinc-200 cursor-pointer">
                   {t("catalog.showMature")}
                 </label>
               </div>

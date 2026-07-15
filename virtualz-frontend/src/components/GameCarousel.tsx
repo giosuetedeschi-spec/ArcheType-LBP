@@ -84,11 +84,11 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
         </Link>
       </div>
 
-      <div className="relative group">
+      <div className="relative group/carousel">
         <button
           onClick={handlePrev}
           aria-label={t("common.previous", { defaultValue: "Previous" })}
-          className="hidden sm:flex absolute left-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
+          className="hidden sm:flex absolute -left-14 top-[72px] -translate-y-1/2 z-10 items-center justify-center bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-40 group-hover/carousel:opacity-100 transition-opacity hover:bg-vz-charcoal"
         >
           <ChevronLeft className="w-6 h-6 text-white" />
         </button>
@@ -110,7 +110,7 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
         <button
           onClick={handleNext}
           aria-label={t("common.next", { defaultValue: "Next" })}
-          className="hidden sm:flex absolute right-2 top-1/2 -translate-y-1/2 z-10 items-center justify-center bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-0 group-hover:opacity-100 transition-opacity hover:bg-vz-charcoal"
+          className="hidden sm:flex absolute -right-14 top-[72px] -translate-y-1/2 z-10 items-center justify-center bg-vz-charcoal/90 border border-slate-700 rounded-full p-2 opacity-40 group-hover/carousel:opacity-100 transition-opacity hover:bg-vz-charcoal"
         >
           <ChevronRight className="w-6 h-6 text-white" />
         </button>
