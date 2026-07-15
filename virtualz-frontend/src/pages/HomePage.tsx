@@ -17,7 +17,7 @@ import { Link } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { useQuery } from "@tanstack/react-query";
 import { useAuth } from "../context/AuthContext";
-import { getLibrary } from "../services/libraryApi";
+import { getUserStats } from "../services/usersApi";
 import { searchCatalog } from "../services/gamesApi";
 import GameCard from "../components/GameCard";
 import HeroSection from "../components/HeroSection";
@@ -36,20 +36,7 @@ const HOME_GENRES = [
 
 export default function HomePage() {
   const { t } = useTranslation();
-
   const { isAuthenticated, user } = useAuth();
-
-  const { data: libraryItems } = useQuery({
-    queryKey: ['library-stats', user?.id],
-    queryFn: () => getLibrary(user!.id),
-    enabled: !!isAuthenticated && !!user,
-  });
-
-  const userStats = {
-    inProgress: libraryItems ? libraryItems.filter((i: any) => i.status === 'playing').length : 0,
-    finished: libraryItems ? libraryItems.filter((i: any) => i.status === 'finished').length : 0,
-    abandoned: libraryItems ? libraryItems.filter((i: any) => i.status === 'abandoned').length : 0,
-  };
 
   // Fetch latest games for the "Featured" section. sortBy/sortDir espliciti
   // (invece di lasciare il default lato backend) per mostrare i giochi più
@@ -63,6 +50,13 @@ export default function HomePage() {
 
   const games = data?.content ?? [];
   const totalGames = data?.totalElements ?? 0;
+
+  const { data: statsData } = useQuery({
+    queryKey: ["userStats", user?.id],
+    queryFn: () => getUserStats(user!.id),
+    enabled: !!user,
+  });
+  const userStats = statsData;
 
   return (
     <div className="relative">
@@ -84,16 +78,16 @@ export default function HomePage() {
       <section className="max-w-5xl mx-auto px-4 py-12">
         <div className="grid sm:grid-cols-3 gap-5">
           {[
-            { titleKey: "home.features.catalog.title", descKey: "home.features.catalog.desc", to: "/catalog" },
-            { titleKey: "home.features.library.title", descKey: "home.features.library.desc", to: isAuthenticated ? "/library" : "/login" },
-            { titleKey: "home.features.stats.title", descKey: "home.features.stats.desc", to: isAuthenticated ? "/profile" : "/login" },
-          ].map(({ titleKey, descKey, to }, i) => (
+            { Icon: Gamepad2, titleKey: "home.features.catalog.title", descKey: "home.features.catalog.desc", to: "/catalog" },
+            { Icon: Heart, titleKey: "home.features.library.title", descKey: "home.features.library.desc", to: isAuthenticated ? "/library" : "/login" },
+            { Icon: BarChart3, titleKey: "home.features.stats.title", descKey: "home.features.stats.desc", to: isAuthenticated ? "/profile" : "/login" },
+          ].map(({ Icon, titleKey, descKey, to }) => (
             <Link
               to={to}
               key={titleKey}
               className="bg-vz-charcoal/70 backdrop-blur border border-slate-800 rounded-2xl p-6 hover:border-vz-lime/40 hover:-translate-y-1 transition-all block"
             >
-              <span className="text-4xl font-bold text-vz-lime/50 mb-3 block font-display">{String(i + 1).padStart(2, "0")}</span>
+              <Icon className="h-8 w-8 mb-3 text-vz-lime" />
               <h3 className="font-display font-semibold text-lg text-white mb-2">
                 {t(titleKey)}
               </h3>
@@ -109,9 +103,9 @@ export default function HomePage() {
       <section className="max-w-5xl mx-auto px-4 pb-12">
         <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
           <StatCard label={t("stats.totalGames")} value={totalGames} color="text-vz-lime" />
-          <StatCard label={t("stats.inProgress")} value={userStats?.inProgress ?? 0} color="text-blue-400" />
-          <StatCard label={t("stats.finished")} value={userStats?.finished ?? 0} color="text-emerald-400" />
-          <StatCard label={t("stats.abandoned")} value={userStats?.abandoned ?? 0} color="text-slate-400" />
+          <StatCard label={t("stats.inProgress")} value={userStats?.playingCount ?? 0} color="text-blue-400" />
+          <StatCard label={t("stats.finished")} value={userStats?.finishedCount ?? 0} color="text-emerald-400" />
+          <StatCard label={t("stats.abandoned")} value={userStats?.abandonedCount ?? 0} color="text-vz-pink" />
         </div>
       </section>
 

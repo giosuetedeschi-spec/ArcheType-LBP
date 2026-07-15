@@ -189,15 +189,15 @@
     "features": {
       "catalog": {
         "title": "Catalogo completo",
-        "desc": "Sfoglia migliaia di giochi Steam con ricerca e filtri avanzati."
+        "desc": "Sfoglia migliaia di giochi Steam con ricerca e filtri avanzati"
       },
       "library": {
         "title": "Libreria personale",
-        "desc": "Lista dei desideri e backlog: tieni traccia di cosa vuoi giocare e a che punto sei."
+        "desc": "Lista dei desideri e backlog: tieni traccia di cosa vuoi giocare e a che punto sei"
       },
       "stats": {
         "title": "Statistiche",
-        "desc": "Visualizza i tuoi progressi: giochi finiti, in corso e tasso di completamento."
+        "desc": "Visualizza i tuoi progressi: giochi finiti, in corso e tasso di completamento"
       }
     },
     "featured": "In evidenza",
