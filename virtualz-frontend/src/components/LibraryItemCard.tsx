@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import type { LibraryItem, LibraryStatus } from "@/types/api";
 import GameCoverPlaceholder from "./GameCoverPlaceholder";
@@ -41,6 +42,7 @@ interface LibraryItemCardProps {
  */
 export default function LibraryItemCard({ item, onStatusChange, onRemove }: LibraryItemCardProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
 
   // IMPORTANTE: passiamo sempre item.id (l'id della VOCE di backlog),
   // mai item.game.id — il backend identifica/modifica le voci per il
@@ -49,22 +51,32 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
   return (
     <div className="bg-vz-charcoal rounded-xl border border-slate-800 overflow-hidden">
       <div className="flex gap-3 p-3">
-        {item.game.headerImageUrl ? (
-          <img
-            src={item.game.headerImageUrl}
-            alt={item.game.name}
-            className="w-24 aspect-[92/43] object-cover rounded-lg bg-slate-900 flex-shrink-0"
-            loading="lazy"
-          />
-        ) : (
-          <GameCoverPlaceholder
-            name={item.game.name}
-            seed={item.game.id}
-            className="w-24 h-14 rounded-lg flex-shrink-0"
-          />
-        )}
+        <div
+          onClick={(e) => { e.stopPropagation(); navigate({ to: "/games/$id", params: { id: String(item.game.id) } }); }}
+          className="cursor-pointer group"
+        >
+          {item.game.headerImageUrl ? (
+            <img
+              src={item.game.headerImageUrl}
+              alt={item.game.name}
+              className="w-24 aspect-[92/43] object-cover rounded-lg bg-slate-900 flex-shrink-0 group-hover:opacity-80 transition-opacity"
+              loading="lazy"
+            />
+          ) : (
+            <GameCoverPlaceholder
+              name={item.game.name}
+              seed={item.game.id}
+              className="w-24 h-14 rounded-lg flex-shrink-0 group-hover:opacity-80 transition-opacity"
+            />
+          )}
+        </div>
         <div className="flex-1 min-w-0">
-          <h3 className="font-semibold text-white truncate">{item.game.name}</h3>
+          <h3
+            onClick={(e) => { e.stopPropagation(); navigate({ to: "/games/$id", params: { id: String(item.game.id) } }); }}
+            className="font-semibold text-white truncate cursor-pointer hover:text-vz-lime transition-colors"
+          >
+            {item.game.name}
+          </h3>
           <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[item.status]}`}>
             {t(`library.status.${item.status}`)}
           </span>
@@ -72,10 +84,10 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
       </div>
 
       {/* Azioni di cambio stato — quali bottoni mostrare dipende dallo stato attuale */}
-      <div className="px-3 pb-3 flex flex-wrap gap-2">
+      <div className="px-3 pb-3 pt-2 border-t border-slate-800/50 flex flex-wrap gap-2">
         {item.status === "wishlist" && (
           <button
-            onClick={() => onStatusChange(item.id, "playing")}
+            onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
             className="text-xs px-3 py-1 rounded-full bg-vz-lime text-vz-navy font-semibold"
           >
             {t("library.moveToBacklog")}
@@ -84,29 +96,29 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
         {item.status === "playing" && (
           <>
             <button
-              onClick={() => onStatusChange(item.id, "finished")}
-              className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
-            >
-              {t("library.markAsFinished")}
-            </button>
-            <button
-              onClick={() => onStatusChange(item.id, "abandoned")}
+              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "abandoned"); }}
               className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
             >
               {t("library.markAsAbandoned")}
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "finished"); }}
+              className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
+            >
+              {t("library.markAsFinished")}
             </button>
           </>
         )}
         {item.status === "abandoned" && (
           <button
-            onClick={() => onStatusChange(item.id, "playing")}
+            onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
             className="text-xs px-3 py-1 rounded-full border border-blue-400 text-blue-300"
           >
             {t("library.markAsInProgress")}
           </button>
         )}
         <button
-          onClick={() => onRemove(item.id)}
+          onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
           className="text-xs px-3 py-1 rounded-full text-slate-500 hover:text-vz-pink"
         >
           {t("library.remove")}
