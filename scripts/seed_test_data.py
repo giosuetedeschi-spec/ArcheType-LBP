@@ -32,9 +32,16 @@ BCRYPT_COST_FACTOR = 10
 
 # Stati ammessi dal CHECK constraint su backlog.status
 BACKLOG_STATUSES = ["playing", "finished", "abandoned"]
-NUM_USERS = 5
 BACKLOG_GAMES_PER_USER = (3, 12)
 WISHLIST_GAMES_PER_USER = (2, 8)
+
+# Servizio di foto segnaposto (Flickr, tag "cat") usato anche dalla
+# registrazione reale (UserService.buildCatAvatarUrl lato backend):
+# ?lock=<id> restituisce sempre la stessa foto per quell'id, quindi ogni
+# utente ha un gatto distinto e stabile, senza dover gestire un elenco
+# di URL a mano.
+def build_cat_avatar_url(user_id: int) -> str:
+    return f"https://loremflickr.com/200/200/cat?lock={user_id}"
 
 
 def get_connection():
@@ -96,9 +103,16 @@ def seed_users(conn):
     test_users = [
         ("gamer_alice", "alice@example.com", "password123"),
         ("gamer_bob", "bob@example.com", "password123"),
-        ("gamer_carol", "carol@example.com", "password123"),
-        ("gamer_dave", "dave@example.com", "password123"),
-        ("gamer_eve", "eve@example.com", "password123"),
+        ("gamer_carlo", "carlo@example.com", "password123"),
+        ("gamer_diana", "diana@example.com", "password123"),
+        ("gamer_marco", "marco@example.com", "password123"),
+        ("gamer_sara", "sara@example.com", "password123"),
+        ("gamer_luca", "luca@example.com", "password123"),
+        ("gamer_elena", "elena@example.com", "password123"),
+        ("gamer_paolo", "paolo@example.com", "password123"),
+        ("gamer_giulia", "giulia@example.com", "password123"),
+        ("gamer_matteo", "matteo@example.com", "password123"),
+        ("gamer_valentina", "valentina@example.com", "password123"),
     ]
 
     sql = """
@@ -113,6 +127,22 @@ def seed_users(conn):
     cur.execute("SELECT id, username FROM users")
     users = cur.fetchall()
     log.info(f"Users in DB: {len(users)}")
+
+    # Avatar segnaposto per chi non ne ha ancora uno (utenti appena creati
+    # qui sopra, o preesistenti da un run parziale precedente) — stessa
+    # logica della registrazione reale, per non lasciare mai un utente
+    # senza foto dopo un re-seed da zero.
+    cur.execute("SELECT id FROM users WHERE avatar_url IS NULL OR avatar_url = ''")
+    missing_avatar_ids = [row[0] for row in cur.fetchall()]
+    for user_id in missing_avatar_ids:
+        cur.execute(
+            "UPDATE users SET avatar_url = %s WHERE id = %s",
+            (build_cat_avatar_url(user_id), user_id),
+        )
+    conn.commit()
+    if missing_avatar_ids:
+        log.info(f"Avatar assegnato a {len(missing_avatar_ids)} utenti senza foto")
+
     cur.close()
     return users
 

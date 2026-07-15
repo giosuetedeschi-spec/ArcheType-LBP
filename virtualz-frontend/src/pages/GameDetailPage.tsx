@@ -95,6 +95,8 @@ export default function GameDetailPage() {
     try {
       await addOrUpdateReview(user.id, { gameId: game.id, rating: reviewRating, comment: reviewComment || null });
       fetchReviews();
+      setReviewRating(0);
+      setReviewComment("");
     } catch (err) {
       const message = isAxiosError<{ message?: string }>(err) ? err.response?.data?.message : undefined;
       setReviewError(message || t("common.error"));

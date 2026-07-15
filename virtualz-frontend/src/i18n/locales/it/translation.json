@@ -159,7 +159,8 @@
     "noFriends": "Non hai ancora amici. Cercali qui sopra!",
     "ownedGames": "Giochi posseduti",
     "playingNow": "In corso",
-    "remove": "Rimuovi"
+    "remove": "Rimuovi",
+    "alreadyFriends": "Amici"
   },
   "profile": {
     "ownedGames": "Giochi posseduti",
@@ -193,7 +194,7 @@
       },
       "library": {
         "title": "Libreria personale",
-        "desc": "Lista dei desideri e backlog: tieni traccia di cosa vuoi giocare e a che punto sei."
+        "desc": "Gestisci i tuoi giochi: in corso, finiti e abbandonati, tutto in un posto."
       },
       "stats": {
         "title": "Statistiche",
