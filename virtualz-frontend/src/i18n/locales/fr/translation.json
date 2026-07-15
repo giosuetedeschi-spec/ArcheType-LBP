@@ -159,7 +159,8 @@
     "noFriends": "Vous n'avez pas encore d'amis. Cherchez-en ci-dessus !",
     "ownedGames": "Jeux possédés",
     "playingNow": "En cours",
-    "remove": "Retirer"
+    "remove": "Retirer",
+    "alreadyFriends": "Amis"
   },
   "profile": {
     "ownedGames": "Jeux possédés",

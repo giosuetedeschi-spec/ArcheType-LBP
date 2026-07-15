@@ -12,23 +12,11 @@ import {
   rejectFriendRequest,
   removeFriend,
 } from "../services/friendsApi";
+import Avatar from "../components/Avatar";
 import type { FriendItem, UserStats, UserSummary } from "@/types/api";
 
 function extractErrorMessage(err: unknown, fallback: string): string {
   return isAxiosError<{ message?: string }>(err) ? err.response?.data?.message || fallback : fallback;
-}
-
-/**
- * AvatarCircle — stesso pattern di iniziale-in-cerchio già usato in
- * Navbar/ProfilePage. avatarUrl non è mai valorizzato nei dati attuali
- * (sempre null), quindi non c'è un fallback a immagine da gestire qui.
- */
-function AvatarCircle({ username }: { username: string }) {
-  return (
-    <div className="w-10 h-10 rounded-full bg-vz-lime text-vz-navy flex items-center justify-center font-bold font-display shrink-0">
-      {username.charAt(0).toUpperCase()}
-    </div>
-  );
 }
 
 export default function FriendsPage() {
@@ -147,7 +135,7 @@ export default function FriendsPage() {
                   className="flex items-center justify-between gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-3"
                 >
                   <div className="flex items-center gap-3 min-w-0">
-                    <AvatarCircle username={candidate.username} />
+                    <Avatar username={candidate.username} avatarUrl={candidate.avatarUrl} variant="lime" />
                     <span className="text-white font-medium truncate">{candidate.username}</span>
                   </div>
                   <button
@@ -181,7 +169,7 @@ export default function FriendsPage() {
                     className="flex items-center justify-between gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-3"
                   >
                     <div className="flex items-center gap-3 min-w-0">
-                      <AvatarCircle username={req.username} />
+                      <Avatar username={req.username} avatarUrl={req.avatarUrl} variant="lime" />
                       <span className="text-white font-medium truncate">{req.username}</span>
                     </div>
                     <div className="flex gap-2 shrink-0">
@@ -220,7 +208,7 @@ export default function FriendsPage() {
                       className="flex items-center justify-between gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-3"
                     >
                       <div className="flex items-center gap-3 min-w-0">
-                        <AvatarCircle username={friend.username} />
+                        <Avatar username={friend.username} avatarUrl={friend.avatarUrl} variant="lime" />
                         <div className="min-w-0">
                           <p className="text-white font-medium truncate">{friend.username}</p>
                           {stats && (
