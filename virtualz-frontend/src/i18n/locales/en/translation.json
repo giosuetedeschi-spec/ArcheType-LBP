@@ -159,7 +159,8 @@
     "noFriends": "You don't have any friends yet. Search for some above!",
     "ownedGames": "Owned games",
     "playingNow": "Playing now",
-    "remove": "Remove"
+    "remove": "Remove",
+    "alreadyFriends": "Friends"
   },
   "profile": {
     "ownedGames": "Owned games",
@@ -205,6 +206,7 @@
     "openLibrary": "Open Library"
   },
   "colorblind": {
+    "label": "Colorblind mode",
     "normal": "Normal",
     "protanopia": "Protanopia",
     "deuteranopia": "Deuteranopia",

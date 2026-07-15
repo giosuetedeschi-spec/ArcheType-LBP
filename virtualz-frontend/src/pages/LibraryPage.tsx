@@ -152,15 +152,15 @@ export default function LibraryPage() {
           rimossa: l'endpoint /backlog/search non esiste nel backend
           ArcheType-LBP. */}
       <div className="border-b border-slate-800 mb-6">
-        <nav className="flex flex-wrap gap-6 text-sm">
+        <nav className="flex flex-wrap justify-center gap-12 text-base">
           {tabs.map((tab) => (
             <button
               key={tab.value || "all"}
               onClick={() => handleStatusFilterChange(tab.value)}
-              className={`pb-3 -mb-px border-b-2 transition-colors ${
+              className={`pb-4 -mb-px border-b-2 font-medium transition-colors ${
                 statusFilter === tab.value
                   ? "border-vz-lime text-vz-lime font-semibold"
-                  : "border-transparent text-slate-400 hover:text-white"
+                  : "border-transparent text-slate-300 hover:text-white"
               }`}
             >
               {tab.label}

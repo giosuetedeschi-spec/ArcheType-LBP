@@ -56,7 +56,10 @@ class UserServiceTest {
 
         UserResponse result = userService.register(req);
         assertThat(result.getUsername()).isEqualTo("alice");
-        verify(userRepo).save(any(User.class));
+        // Il primo save assegna l'id, il secondo persiste l'avatar_url
+        // derivato da quell'id (vedi UserService.buildCatAvatarUrl).
+        assertThat(result.getAvatarUrl()).isEqualTo("https://loremflickr.com/200/200/cat?lock=1");
+        verify(userRepo, times(2)).save(any(User.class));
     }
 
     @Test

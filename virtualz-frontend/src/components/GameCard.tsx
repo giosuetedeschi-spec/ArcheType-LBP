@@ -26,9 +26,9 @@ export default function GameCard({ game }: GameCardProps) {
     <Link
       to="/games/$id"
       params={{ id: String(game.id) }}
-      className="group bg-vz-charcoal rounded-xl overflow-hidden border border-slate-800 hover:border-vz-lime hover:shadow-lg hover:shadow-vz-lime/10 hover:-translate-y-1 transition-all duration-200"
+      className="group bg-vz-charcoal rounded-xl overflow-hidden border border-slate-800 hover:border-vz-lime hover:shadow-lg hover:shadow-vz-lime/10 hover:-translate-y-1 transition-all duration-200 transform-gpu"
     >
-      <div className="aspect-video bg-slate-900 overflow-hidden relative">
+      <div className="aspect-[92/43] bg-slate-900 overflow-hidden relative">
         {game.headerImageUrl ? (
           <img
             src={game.headerImageUrl}

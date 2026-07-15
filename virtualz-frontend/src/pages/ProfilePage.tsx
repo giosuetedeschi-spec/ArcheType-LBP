@@ -11,6 +11,7 @@ import LibraryItemCard from "../components/LibraryItemCard";
 import GenreBarChart from "../components/GenreBarChart";
 import LibraryCompositionBar from "../components/LibraryCompositionBar";
 import StarRating from "../components/StarRating";
+import Avatar from "../components/Avatar";
 import type { FriendItem, LeaderboardResponse, LibraryItem, LibraryStatus, Review, UserStats } from "@/types/api";
 
 // STAT_CARDS.key deve combaciare con le chiavi dell'oggetto `stats` più sotto
@@ -116,9 +117,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center gap-4 mb-8">
-        <div className="w-16 h-16 rounded-full bg-vz-lime text-vz-navy flex items-center justify-center text-2xl font-bold font-display">
-          {user.username.charAt(0).toUpperCase()}
-        </div>
+        <Avatar username={user.username} size={64} variant="lime" className="text-2xl" />
         <div>
           <h1 className="text-2xl font-display font-bold text-white">{user.username}</h1>
           <p className="text-sm text-slate-400">{t("stats.title")}</p>
@@ -249,7 +248,7 @@ export default function ProfilePage() {
                     <img
                       src={review.gameHeaderImageUrl || "https://placehold.co/120x67/111827/ffffff?text=No+Image"}
                       alt={review.gameName}
-                      className="w-20 h-11 object-cover rounded-lg bg-slate-900 shrink-0"
+                      className="w-20 aspect-[92/43] object-cover rounded-lg bg-slate-900 shrink-0"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-medium truncate">{review.gameName}</p>
@@ -305,9 +304,7 @@ export default function ProfilePage() {
                       key={friend.friendId}
                       className="flex items-center gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-3"
                     >
-                      <div className="w-10 h-10 rounded-full bg-vz-lime text-vz-navy flex items-center justify-center font-bold font-display shrink-0">
-                        {friend.username.charAt(0).toUpperCase()}
-                      </div>
+                      <Avatar username={friend.username} avatarUrl={friend.avatarUrl} variant="lime" />
                       <div className="min-w-0">
                         <p className="text-white font-medium truncate">{friend.username}</p>
                         {stats && (

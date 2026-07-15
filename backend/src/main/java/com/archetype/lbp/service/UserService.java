@@ -43,7 +43,20 @@ public class UserService {
         // Password hashata con BCrypt
         user.setPasswordHash(passwordEncoder.encode(req.getPassword()));
 
-        return toResponse(userRepo.save(user));
+        user = userRepo.save(user);
+
+        // Avatar segnaposto automatico: una foto di gatto deterministica e
+        // sempre distinta per ogni nuovo utente, derivata dall'id assegnato
+        // dal DB (disponibile solo dopo il primo save). Non finisce mai i
+        // gatti: ?lock=<id> genera una foto stabile per qualunque id futuro.
+        user.setAvatarUrl(buildCatAvatarUrl(user.getId()));
+        user = userRepo.save(user);
+
+        return toResponse(user);
+    }
+
+    private static String buildCatAvatarUrl(Long userId) {
+        return "https://loremflickr.com/200/200/cat?lock=" + userId;
     }
 
     /** Lista tutti gli utenti registrati. */
