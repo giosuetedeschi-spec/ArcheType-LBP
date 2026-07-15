@@ -1,3 +1,4 @@
+import { Gamepad2, Heart, BarChart3 } from "lucide-react";
 /**
  * HomePage - Main landing page for VirtualZ
  * 
