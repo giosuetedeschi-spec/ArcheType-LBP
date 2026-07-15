@@ -75,16 +75,16 @@ export default function HomePage() {
           ].map(({ Icon, titleKey, descKey }) => (
             <div
               key={titleKey}
-              className="bg-vz-charcoal/70 backdrop-blur border border-slate-800 rounded-2xl p-6 hover:border-vz-lime/40 hover:-translate-y-1 transition-all"
+              className="bg-vz-charcoal/70 backdrop-blur border border-slate-800 rounded-2xl p-6 hover:border-vz-lime/40 hover:-translate-y-1 transition-all block"
             >
-              <Icon className="h-8 w-8 mb-3 text-vz-lime" />
+              <span className="text-4xl font-bold text-vz-lime/50 mb-3 block font-display">{String(i + 1).padStart(2, "0")}</span>
               <h3 className="font-display font-semibold text-lg text-white mb-2">
                 {t(titleKey)}
               </h3>
               <p className="text-sm text-slate-400 leading-relaxed">
                 {t(descKey)}
               </p>
-            </div>
+            </Link>
           ))}
           <div className="bg-vz-charcoal/70 backdrop-blur border border-slate-800 rounded-2xl p-6 hover:border-vz-lime/40 hover:-translate-y-1 transition-all">
             <Library className="h-8 w-8 mb-3 text-vz-lime" />
