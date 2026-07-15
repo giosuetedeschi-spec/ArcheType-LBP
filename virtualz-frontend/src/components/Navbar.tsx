@@ -45,7 +45,7 @@ export default function Navbar() {
   const sessionControls = (
     isAuthenticated ? (
       <div className="flex items-center gap-3">
-        <Link to="/profile" className="text-sm text-slate-400 hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
+        <Link to="/profile" className="text-sm text-white font-medium hover:text-vz-lime transition-colors" onClick={() => setMenuOpen(false)}>
           {user?.username}
         </Link>
         <button
