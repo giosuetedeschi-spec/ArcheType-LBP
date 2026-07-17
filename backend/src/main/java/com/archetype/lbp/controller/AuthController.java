@@ -79,4 +79,43 @@ public class AuthController {
                 new AuthResponse(token, created.getId(), created.getUsername(), req.getEmail()),
                 "Registrazione completata"));
     }
+
+    /**
+     * Endpoint di Mock per simulare l'accesso con Google.
+     * Genera un utente di test nel database (se non esiste) e restituisce un JWT valido.
+     */
+    @GetMapping("/mock-google")
+    public ResponseEntity<ApiResponse<AuthResponse>> mockGoogle() {
+        String mockUsername = "google_test_user";
+        String mockEmail = "studente.test@gmail.com";
+        
+        User user;
+        try {
+            // Controlliamo se il finto utente Google esiste già nel database
+            user = userService.findByUsername(mockUsername);
+            log.info("Mock Google Login - Utente esistente trovato: {}", mockUsername);
+        } catch (Exception e) {
+            // Se non esiste, lo registriamo al volo nel database
+            log.info("Mock Google Login - Creazione nuovo utente di test: {}", mockUsername);
+            UserRequest newUserReq = new UserRequest();
+            newUserReq.setUsername(mockUsername);
+            newUserReq.setEmail(mockEmail);
+            newUserReq.setPassword("PasswordSicura123!"); // Password fittizia richiesta dal DTO
+            
+            UserResponse created = userService.register(newUserReq);
+            
+            // Recuperiamo l'entità User reale appena salvata per avere l'ID corretto
+            user = userService.findByUsername(created.getUsername());
+        }
+
+        // Generiamo il token JWT REALE del tuo sistema usando il tuo JwtUtils
+        String token = jwtUtils.generateToken(user.getUsername());
+
+        log.info("Mock Google Login completato con successo per ID: {}", user.getId());
+
+        // Restituiamo la stessa identica risposta (AuthResponse) del login classico!
+        return ResponseEntity.ok(ApiResponse.ok(
+                new AuthResponse(token, user.getId(), user.getUsername(), user.getEmail()),
+                "Accesso con Google (Simulato) riuscito"));
+    }
 }

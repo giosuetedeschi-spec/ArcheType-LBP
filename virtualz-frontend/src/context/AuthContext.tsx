@@ -9,15 +9,13 @@ interface User {
   username: string;
 }
 
-// Forma del valore esposto da useAuth() a tutti i componenti
 interface AuthContextValue {
   user: User | null;
-  // remember: true = resta connesso tra riavvii del browser (localStorage),
-  // false = solo finché la scheda resta aperta (sessionStorage) — issue #35.
   login: (credentials: LoginPayload, remember: boolean) => Promise<AuthResponse>;
   register: (payload: RegisterPayload) => Promise<AuthResponse>;
   logout: () => void;
   isAuthenticated: boolean;
+  persistSession: (authResponse: AuthResponse, remember: boolean) => void; // <--- AGGIUNGI QUESTA RIGA
 }
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -69,7 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated: !!user }}>
+    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated: !!user, persistSession }}> {/* <--- AGGIUNGI "persistSession" QUI */}
       {children}
     </AuthContext.Provider>
   );
