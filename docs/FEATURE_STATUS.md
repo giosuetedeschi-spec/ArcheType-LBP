@@ -11,7 +11,7 @@ Legenda: ✅ Fatta · 🟠 A metà/parziale · ⏳ Non iniziata
 
 | Funzionalità | Stato | Note |
 |---|---|---|
-| 📚 Libreria personale | ✅ | Import Steam via `populate_db.py`, libreria con stati playing/finished/abandoned |
+| 📚 Libreria personale | ✅ | Libreria con stati playing/finished/abandoned; ⚠️ import dati: dal PR #218 il `docker compose up` di default non esegue più `populate_db.py`, scarica un pg_dump precompilato — vedi nota sotto e `docs/SEED_PYTHON_COMPLIANCE_PLAN.md` |
 | ❤️ Wishlist | ✅ | Backend + sezione dedicata nel profilo (PR #167) |
 | 📊 Grafici di utilizzo | ✅ | Due grafici reali nel profilo (giochi per genere, composizione libreria), riusando `StatsController` già cachato; developer/anno/rating ancora solo numeri, non graficati |
 | 🏆 Classifiche | ✅ | `LeaderboardPage.tsx` implementata (tab globale/amici, filtro metrica, paginazione, riassunto "tu" fisso); i 19 errori TypeScript segnalati in precedenza sono risolti (commit `37d6e64`) — `tsc --noEmit` pulito, riverificato il 2026-07-09 |
@@ -28,7 +28,9 @@ Legenda: ✅ Fatta · 🟠 A metà/parziale · ⏳ Non iniziata
 - #102 Login/Register: redesign visivo fatto (PR #170); i bottoni Steam/Google restano placeholder disabilitati — l'integrazione OAuth vera e propria resta da fare
 
 ---
-*Ultimo aggiornamento: 2026-07-13 — chiuso un lotto di 15 PR aperte (#184-#214) dopo aver risolto conflitti multipli con `main` (worktree per branch, verifica `tsc --noEmit`/lint prima di ogni push) e alcuni bug reali segnalati durante la review (vedi sotto). Punti rilevanti non già coperti dalle voci precedenti:*
+*Ultimo aggiornamento: 2026-07-14 — ⚠️ PR #218 ("schema versionato con Flyway + boot deterministico") ha rimosso il servizio `populate` da `docker-compose.yml`: da ora `git clone && docker compose up` scarica un pg_dump precompilato (`db/initdb.d/02_download_seed.sh`, da GitHub Releases `v1.0-seed`) invece di eseguire `scripts/populate_db.py` sul dataset CSV. Lo schema versionato con Flyway (`backend/src/main/resources/db/migration/V1-V3__*.sql`) è un miglioramento reale e non in discussione — ma il popolamento dati non gira più via Python nell'uso normale del progetto, in tensione con il capitolato ("procedura automatizzata sviluppata in Python... Python" tra le tecnologie richieste). `scripts/populate_db.py`/`scripts/generate_seed.py` esistono ancora nel repo ma sono di fatto inutilizzati a runtime. Analisi completa e proposta (CSV pulito versionato + `populate_db.py` con `COPY` invece del pg_dump, mantenendo Flyway) in `docs/SEED_PYTHON_COMPLIANCE_PLAN.md` — issue da aprire per farla discutere dal team, non ancora implementata. Nota anche: `README.md` non aggiornato dopo PR #218, descrive ancora il vecchio flusso (`data/games.csv` manuale + servizio `populate` automatico) che non esiste più:*
+
+*Precedente (2026-07-13) — chiuso un lotto di 15 PR aperte (#184-#214) dopo aver risolto conflitti multipli con `main` (worktree per branch, verifica `tsc --noEmit`/lint prima di ogni push) e alcuni bug reali segnalati durante la review (vedi sotto). Punti rilevanti non già coperti dalle voci precedenti:*
 - *#38 stato di caricamento globale: `defaultPendingComponent` di TanStack Router mostra uno spinner centrato durante le transizioni di rotta (PR #197)*
 - *#35 "resta connesso": vedi riga "Login immediato" sopra (PR #211)*
 - *ordinamento di default per popolarità: aggiunta la colonna `games.estimated_owners` (punto medio del range SteamSpy "min - max" importato da `populate_db.py`), nuovo default `sortBy=estimatedOwners&sortDir=desc` al posto di `name/asc` (che metteva in prima pagina titoli obscure/asset-flip solo perché iniziano con simboli), applicato esplicitamente anche a `HomePage`/`GameCarousel` come difesa in profondità (PR #212)*

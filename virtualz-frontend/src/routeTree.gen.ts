@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ProfileRouteImport } from './routes/profile'
+import { Route as OauthCallbackRouteImport } from './routes/oauth-callback'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as LibraryRouteImport } from './routes/library'
 import { Route as LeaderboardRouteImport } from './routes/leaderboard'
@@ -28,6 +29,11 @@ const RegisterRoute = RegisterRouteImport.update({
 const ProfileRoute = ProfileRouteImport.update({
   id: '/profile',
   path: '/profile',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const OauthCallbackRoute = OauthCallbackRouteImport.update({
+  id: '/oauth-callback',
+  path: '/oauth-callback',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -79,6 +85,7 @@ export interface FileRoutesByFullPath {
   '/leaderboard': typeof LeaderboardRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/oauth-callback': typeof OauthCallbackRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/games/$id': typeof GamesIdRoute
@@ -91,6 +98,7 @@ export interface FileRoutesByTo {
   '/leaderboard': typeof LeaderboardRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/oauth-callback': typeof OauthCallbackRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/games/$id': typeof GamesIdRoute
@@ -104,6 +112,7 @@ export interface FileRoutesById {
   '/leaderboard': typeof LeaderboardRoute
   '/library': typeof LibraryRoute
   '/login': typeof LoginRoute
+  '/oauth-callback': typeof OauthCallbackRoute
   '/profile': typeof ProfileRoute
   '/register': typeof RegisterRoute
   '/games/$id': typeof GamesIdRoute
@@ -118,6 +127,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/library'
     | '/login'
+    | '/oauth-callback'
     | '/profile'
     | '/register'
     | '/games/$id'
@@ -130,6 +140,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/library'
     | '/login'
+    | '/oauth-callback'
     | '/profile'
     | '/register'
     | '/games/$id'
@@ -142,6 +153,7 @@ export interface FileRouteTypes {
     | '/leaderboard'
     | '/library'
     | '/login'
+    | '/oauth-callback'
     | '/profile'
     | '/register'
     | '/games/$id'
@@ -155,6 +167,7 @@ export interface RootRouteChildren {
   LeaderboardRoute: typeof LeaderboardRoute
   LibraryRoute: typeof LibraryRoute
   LoginRoute: typeof LoginRoute
+  OauthCallbackRoute: typeof OauthCallbackRoute
   ProfileRoute: typeof ProfileRoute
   RegisterRoute: typeof RegisterRoute
   GamesIdRoute: typeof GamesIdRoute
@@ -174,6 +187,13 @@ declare module '@tanstack/react-router' {
       path: '/profile'
       fullPath: '/profile'
       preLoaderRoute: typeof ProfileRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/oauth-callback': {
+      id: '/oauth-callback'
+      path: '/oauth-callback'
+      fullPath: '/oauth-callback'
+      preLoaderRoute: typeof OauthCallbackRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -243,6 +263,7 @@ const rootRouteChildren: RootRouteChildren = {
   LeaderboardRoute: LeaderboardRoute,
   LibraryRoute: LibraryRoute,
   LoginRoute: LoginRoute,
+  OauthCallbackRoute: OauthCallbackRoute,
   ProfileRoute: ProfileRoute,
   RegisterRoute: RegisterRoute,
   GamesIdRoute: GamesIdRoute,
