@@ -7,6 +7,15 @@ interface GameCardProps {
   game: Game;
 }
 
+/**
+ * Card di un gioco con link alla pagina di dettaglio.
+ *
+ * NOTE SUI BORDI (Issue #243):
+ * - border-l-0: rimosso per evitare sovrapposizione visiva tra card adiacenti nei caroselli
+ * - border-slate-800/50: opacità ridotta al 50% per bordi più sottili e meno invasivi
+ * - NO hover:border: rimosso per evitare linee "fantasma" verticali gialle/lime
+ * - hover:shadow-lg + hover:-translate-y-1: effetto sollevamento mantenuto per UX reattiva
+ */
 export default function GameCard({ game }: GameCardProps) {
   const { t } = useTranslation();
 
@@ -26,7 +35,7 @@ export default function GameCard({ game }: GameCardProps) {
     <Link
       to="/games/$id"
       params={{ id: String(game.id) }}
-      className="group bg-vz-charcoal rounded-xl overflow-hidden border border-slate-800 hover:border-vz-lime hover:shadow-lg hover:shadow-vz-lime/10 hover:-translate-y-1 transition-all duration-200 transform-gpu"
+      className="group bg-vz-charcoal rounded-xl overflow-hidden border border-slate-800/50 border-l-0 hover:shadow-lg hover:shadow-vz-lime/10 hover:-translate-y-1 transition-all duration-200 transform-gpu"
     >
       <div className="aspect-[92/43] bg-slate-900 overflow-hidden relative">
         {game.headerImageUrl ? (
