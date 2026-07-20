@@ -14,5 +14,9 @@ public class UserResponse {
     private String avatarUrl;
     private String status;
     private String bio;
+    // Solo il booleano, mai lo steamId vero e proprio: basta per mostrare
+    // "Steam collegato" nella UI (anche sul profilo di altri utenti), senza
+    // esporre un identificativo di terze parti a chiunque sia loggato.
+    private Boolean steamLinked;
     private LocalDateTime createdAt;
 }

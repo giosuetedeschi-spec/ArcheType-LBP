@@ -1,26 +1,17 @@
 import { useTranslation } from "react-i18next";
+import { API_BASE_URL } from "../services/api";
 
-/**
- * Bottoni OAuth per login con provider esterni (Steam e Google).
- *
- * Al click reindirizza al backend Spring Security OAuth2 che gestisce
- * il flusso di autenticazione con il provider. Il frontend non gestisce
- * token OAuth direttamente — li riceve dal backend dopo il redirect.
- *
- * @see docs/auth-steam-google.md — design dell'autenticazione OAuth
- * @see issue #102 — implementazione backend pendente
- */
+// Steam: implementato (docs/OAUTH_LOGIN_PLAN.md, issue #102) — redirect a
+// pagina intera verso il backend, che gestisce l'intero giro OpenID 2.0 con
+// Steam e torna su /oauth-callback con un token già pronto (vedi
+// SteamAuthController lato backend, OAuthCallbackPage lato frontend).
+// Google: non ancora implementato lato backend — bottone resta placeholder.
 export default function OAuthButtons() {
   const { t } = useTranslation();
 
-  /** URL base dell'API, configurabile via variabile d'ambiente Vite. */
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
-
-  /** Reindirizza al backend per il flusso OAuth Steam (OpenID). */
-  const handleSteam = () => { window.location.href = `${API_BASE}/auth/steam`; };
-
-  /** Reindirizza al backend per il flusso OAuth Google. */
-  const handleGoogle = () => { window.location.href = `${API_BASE}/auth/google`; };
+  function handleSteamLogin() {
+    window.location.href = `${API_BASE_URL}/auth/steam/login`;
+  }
 
   return (
     <div className="mt-6">
@@ -35,7 +26,7 @@ export default function OAuthButtons() {
         {/* Bottone Steam — sfondo blu scuro brand #1b2838 */}
         <button
           type="button"
-          onClick={handleSteam}
+          onClick={handleSteamLogin}
           className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#1b2838] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#2a475e] transition-colors"
         >
           <img src="https://cdn.simpleicons.org/steam/white" alt="Steam" className="h-5 w-5" />

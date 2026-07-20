@@ -171,7 +171,11 @@
     "viewFullLeaderboard": "Classement complet",
     "myReviews": "Mes avis",
     "wishlist": "Liste de souhaits",
-    "emptyWishlist": "Votre liste de souhaits est vide."
+    "emptyWishlist": "Votre liste de souhaits est vide.",
+    "linkSteam": "Lier Steam",
+    "steamLinked": "Steam lié",
+    "steamLinkSuccess": "Compte Steam lié avec succès.",
+    "steamLinkError": "Échec de la liaison avec Steam. Réessayez."
   },
   "common": {
     "loading": "Chargement...",

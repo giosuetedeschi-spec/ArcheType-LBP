@@ -171,7 +171,11 @@
     "viewFullLeaderboard": "Full leaderboard",
     "myReviews": "My reviews",
     "wishlist": "Wishlist",
-    "emptyWishlist": "Your wishlist is empty."
+    "emptyWishlist": "Your wishlist is empty.",
+    "linkSteam": "Link Steam",
+    "steamLinked": "Steam linked",
+    "steamLinkSuccess": "Steam account linked successfully.",
+    "steamLinkError": "Linking your Steam account failed. Please try again."
   },
   "common": {
     "loading": "Loading...",
