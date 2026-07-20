@@ -1,5 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
+import { Heart } from "lucide-react";
 import type { LibraryItem, LibraryStatus } from "@/types/api";
 import GameCoverPlaceholder from "./GameCoverPlaceholder";
 
@@ -29,6 +30,12 @@ interface LibraryItemCardProps {
 /**
  * Mostra una voce della libreria utente (backlog).
  *
+ * Layout a card singola (non più due <div> separati per copertina+titolo
+ * e azioni): copertina a tutta altezza sulla sinistra, informazioni e
+ * bottoni impilati sulla destra. Per lo stato "wishlist" il badge di
+ * stato viene sostituito da un cuore in alto a destra sulla card, invece
+ * di occupare spazio accanto al titolo.
+ *
  * NOTA rimossa durante la migrazione TSX: la versione .jsx precedente
  * leggeva un campo `item.inactivityWarning` per mostrare un banner
  * "stai abbandonando questo gioco?". TypeScript conferma (con il tipo
@@ -43,6 +50,7 @@ interface LibraryItemCardProps {
 export default function LibraryItemCard({ item, onStatusChange, onRemove }: LibraryItemCardProps) {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const isWishlisted = item.status === "wishlist";
 
   // IMPORTANTE: passiamo sempre item.id (l'id della VOCE di backlog),
   // mai item.game.id — il backend identifica/modifica le voci per il
@@ -101,20 +109,36 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
             >
               {t("library.markAsAbandoned")}
             </button>
+          )}
+          {item.status === "playing" && (
+            <>
+              <button
+                onClick={() => onStatusChange(item.id, "finished")}
+                className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
+              >
+                {t("library.markAsFinished")}
+              </button>
+              <button
+                onClick={() => onStatusChange(item.id, "abandoned")}
+                className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
+              >
+                {t("library.markAsAbandoned")}
+              </button>
+            </>
+          )}
+          {item.status === "abandoned" && (
             <button
               onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "finished"); }}
               className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
             >
               {t("library.markAsFinished")}
             </button>
-          </>
-        )}
-        {item.status === "abandoned" && (
+          )}
           <button
             onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
             className="text-xs px-3 py-1 rounded-full border border-blue-400 text-blue-300"
           >
-            {t("library.markAsInProgress")}
+            {t("library.remove")}
           </button>
         )}
         <button
@@ -124,6 +148,18 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
           {t("library.remove")}
         </button>
       </div>
+
+      {/* Cuore in alto a destra al posto del badge "In lista dei desideri" —
+          icona SVG (non più il glifo emoji ♥, troppo piccolo e dipendente
+          dal font di sistema) per un risultato più simile a un logo. */}
+      {isWishlisted && (
+        <Heart
+          aria-label={t("library.status.wishlist")}
+          className="absolute top-2 right-2 w-6 h-6 text-vz-pink"
+          fill="currentColor"
+          strokeWidth={0}
+        />
+      )}
     </div>
   );
 }
