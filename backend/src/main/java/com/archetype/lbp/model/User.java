@@ -27,8 +27,12 @@ public class User {
     @Email
     private String email;
 
-    @Column(name = "password", nullable = false)
-    @NotBlank
+    // Nullable: un account creato via Steam non ha una password propria —
+    // fa login tramite il provider, mai per questo campo. Niente @NotBlank
+    // qui: la validazione "password obbligatoria" resta solo sul percorso
+    // di registrazione classica (RegisterRequest), non sull'entity,
+    // altrimenti bloccherebbe anche la creazione di account Steam-only.
+    @Column(name = "password")
     private String passwordHash;
 
     @Column(name = "avatar_url")
@@ -38,6 +42,14 @@ public class User {
     private String status = "online";
 
     private String bio;
+
+    // Steam non ha email, quindi il collegamento avviene solo come azione
+    // esplicita da un account già autenticato ("Collega Steam" nel
+    // Profilo), mai per auto-match al login — vedi docs/OAUTH_LOGIN_PLAN.md.
+    // Indipendente da password: un utente può avere entrambe, non è
+    // esclusivo.
+    @Column(name = "steam_id")
+    private String steamId;
 
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
