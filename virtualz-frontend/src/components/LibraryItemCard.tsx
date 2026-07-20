@@ -104,41 +104,25 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
         {item.status === "playing" && (
           <>
             <button
-              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "abandoned"); }}
-              className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
-            >
-              {t("library.markAsAbandoned")}
-            </button>
-          )}
-          {item.status === "playing" && (
-            <>
-              <button
-                onClick={() => onStatusChange(item.id, "finished")}
-                className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
-              >
-                {t("library.markAsFinished")}
-              </button>
-              <button
-                onClick={() => onStatusChange(item.id, "abandoned")}
-                className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
-              >
-                {t("library.markAsAbandoned")}
-              </button>
-            </>
-          )}
-          {item.status === "abandoned" && (
-            <button
               onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "finished"); }}
               className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
             >
               {t("library.markAsFinished")}
             </button>
-          )}
+            <button
+              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "abandoned"); }}
+              className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
+            >
+              {t("library.markAsAbandoned")}
+            </button>
+          </>
+        )}
+        {item.status === "abandoned" && (
           <button
             onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
             className="text-xs px-3 py-1 rounded-full border border-blue-400 text-blue-300"
           >
-            {t("library.remove")}
+            {t("library.markAsInProgress")}
           </button>
         )}
         <button
