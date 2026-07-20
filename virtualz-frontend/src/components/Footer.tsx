@@ -44,7 +44,9 @@ export default function Footer() {
           </div>
         </div>
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <Logo className="text-2xl" variant="text" />
+          <Link to="/" className="group shrink-0">
+            <Logo className="text-2xl group-hover:scale-105 transition-transform" variant="text" />
+          </Link>
           <p className="text-xs text-slate-500 text-center md:text-right">
             © Archetype Analytics 2025-{currentYear} - Beni G., Digiglio A., Galarza J.G., Tedeschi G., Vurchio L., El Mbimbey M.
           </p>
