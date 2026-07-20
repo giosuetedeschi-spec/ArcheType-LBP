@@ -27,8 +27,8 @@
   --color-vz-charcoal: #1e2448;
 
   /* Typography */
-  --font-display: 'Inter', system-ui, sans-serif;
-  --font-body: 'Inter', system-ui, sans-serif;
+  --font-display: 'Audiowide', system-ui, sans-serif;
+  --font-body: 'Exo 2', system-ui, sans-serif;
 
   /* Animations */
   --animate-fade-in-up: fade-in-up 0.4s ease-out both;
