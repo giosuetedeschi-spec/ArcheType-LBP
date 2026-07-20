@@ -62,7 +62,7 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
 
   if (isLoading) {
     return (
-      <section className="py-12">
+      <section className="py-6">
         <h2 className="text-2xl font-display font-bold text-white mb-6 px-4">{title}</h2>
         <div className="flex gap-4 px-4 overflow-hidden">
           {[...Array(4)].map((_, i) => (
@@ -76,7 +76,7 @@ export default function GameCarousel({ genre, title }: GameCarouselProps) {
   if (games.length === 0) return null;
 
   return (
-    <section className="py-12">
+    <section className="py-6">
       <div className="flex items-center justify-between px-4 mb-6">
         <h2 className="text-2xl font-display font-bold text-white">{title}</h2>
         <Link to="/catalog" search={{ genre }} className="text-sm text-vz-lime hover:underline">
