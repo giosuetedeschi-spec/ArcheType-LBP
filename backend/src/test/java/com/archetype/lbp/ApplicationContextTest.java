@@ -20,6 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
     "steam.api.key=dummy-key",
     "app.base-url=http://localhost:8080",
     "app.frontend-url=http://localhost:5173",
+    // Proprietà aggiunte per soddisfare la configurazione OAuth2:
     "spring.security.oauth2.client.registration.google.client-id=dummy-id",
     "spring.security.oauth2.client.registration.google.client-secret=dummy-secret"
 })
