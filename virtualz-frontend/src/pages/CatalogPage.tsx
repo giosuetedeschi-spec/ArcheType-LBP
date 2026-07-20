@@ -77,6 +77,22 @@ const OS_OPTIONS = [
   { label: "Linux", value: "linux" },
 ] as const;
 
+// Nomi + hex per gli swatch — devono combaciare con ColorPalette.java lato
+// backend (stessi 11 nomi, tolleranza ±30 RGB per canale sul match).
+const COLOR_OPTIONS = [
+  { name: "green", hex: "#32CD32" },
+  { name: "red", hex: "#B22222" },
+  { name: "blue", hex: "#1E90FF" },
+  { name: "yellow", hex: "#FFD700" },
+  { name: "purple", hex: "#800080" },
+  { name: "orange", hex: "#FF8C00" },
+  { name: "cyan", hex: "#00C8C8" },
+  { name: "brown", hex: "#8B4513" },
+  { name: "pink", hex: "#FF69B4" },
+  { name: "white", hex: "#F0F0F0" },
+  { name: "black", hex: "#141414" },
+] as const;
+
 interface FilterState {
   search: string;
   genre: string;
@@ -86,6 +102,7 @@ interface FilterState {
   vr: boolean;
   minUserRating: string;
   mature: boolean;
+  color: string;
   sort: string; // "campo:direzione" oppure ""
 }
 
@@ -98,6 +115,7 @@ const EMPTY_FILTERS: FilterState = {
   vr: false,
   minUserRating: "",
   mature: false,
+  color: "",
   sort: "estimatedOwners:desc",
 };
 
@@ -159,6 +177,7 @@ export default function CatalogPage() {
       if (filters.vr) params.vr = true;
       if (filters.minUserRating) params.minUserRating = Number(filters.minUserRating);
       if (filters.mature) params.mature = true;
+      if (filters.color) params.color = filters.color;
       if (filters.sort) {
         const [sortBy, sortDir] = filters.sort.split(":");
         params.sortBy = sortBy;
@@ -201,6 +220,11 @@ export default function CatalogPage() {
     }));
   }
 
+  // Toggle colore: single-select, come genere — riclick sullo stesso = deseleziona
+  function toggleColor(value: string) {
+    handleFilterChange("color", filters.color === value ? "" : value);
+  }
+
   function toggleVr() {
     setPage(0);
     setFilters((f) => ({ ...f, vr: !f.vr }));
@@ -225,6 +249,7 @@ export default function CatalogPage() {
     filters.vr ||
     filters.minUserRating !== "" ||
     filters.mature ||
+    filters.color !== "" ||
     filters.sort !== "";
 
   const inputClass =
@@ -282,6 +307,32 @@ export default function CatalogPage() {
                   );
                 })}
               </ul>
+            </div>
+
+            {/* --- Colore --- */}
+            <div>
+              <h3 className="text-xs font-semibold uppercase tracking-wider text-slate-400 mb-3">
+                {t("catalog.color")}
+              </h3>
+              <div className="flex flex-wrap gap-2">
+                {COLOR_OPTIONS.map((c) => {
+                  const active = filters.color === c.name;
+                  return (
+                    <button
+                      key={c.name}
+                      type="button"
+                      onClick={() => toggleColor(c.name)}
+                      aria-pressed={active}
+                      aria-label={t(`colors.${c.name}`, { defaultValue: c.name })}
+                      title={t(`colors.${c.name}`, { defaultValue: c.name })}
+                      className={`w-7 h-7 rounded-full border-2 transition-transform ${
+                        active ? "border-vz-lime scale-110" : "border-slate-700 hover:scale-105"
+                      }`}
+                      style={{ backgroundColor: c.hex }}
+                    />
+                  );
+                })}
+              </div>
             </div>
 
             {/* --- Sistema operativo --- */}

@@ -109,6 +109,18 @@ public class Game {
     @Column(name = "estimated_owners", nullable = false)
     private Integer estimatedOwners = 0;
 
+    // Colore dominante della cover (RGB), per il filtro colore del catalogo
+    // (virtualz-frontend/docs/color-filter-design.md). Null finché non
+    // ancora calcolato/importato per quel gioco.
+    @Column(name = "color_r")
+    private Integer colorR;
+
+    @Column(name = "color_g")
+    private Integer colorG;
+
+    @Column(name = "color_b")
+    private Integer colorB;
+
     @Column(name = "created_at")
     private LocalDateTime createdAt = LocalDateTime.now();
 

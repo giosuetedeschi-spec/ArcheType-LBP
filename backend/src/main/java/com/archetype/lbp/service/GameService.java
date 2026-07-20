@@ -13,6 +13,7 @@ import com.archetype.lbp.repository.GenreRepository;
 import com.archetype.lbp.repository.PublisherRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.*;
+import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +58,8 @@ public class GameService {
                         filter.getOs(),
                         filter.getVr(),
                         filter.getMature(),
-                        filter.getMinUserRating()
+                        filter.getMinUserRating(),
+                        filter.getColor()
                 ),
                 pageable
         );
@@ -121,6 +123,21 @@ public class GameService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Giochi la cui cover ha colore dominante entro ±30 per canale RGB dal
+     * nome colore richiesto (vedi ColorPalette per la palette supportata).
+     */
+    @Transactional(readOnly = true)
+    public List<GameResponse> byColor(String color) {
+        Specification<Game> spec = GameRepository.withFilters(
+                null, null, null, null, null, null, null, null, null, null, null, null, color
+        );
+        return gameRepo.findAll(spec)
+                .stream()
+                .map(this::toResponse)
+                .collect(Collectors.toList());
+    }
+
     public Game findEntityById(Long id) {
         return gameRepo.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException("Game", "id", id));
@@ -142,6 +159,9 @@ public class GameService {
         game.setLinux(req.getLinux() != null ? req.getLinux() : false);
         game.setMature(req.getMature() != null ? req.getMature() : false);
         game.setEstimatedOwners(req.getEstimatedOwners() != null ? req.getEstimatedOwners() : 0);
+        game.setColorR(req.getColorR());
+        game.setColorG(req.getColorG());
+        game.setColorB(req.getColorB());
     }
 
     /**
@@ -201,6 +221,9 @@ public class GameService {
         r.setLinux(game.getLinux());
         r.setMature(game.getMature());
         r.setEstimatedOwners(game.getEstimatedOwners());
+        r.setColorR(game.getColorR());
+        r.setColorG(game.getColorG());
+        r.setColorB(game.getColorB());
         r.setCreatedAt(game.getCreatedAt());
         return r;
     }
