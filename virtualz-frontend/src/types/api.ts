@@ -33,6 +33,10 @@ export interface Game {
   mature: boolean;
   /** Punto medio della fascia "Estimated owners" Steam — segnale di popolarità. */
   estimatedOwners: number;
+  /** Colore dominante della cover (RGB), null finché non ancora calcolato/importato. */
+  colorR: number | null;
+  colorG: number | null;
+  colorB: number | null;
   createdAt: string;
 }
 
@@ -49,6 +53,8 @@ export interface CatalogSearchParams {
   os?: string[];
   /** true = solo giochi con supporto VR (categorie Steam dedicate). */
   vr?: boolean;
+  /** Nome colore dalla palette (vedi COLOR_OPTIONS in CatalogPage.tsx). */
+  color?: string;
   /** Media minima delle recensioni utente (tabella reviews, scala 1-5). */
   minUserRating?: number;
   /** true = solo giochi 18+ (games.mature). */

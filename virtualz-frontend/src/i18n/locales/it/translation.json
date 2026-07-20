@@ -47,6 +47,7 @@
     "searchPlaceholder": "Cerca un gioco...",
     "filters": "Filtri",
     "genre": "Genere",
+    "color": "Colore",
     "minPrice": "Prezzo minimo",
     "maxPrice": "Prezzo massimo",
     "platforms": "Piattaforme",
@@ -256,5 +257,18 @@
     "earlyAccess": "Accesso anticipato",
     "freeToPlay": "Free to Play",
     "massivelyMultiplayer": "Multiplayer di massa"
+  },
+  "colors": {
+    "green": "Verde",
+    "red": "Rosso",
+    "blue": "Blu",
+    "yellow": "Giallo",
+    "purple": "Viola",
+    "orange": "Arancione",
+    "cyan": "Ciano",
+    "brown": "Marrone",
+    "pink": "Rosa",
+    "white": "Bianco",
+    "black": "Nero"
   }
 }

@@ -42,4 +42,8 @@ public class GameRequest {
 
     @Min(value = 0, message = "Estimated owners cannot be negative")
     private Integer estimatedOwners = 0;
+
+    private Integer colorR;
+    private Integer colorG;
+    private Integer colorB;
 }

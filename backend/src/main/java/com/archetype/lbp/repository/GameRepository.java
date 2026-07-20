@@ -3,6 +3,7 @@ package com.archetype.lbp.repository;
 import com.archetype.lbp.model.Game;
 import com.archetype.lbp.model.Genre;
 import com.archetype.lbp.model.Review;
+import com.archetype.lbp.util.ColorPalette;
 
 import jakarta.persistence.criteria.Join;
 import jakarta.persistence.criteria.JoinType;
@@ -58,7 +59,7 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
                                             BigDecimal minPrice, BigDecimal maxPrice,
                                             BigDecimal minRating, LocalDate releasedAfter,
                                             LocalDate releasedBefore, List<String> os, Boolean vr,
-                                            Boolean mature, BigDecimal minUserRating) {
+                                            Boolean mature, BigDecimal minUserRating, String color) {
         return (root, query, cb) -> {
             List<Predicate> predicates = new ArrayList<>();
 
@@ -109,6 +110,16 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
                     predicates.add(cb.or(osPredicates.toArray(new Predicate[0])));
                 }
             }
+            int[] targetRgb = ColorPalette.resolve(color);
+            if (targetRgb != null) {
+                // ±30 per canale (design doc), su un match "nessun colore
+                // calcolato" (colorR null) semplicemente non entra nel range.
+                int tolerance = 30;
+                predicates.add(cb.between(root.get("colorR"), targetRgb[0] - tolerance, targetRgb[0] + tolerance));
+                predicates.add(cb.between(root.get("colorG"), targetRgb[1] - tolerance, targetRgb[1] + tolerance));
+                predicates.add(cb.between(root.get("colorB"), targetRgb[2] - tolerance, targetRgb[2] + tolerance));
+            }
+
             if (Boolean.TRUE.equals(vr)) {
                 // Stesso pattern del join su "genres" sopra: un gioco può
                 // avere più categorie VR contemporaneamente, quindi serve

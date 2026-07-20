@@ -30,8 +30,14 @@ public class Application {
         int failures = 0;
 
         // === GameRepository.withFilters() ===
-        var spec = GameRepository.withFilters("counter", null, null, null, null, null, null, null, null, null, null, null);
+        var spec = GameRepository.withFilters("counter", null, null, null, null, null, null, null, null, null, null, null, null);
         if (spec == null) { System.err.println("FAIL: withFilters returns null"); failures++; }
+
+        // === ColorPalette.resolve() ===
+        var green = com.archetype.lbp.util.ColorPalette.resolve("GREEN");
+        if (green == null || green.length != 3) { System.err.println("FAIL: ColorPalette.resolve(\"GREEN\") should resolve case-insensitively"); failures++; }
+        if (com.archetype.lbp.util.ColorPalette.resolve("not-a-color") != null) { System.err.println("FAIL: ColorPalette.resolve should return null for unknown color"); failures++; }
+        if (com.archetype.lbp.util.ColorPalette.resolve(null) != null) { System.err.println("FAIL: ColorPalette.resolve(null) should return null"); failures++; }
 
         // === GameRequest validation ===
         var req = new GameRequest();
