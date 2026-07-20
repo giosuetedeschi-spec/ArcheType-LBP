@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Heart } from "lucide-react";
 import type { LibraryItem, LibraryStatus } from "@/types/api";
@@ -48,6 +49,7 @@ interface LibraryItemCardProps {
  */
 export default function LibraryItemCard({ item, onStatusChange, onRemove }: LibraryItemCardProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const isWishlisted = item.status === "wishlist";
 
   // IMPORTANTE: passiamo sempre item.id (l'id della VOCE di backlog),
@@ -55,79 +57,80 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
   // proprio id, non per il gameId collegato. Passare game.id qui
   // modificherebbe/cancellerebbe la voce sbagliata.
   return (
-    <div className="relative bg-vz-charcoal rounded-xl border border-slate-800 overflow-hidden flex gap-2 p-2 w-[488px] h-[122px]">
-      {/* Copertina — self-stretch la fa crescere in altezza fino a
-          combaciare con la colonna di destra. Con la card a dimensione
-          fissa (w-[488px] h-[122px]) la copertina ha sempre la stessa
-          altezza in ogni vista/stato, invece di dipendere da quanto
-          contenuto ha la colonna di destra. */}
-      <div className="w-28 flex-shrink-0 self-stretch">
-        {item.game.headerImageUrl ? (
-          <img
-            src={item.game.headerImageUrl}
-            alt={item.game.name}
-            className="w-full h-full object-cover rounded-lg bg-slate-900"
-            loading="lazy"
-          />
-        ) : (
-          <GameCoverPlaceholder name={item.game.name} seed={item.game.id} className="w-full h-full rounded-lg" />
-        )}
+    <div className="bg-vz-charcoal rounded-xl border border-slate-800 overflow-hidden">
+      <div className="flex gap-3 p-3">
+        <div
+          onClick={(e) => { e.stopPropagation(); navigate({ to: "/games/$id", params: { id: String(item.game.id) } }); }}
+          className="cursor-pointer group"
+        >
+          {item.game.headerImageUrl ? (
+            <img
+              src={item.game.headerImageUrl}
+              alt={item.game.name}
+              className="w-24 aspect-[92/43] object-cover rounded-lg bg-slate-900 flex-shrink-0 group-hover:opacity-80 transition-opacity"
+              loading="lazy"
+            />
+          ) : (
+            <GameCoverPlaceholder
+              name={item.game.name}
+              seed={item.game.id}
+              className="w-24 h-14 rounded-lg flex-shrink-0 group-hover:opacity-80 transition-opacity"
+            />
+          )}
+        </div>
+        <div className="flex-1 min-w-0">
+          <h3
+            onClick={(e) => { e.stopPropagation(); navigate({ to: "/games/$id", params: { id: String(item.game.id) } }); }}
+            className="font-semibold text-white truncate cursor-pointer hover:text-vz-lime transition-colors"
+          >
+            {item.game.name}
+          </h3>
+          <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[item.status]}`}>
+            {t(`library.status.${item.status}`)}
+          </span>
+        </div>
       </div>
 
-      {/* Info + azioni, colonna destra — dimensione fissa (350x104) così
-          resta identica in ogni vista/stato, indipendentemente da quanti
-          bottoni/badge mostra una determinata voce. */}
-      <div className="w-[350px] h-[104px] flex flex-col justify-between">
-        <div>
-          <h3 className="font-semibold text-white truncate pr-8">{item.game.name}</h3>
-          {!isWishlisted && (
-            <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[item.status]}`}>
-              {t(`library.status.${item.status}`)}
-            </span>
-          )}
-        </div>
-
-        {/* Azioni di cambio stato — quali bottoni mostrare dipende dallo stato attuale */}
-        <div className="flex flex-wrap gap-2 mt-2">
-          {isWishlisted && (
-            <button
-              onClick={() => onStatusChange(item.id, "playing")}
-              className="text-xs px-3 py-1 rounded-full bg-vz-lime text-vz-navy font-semibold"
-            >
-              {t("library.markAsInProgress")}
-            </button>
-          )}
-          {item.status === "playing" && (
-            <>
-              <button
-                onClick={() => onStatusChange(item.id, "finished")}
-                className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
-              >
-                {t("library.markAsFinished")}
-              </button>
-              <button
-                onClick={() => onStatusChange(item.id, "abandoned")}
-                className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
-              >
-                {t("library.markAsAbandoned")}
-              </button>
-            </>
-          )}
-          {item.status === "abandoned" && (
-            <button
-              onClick={() => onStatusChange(item.id, "playing")}
-              className="text-xs px-3 py-1 rounded-full border border-blue-400 text-blue-300"
-            >
-              {t("library.markAsInProgress")}
-            </button>
-          )}
+      {/* Azioni di cambio stato — quali bottoni mostrare dipende dallo stato attuale */}
+      <div className="px-3 pb-3 pt-2 border-t border-slate-800/50 flex flex-wrap gap-2">
+        {item.status === "wishlist" && (
           <button
-            onClick={() => onRemove(item.id)}
-            className="text-xs px-3 py-1 rounded-full text-slate-500 hover:text-vz-pink"
+            onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
+            className="text-xs px-3 py-1 rounded-full bg-vz-lime text-vz-navy font-semibold"
           >
-            {t("library.remove")}
+            {t("library.moveToBacklog")}
           </button>
-        </div>
+        )}
+        {item.status === "playing" && (
+          <>
+            <button
+              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "finished"); }}
+              className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
+            >
+              {t("library.markAsFinished")}
+            </button>
+            <button
+              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "abandoned"); }}
+              className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
+            >
+              {t("library.markAsAbandoned")}
+            </button>
+          </>
+        )}
+        {item.status === "abandoned" && (
+          <button
+            onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
+            className="text-xs px-3 py-1 rounded-full border border-blue-400 text-blue-300"
+          >
+            {t("library.markAsInProgress")}
+          </button>
+        )}
+        <button
+          onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
+          className="text-xs px-3 py-1 rounded-full text-slate-500 hover:text-vz-pink"
+        >
+          {t("library.remove")}
+        </button>
       </div>
 
       {/* Cuore in alto a destra al posto del badge "In lista dei desideri" —
