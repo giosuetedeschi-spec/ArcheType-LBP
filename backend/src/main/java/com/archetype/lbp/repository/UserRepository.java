@@ -18,4 +18,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     
     /** Trova un utente tramite la sua email esatta (case-sensitive). */
     Optional<User> findByEmail(String email);
+
+    /** Trova un utente con questo Steam ID collegato — sempre via azione esplicita dal Profilo, mai per auto-match (vedi docs/OAUTH_LOGIN_PLAN.md). */
+    Optional<User> findBySteamId(String steamId);
 }

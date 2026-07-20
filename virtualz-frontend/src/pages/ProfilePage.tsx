@@ -3,10 +3,12 @@ import { useTranslation } from "react-i18next";
 import { Link } from "@tanstack/react-router";
 import { getLibrary, updateLibraryStatus, removeFromLibrary } from "../services/libraryApi";
 import { getFriends } from "../services/friendsApi";
-import { getUserStats } from "../services/usersApi";
+import { getUser, getUserStats } from "../services/usersApi";
 import { getLeaderboard } from "../services/leaderboardApi";
 import { getUserReviews } from "../services/reviewsApi";
 import { useAuth } from "../context/AuthContext";
+import { API_BASE_URL } from "../services/api";
+import { getToken } from "../services/tokenStorage";
 import LibraryItemCard from "../components/LibraryItemCard";
 import GenreBarChart from "../components/GenreBarChart";
 import LibraryCompositionBar from "../components/LibraryCompositionBar";
@@ -34,8 +36,25 @@ export default function ProfilePage() {
   const [myStats, setMyStats] = useState<UserStats | null>(null);
   const [leaderboard, setLeaderboard] = useState<LeaderboardResponse | null>(null);
   const [myReviews, setMyReviews] = useState<Review[]>([]);
+  const [steamLinked, setSteamLinked] = useState(false);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+
+  // Esito del redirect da SteamAuthController.linkCallback (?steamLinked=true
+  // o ?error=...) — letto una sola volta al montaggio, poi ripulito dall'URL
+  // così un refresh della pagina non ripropone lo stesso messaggio.
+  const [steamLinkMessage, setSteamLinkMessage] = useState<{ ok: boolean; text: string } | null>(null);
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("steamLinked") === "true") {
+      setSteamLinkMessage({ ok: true, text: t("profile.steamLinkSuccess") });
+      setSteamLinked(true);
+      window.history.replaceState({}, "", window.location.pathname);
+    } else if (params.get("error")) {
+      setSteamLinkMessage({ ok: false, text: t("profile.steamLinkError") });
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [t]);
 
   // ProfilePage è raggiungibile solo da utente autenticato (route protetta),
   // ma TypeScript non lo sa: user può essere null per tipo. Guard esplicita
@@ -43,21 +62,24 @@ export default function ProfilePage() {
   const fetchLibrary = useCallback(async () => {
     if (!user) return;
     try {
-      const [libraryResult, friendsResult, myStatsResult, leaderboardResult, myReviewsResult] = await Promise.all([
-        getLibrary(user.id),
-        getFriends(user.id),
-        getUserStats(user.id),
-        // Riassunto: prime 3 posizioni globali per ore di gioco + la
-        // propria posizione (myEntry, calcolata su tutta la classifica
-        // indipendentemente da page/size — vedi nota in @/types/api).
-        getLeaderboard({ userId: user.id, scope: "global", metric: "hours", page: 0, size: 3 }),
-        getUserReviews(user.id),
-      ]);
+      const [libraryResult, friendsResult, myStatsResult, leaderboardResult, myReviewsResult, myProfile] =
+        await Promise.all([
+          getLibrary(user.id),
+          getFriends(user.id),
+          getUserStats(user.id),
+          // Riassunto: prime 3 posizioni globali per ore di gioco + la
+          // propria posizione (myEntry, calcolata su tutta la classifica
+          // indipendentemente da page/size — vedi nota in @/types/api).
+          getLeaderboard({ userId: user.id, scope: "global", metric: "hours", page: 0, size: 3 }),
+          getUserReviews(user.id),
+          getUser(user.id),
+        ]);
       setLibrary(libraryResult);
       setFriends(friendsResult);
       setMyStats(myStatsResult);
       setLeaderboard(leaderboardResult);
       setMyReviews(myReviewsResult);
+      setSteamLinked(myProfile.steamLinked);
 
       // Statistiche per ogni amico (giochi posseduti/in corso), in
       // parallelo — stesso pattern usato in FriendsPage.tsx.
@@ -116,12 +138,40 @@ export default function ProfilePage() {
 
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
-      <div className="flex items-center gap-4 mb-8">
+      <div className="flex items-center gap-4 mb-4">
         <Avatar username={user.username} size={64} variant="lime" className="text-2xl" />
         <div>
           <h1 className="text-2xl font-display font-bold text-white">{user.username}</h1>
           <p className="text-sm text-slate-400">{t("stats.title")}</p>
         </div>
+      </div>
+
+      {steamLinkMessage && (
+        <p className={`text-sm mb-4 ${steamLinkMessage.ok ? "text-vz-lime" : "text-vz-pink"}`}>
+          {steamLinkMessage.text}
+        </p>
+      )}
+
+      {/* Collegamento Steam (docs/OAUTH_LOGIN_PLAN.md, issue #102) — sempre
+          un'azione esplicita da qui, mai un auto-match: vedi
+          SteamAuthController.link/linkCallback lato backend. */}
+      <div className="mb-8">
+        {steamLinked ? (
+          <span className="inline-flex items-center gap-2 text-sm text-slate-400">
+            🎮 {t("profile.steamLinked")}
+          </span>
+        ) : (
+          <button
+            type="button"
+            onClick={() => {
+              const token = getToken();
+              if (token) window.location.href = `${API_BASE_URL}/auth/steam/link?token=${encodeURIComponent(token)}`;
+            }}
+            className="inline-flex items-center gap-2 text-sm rounded-lg bg-[#1b2838] px-4 py-2 text-white hover:bg-[#2a475e] transition-colors"
+          >
+            🎮 {t("profile.linkSteam")}
+          </button>
+        )}
       </div>
 
       {loading && <p className="text-slate-400">{t("common.loading")}</p>}
