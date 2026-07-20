@@ -1,8 +1,8 @@
 import { useTranslation } from "react-i18next";
 import axios from 'axios';
 import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "@tanstack/react-router"; // Usiamo il tuo router ufficiale per un cambio pagina pulito
-
+import { useNavigate } from "@tanstack/react-router";
+import { API_BASE_URL } from "../services/api";
 export default function OAuthButtons() {
   const { t } = useTranslation();
   const { persistSession } = useAuth(); // Recuperiamo la funzione ufficiale dal contesto
@@ -34,6 +34,10 @@ export default function OAuthButtons() {
     }
   };
 
+  function handleSteamLogin() {
+    window.location.href = `${API_BASE_URL}/auth/steam/login`;
+  }
+
   return (
     <div className="mt-6">
       <div className="flex items-center gap-3 text-xs text-slate-500 uppercase tracking-wide">
@@ -46,9 +50,8 @@ export default function OAuthButtons() {
         {/* Steam rimane disabilitato */}
         <button
           type="button"
-          disabled
-          title={t("auth.comingSoon")}
-          className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#1b2838] px-4 py-2.5 text-sm font-medium text-white opacity-50 cursor-not-allowed"
+          onClick={handleSteamLogin}
+          className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#1b2838] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#2a475e] transition-colors"
         >
           🎮 {t("auth.continueWithSteam") || "Continua con Steam"}
         </button>

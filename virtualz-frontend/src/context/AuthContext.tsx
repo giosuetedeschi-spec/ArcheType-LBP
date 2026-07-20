@@ -13,6 +13,11 @@ interface AuthContextValue {
   user: User | null;
   login: (credentials: LoginPayload, remember: boolean) => Promise<AuthResponse>;
   register: (payload: RegisterPayload) => Promise<AuthResponse>;
+  // Apre la sessione da un token già emesso dal backend (login Steam via
+  // redirect, OAuthCallbackPage) — a differenza di login()/register(), non
+  // chiama nessuna API: il token/userId/username arrivano già pronti nella
+  // query string del redirect, vedi SteamAuthController.callback().
+  completeOAuthLogin: (authResponse: AuthResponse, remember: boolean) => void;
   logout: () => void;
   isAuthenticated: boolean;
   persistSession: (authResponse: AuthResponse, remember: boolean) => void; // <--- AGGIUNGI QUESTA RIGA
@@ -67,7 +72,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   return (
-    <AuthContext.Provider value={{ user, login, register, logout, isAuthenticated: !!user, persistSession }}> {/* <--- AGGIUNGI "persistSession" QUI */}
+<AuthContext.Provider
+      value={{ 
+        user, 
+        login, 
+        register, 
+        completeOAuthLogin: persistSession, 
+        persistSession, 
+        logout, 
+        isAuthenticated: !!user 
+      }}
+    >
       {children}
     </AuthContext.Provider>
   );
