@@ -1,7 +1,10 @@
 import axios from "axios";
 import { getToken, clearSession } from "./tokenStorage";
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
+// Esportata (non solo locale): serve anche per i redirect a pagina intera
+// del login Steam (OAuthButtons.tsx), che non passano da axios — non è
+// un'istanza di axios che serve lì, solo la stessa base URL.
+export const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
 export const api = axios.create({
   baseURL: API_BASE_URL,

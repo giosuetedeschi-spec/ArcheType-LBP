@@ -114,6 +114,8 @@ export interface UserSummary {
   avatarUrl: string | null;
   status: string;
   bio: string | null;
+  /** true se l'utente ha collegato Steam (mai lo steamId vero e proprio). */
+  steamLinked: boolean;
   createdAt: string;
 }
 

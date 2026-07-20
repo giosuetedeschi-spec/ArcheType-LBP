@@ -11,6 +11,12 @@ export async function listUsers(): Promise<UserSummary[]> {
   return data;
 }
 
+/** Profilo di un singolo utente (incluso steamLinked, per la sezione "Collega Steam"). */
+export async function getUser(userId: number): Promise<UserSummary> {
+  const { data } = await api.get<UserSummary>(`/users/${userId}`);
+  return data;
+}
+
 /** Statistiche aggregate di un utente (giochi posseduti, in corso, ecc.). */
 export async function getUserStats(userId: number): Promise<UserStats> {
   const { data } = await api.get<UserStats>(`/users/${userId}/stats`);

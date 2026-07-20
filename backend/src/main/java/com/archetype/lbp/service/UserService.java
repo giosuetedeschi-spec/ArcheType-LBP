@@ -59,6 +59,75 @@ public class UserService {
         return "https://loremflickr.com/200/200/cat?lock=" + userId;
     }
 
+    /**
+     * Trova l'utente già collegato a questo Steam ID, o ne crea uno nuovo
+     * Steam-only — usato dal login pubblico "Continua con Steam"
+     * (docs/OAUTH_LOGIN_PLAN.md). Non collega mai a un account esistente
+     * diverso: se lo steamId non risulta già associato, l'esito è sempre un
+     * account nuovo, mai un tentativo di indovinare quale account locale
+     * potrebbe corrispondere (Steam non dà un'email da confrontare).
+     *
+     * @param steamId SteamID64 già verificato dal chiamante (SteamOpenIdService)
+     * @param displayName nome pubblico Steam (personaname), può essere null
+     *   se la Steam Web API non è configurata o non ha risposto
+     * @param avatarUrl avatar Steam, può essere null per lo stesso motivo
+     */
+    public User findOrCreateBySteamId(String steamId, String displayName, String avatarUrl) {
+        return userRepo.findBySteamId(steamId).orElseGet(() -> {
+            User user = new User();
+            user.setUsername(generateUniqueUsername(displayName));
+            // Steam non fornisce un'email: placeholder sintetico, univoco
+            // per costruzione (steamId è unico) — soddisfa il vincolo
+            // NOT NULL/UNIQUE della colonna senza inventare uno schema a
+            // parte solo per questo caso.
+            user.setEmail("steam_" + steamId + "@steam.placeholder");
+            user.setSteamId(steamId);
+            User saved = userRepo.save(user);
+            saved.setAvatarUrl(avatarUrl != null ? avatarUrl : buildCatAvatarUrl(saved.getId()));
+            return userRepo.save(saved);
+        });
+    }
+
+    /**
+     * Collega uno Steam ID a un account già autenticato — azione esplicita
+     * "Collega Steam" dal Profilo, l'unico modo in cui Steam si associa a un
+     * account che non ha creato lui stesso (vedi docs/OAUTH_LOGIN_PLAN.md).
+     *
+     * @throws IllegalStateException se questo Steam ID è già collegato a un
+     *   account diverso da {@code userId} — non lo si "ruba" silenziosamente.
+     */
+    public void linkSteamAccount(Long userId, String steamId) {
+        userRepo.findBySteamId(steamId).ifPresent(existing -> {
+            if (!existing.getId().equals(userId)) {
+                throw new IllegalStateException("Questo account Steam è già collegato a un altro utente.");
+            }
+        });
+        User user = findEntityById(userId);
+        user.setSteamId(steamId);
+        userRepo.save(user);
+    }
+
+    /**
+     * Deriva uno username univoco e valido (3-50 caratteri) da un nome
+     * suggerito (es. il nome pubblico Steam) — con fallback e suffisso
+     * numerico se già occupato, stesso spirito del cat-avatar deterministico
+     * sopra: non deve mai fallire per collisione.
+     */
+    private String generateUniqueUsername(String suggested) {
+        String base = (suggested == null || suggested.isBlank())
+                ? "player"
+                : suggested.trim().replaceAll("\\s+", "_");
+        if (base.length() > 40) base = base.substring(0, 40);
+        if (base.length() < 3) base = base + "_player";
+
+        String candidate = base;
+        int suffix = 1;
+        while (userRepo.findByUsername(candidate).isPresent()) {
+            candidate = base + "_" + suffix++;
+        }
+        return candidate;
+    }
+
     /** Lista tutti gli utenti registrati. */
     @Transactional(readOnly = true)
     public List<UserResponse> listAll() {
@@ -106,6 +175,7 @@ public class UserService {
         r.setAvatarUrl(user.getAvatarUrl());
         r.setStatus(user.getStatus());
         r.setBio(user.getBio());
+        r.setSteamLinked(user.getSteamId() != null);
         r.setCreatedAt(user.getCreatedAt());
         return r;
     }

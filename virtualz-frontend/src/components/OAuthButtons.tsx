@@ -1,11 +1,17 @@
 import { useTranslation } from "react-i18next";
+import { API_BASE_URL } from "../services/api";
 
-// Provider OAuth non ancora implementato lato backend (vedi
-// docs/auth-steam-google.md, design non ancora costruito) - bottoni
-// disabilitati/placeholder per il mockup di #102, in attesa del lavoro
-// backend necessario (Spring Security OAuth2 + Steam OpenID + Google).
+// Steam: implementato (docs/OAUTH_LOGIN_PLAN.md, issue #102) — redirect a
+// pagina intera verso il backend, che gestisce l'intero giro OpenID 2.0 con
+// Steam e torna su /oauth-callback con un token già pronto (vedi
+// SteamAuthController lato backend, OAuthCallbackPage lato frontend).
+// Google: non ancora implementato lato backend — bottone resta placeholder.
 export default function OAuthButtons() {
   const { t } = useTranslation();
+
+  function handleSteamLogin() {
+    window.location.href = `${API_BASE_URL}/auth/steam/login`;
+  }
 
   return (
     <div className="mt-6">
@@ -18,9 +24,8 @@ export default function OAuthButtons() {
       <div className="mt-4 space-y-2">
         <button
           type="button"
-          disabled
-          title={t("auth.comingSoon")}
-          className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#1b2838] px-4 py-2.5 text-sm font-medium text-white opacity-50 cursor-not-allowed"
+          onClick={handleSteamLogin}
+          className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#1b2838] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#2a475e] transition-colors"
         >
           🎮 {t("auth.continueWithSteam")}
         </button>

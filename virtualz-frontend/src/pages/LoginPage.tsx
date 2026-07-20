@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent } from "react";
 import { Link, Navigate, useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
@@ -17,6 +17,17 @@ export default function LoginPage() {
   const [rememberMe, setRememberMe] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+
+  // Errore dal redirect di SteamAuthController.callback (login Steam fallito
+  // — vedi anche OAuthCallbackPage, che rimanda qui con ?error=...). Letto
+  // una sola volta al montaggio, poi ripulito dall'URL.
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("error")) {
+      setError(t("auth.loginError"));
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, [t]);
 
   // Se utente gia autenticato, redirect alla home
   if (isAuthenticated) return <Navigate to="/" />;

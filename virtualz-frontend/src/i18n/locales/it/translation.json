@@ -171,7 +171,11 @@
     "viewFullLeaderboard": "Classifica completa",
     "myReviews": "Le mie recensioni",
     "wishlist": "Lista dei desideri",
-    "emptyWishlist": "La tua lista dei desideri è vuota."
+    "emptyWishlist": "La tua lista dei desideri è vuota.",
+    "linkSteam": "Collega Steam",
+    "steamLinked": "Steam collegato",
+    "steamLinkSuccess": "Account Steam collegato con successo.",
+    "steamLinkError": "Collegamento a Steam non riuscito. Riprova."
   },
   "common": {
     "loading": "Caricamento...",
