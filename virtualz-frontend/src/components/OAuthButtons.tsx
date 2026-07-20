@@ -1,58 +1,33 @@
 import { useTranslation } from "react-i18next";
-import axios from 'axios';
-import { useAuth } from "../context/AuthContext";
-import { useNavigate } from "@tanstack/react-router";
 import { API_BASE_URL } from "../services/api";
 
 /**
  * Bottoni OAuth per login con provider esterni (Steam e Google).
  *
- * Al click reindirizza al backend Spring Security OAuth2 che gestisce
- * il flusso di autenticazione con il provider. Il frontend non gestisce
- * token OAuth direttamente — li riceve dal backend dopo il redirect.
+ * Al click reindirizza al backend, che gestisce il flusso di
+ * autenticazione con il provider (redirect a pagina intera, mai XHR/fetch).
+ * Il frontend non gestisce token OAuth direttamente — li riceve dal
+ * backend dopo il redirect su /oauth-callback (vedi
+ * routes/oauth-callback.tsx — gestito a mano sia per Steam che per Google,
+ * SteamAuthController/GoogleAuthController, niente oauth2Login() di Spring).
+ *
+ * Nota: entrambi i provider richiedono segreti reali lato backend
+ * (GOOGLE_CLIENT_ID/SECRET, STEAM_API_KEY) non ancora presenti in
+ * docker-compose.yml — senza quelli il redirect parte ma
+ * l'autenticazione con il provider fallisce.
  *
  * @see docs/auth-steam-google.md — design dell'autenticazione OAuth
- * @see issue #102 — implementazione backend pendente
+ * @see docs/OAUTH_LOGIN_PLAN.md — flusso Steam (login/link)
+ * @see issue #249 — loghi ufficiali bottoni OAuth
  */
 export default function OAuthButtons() {
   const { t } = useTranslation();
-  const { persistSession } = useAuth(); // Recuperiamo la funzione ufficiale dal contesto
-  const navigate = useNavigate();
-
-  // URL del nostro backend Docker (porta 8080)
-  const API_BASE_URL = "http://localhost:8080";
-
-  const handleGoogleLogin = async () => {
-    try {
-      // 1. Chiamiamo l'endpoint di mock sul backend
-      const response = await axios.get(`${API_BASE_URL}/api/auth/mock-google`);
-      
-      if (response.data && response.data.data) {
-        // response.data.data corrisponde esattamente al tuo AuthResponse (contiene token, userId, username, email)
-        const authResponse = response.data.data;
-        
-        // 2. Salva la sessione usando le REGOLE REALI del tuo progetto (impostiamo remember su true)
-        persistSession(authResponse, true);
-        
-        alert("Accesso simulato con Google riuscito!");
-        
-        // 3. Reindirizziamo alla Home usando il router nativo di TanStack
-        navigate({ to: "/" });
-      }
-    } catch (error) {
-      console.error("Errore durante il mock login con Google:", error);
-      alert("Impossibile connettersi al mock di Google");
-    }
-  };
-
-  /** URL base dell'API, configurabile via variabile d'ambiente Vite. */
-  const API_BASE = import.meta.env.VITE_API_BASE_URL || "http://localhost:8080/api";
 
   /** Reindirizza al backend per il flusso OAuth Steam (OpenID). */
-  const handleSteam = () => { window.location.href = `${API_BASE}/auth/steam`; };
+  const handleSteam = () => { window.location.href = `${API_BASE_URL}/auth/steam/login`; };
 
-  /** Reindirizza al backend per il flusso OAuth Google. */
-  const handleGoogle = () => { window.location.href = `${API_BASE}/auth/google`; };
+  /** Reindirizza al backend per il flusso OAuth2 Google (gestito a mano, vedi GoogleAuthController). */
+  const handleGoogle = () => { window.location.href = `${API_BASE_URL}/auth/google/login`; };
 
   return (
     <div className="mt-6">
@@ -70,16 +45,18 @@ export default function OAuthButtons() {
           onClick={handleSteam}
           className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#1b2838] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#2a475e] transition-colors"
         >
-          🎮 {t("auth.continueWithSteam") || "Continua con Steam"}
+          <img src="https://cdn.simpleicons.org/steam/white" alt="Steam" className="h-5 w-5" />
+          {t("auth.continueWithSteam") || "Continua con Steam"}
         </button>
 
-        {/* GOOGLE ORA INTEGRATO INTEGRALMENTE CON L'AUTH CONTEXT! */}
+        {/* Bottone Google — sfondo scuro coerente col tema, logo ufficiale a colori */}
         <button
           type="button"
-          onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 rounded-lg border border-slate-700 bg-vz-charcoal px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-slate-800 transition-colors cursor-pointer"
+          onClick={handleGoogle}
+          className="w-full flex items-center justify-center gap-3 rounded-lg border border-slate-700 bg-vz-charcoal px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-slate-800 transition-colors"
         >
-          🔍 {t("auth.continueWithGoogle") || "Continua con Google"}
+          <img src="https://cdn.simpleicons.org/google" alt="Google" className="h-5 w-5" />
+          {t("auth.continueWithGoogle") || "Continua con Google"}
         </button>
       </div>
     </div>

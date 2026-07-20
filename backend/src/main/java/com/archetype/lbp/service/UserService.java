@@ -89,6 +89,27 @@ public class UserService {
     }
 
     /**
+     * Trova un utente esistente per email Google, oppure lo crea al volo.
+     * A differenza di Steam, Google fornisce un'email verificata: chi ha già
+     * un account con quell'email lo ritrova semplicemente (stesso account di
+     * sempre, login classico o Google indifferentemente), altrimenti ne
+     * viene creato uno nuovo senza password (login solo via Google finché
+     * non ne imposta una) — niente placeholder sintetico né flusso di
+     * collegamento esplicito separato, non serve.
+     */
+    public User findOrCreateByGoogleProfile(String email, String displayName, String avatarUrl) {
+        return userRepo.findByEmail(email).orElseGet(() -> {
+            User user = new User();
+            user.setUsername(generateUniqueUsername(
+                    (displayName != null && !displayName.isBlank()) ? displayName : email.split("@")[0]));
+            user.setEmail(email);
+            User saved = userRepo.save(user);
+            saved.setAvatarUrl(avatarUrl != null ? avatarUrl : buildCatAvatarUrl(saved.getId()));
+            return userRepo.save(saved);
+        });
+    }
+
+    /**
      * Collega uno Steam ID a un account già autenticato — azione esplicita
      * "Collega Steam" dal Profilo, l'unico modo in cui Steam si associa a un
      * account che non ha creato lui stesso (vedi docs/OAUTH_LOGIN_PLAN.md).

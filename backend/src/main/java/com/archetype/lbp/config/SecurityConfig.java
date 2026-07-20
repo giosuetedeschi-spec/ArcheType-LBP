@@ -64,23 +64,17 @@ public class SecurityConfig {
                 session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
             .authorizeHttpRequests(auth -> auth
                 // Endpoint pubblici — nessun token richiesto
+                // Steam e Google sono entrambi gestiti a mano (SteamAuthController,
+                // GoogleAuthController) — niente oauth2Login() di Spring: si appoggia
+                // alla HttpSession per l'authorization request, in conflitto con
+                // SessionCreationPolicy.STATELESS qui sotto.
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/health").permitAll()
-                .requestMatchers("/login/oauth2/**", "/oauth2/**").permitAll() // Abilitiamo i percorsi di callback di OAuth2
                 .requestMatchers(HttpMethod.GET, "/api/games", "/api/games/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/genres", "/api/genres/**").permitAll()
                 .requestMatchers(HttpMethod.GET, "/api/categories", "/api/categories/**").permitAll()
                 // Tutto il resto richiede autenticazione
                 .anyRequest().authenticated()
-            )
-            // Integrazione dell'OAuth2 Login di Spring
-            .oauth2Login(oauth2 -> oauth2
-                .authorizationEndpoint(authorization -> authorization
-                    .baseUri("/api/oauth2/authorization") // Rendiamo gli endpoint omogenei sotto /api
-                )
-                .redirectionEndpoint(redirection -> redirection
-                    .baseUri("/login/oauth2/code/*")
-                )
             )
             .authenticationProvider(authenticationProvider())
             .addFilterBefore(jwtAuthFilter, UsernamePasswordAuthenticationFilter.class);
