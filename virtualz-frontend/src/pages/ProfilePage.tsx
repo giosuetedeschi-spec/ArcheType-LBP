@@ -37,6 +37,7 @@ export default function ProfilePage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardResponse | null>(null);
   const [myReviews, setMyReviews] = useState<Review[]>([]);
   const [steamLinked, setSteamLinked] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,6 +81,7 @@ export default function ProfilePage() {
       setLeaderboard(leaderboardResult);
       setMyReviews(myReviewsResult);
       setSteamLinked(myProfile.steamLinked);
+      setAvatarUrl(myProfile.avatarUrl);
 
       // Statistiche per ogni amico (giochi posseduti/in corso), in
       // parallelo — stesso pattern usato in FriendsPage.tsx.
@@ -139,7 +141,7 @@ export default function ProfilePage() {
   return (
     <div className="max-w-4xl mx-auto px-4 py-8">
       <div className="flex items-center gap-4 mb-4">
-        <Avatar username={user.username} size={64} variant="lime" className="text-2xl" />
+        <Avatar username={user.username} avatarUrl={avatarUrl} size={64} variant="lime" className="text-2xl" />
         <div>
           <h1 className="text-2xl font-display font-bold text-white">{user.username}</h1>
           <p className="text-sm text-slate-400">{t("stats.title")}</p>

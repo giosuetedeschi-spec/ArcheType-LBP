@@ -30,6 +30,10 @@ public class GameFilterRequest {
     // GameRepository.withFilters per l'elenco esatto).
     private Boolean vr;
 
+    // Nome colore dalla palette (vedi ColorPalette) -- filtra i giochi la cui
+    // cover ha colore dominante entro ±30 per canale RGB dal colore richiesto.
+    private String color;
+
     // Media delle recensioni utente (tabella reviews, scala 1-5) — distinta
     // da minRating sopra, che filtra il rating Steam del dataset, non le
     // recensioni scritte dagli utenti sulla piattaforma.

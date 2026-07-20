@@ -23,5 +23,8 @@ public class GameResponse {
     private Boolean linux;
     private Boolean mature;
     private Integer estimatedOwners;
+    private Integer colorR;
+    private Integer colorG;
+    private Integer colorB;
     private LocalDateTime createdAt;
 }

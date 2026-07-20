@@ -104,4 +104,10 @@ public class GameController {
     public ResponseEntity<ApiResponse<GameResponse>> bySteamId(@PathVariable Integer steamAppId) {
         return ResponseEntity.ok(ApiResponse.ok(gameService.getBySteamAppId(steamAppId)));
     }
+
+    // ponytail: color filter — map color name to RGB range query
+    @GetMapping("/color/{color}")
+    public ResponseEntity<ApiResponse<List<GameResponse>>> byColor(@PathVariable String color) {
+        return ResponseEntity.ok(ApiResponse.ok(gameService.byColor(color)));
+    }
 }
