@@ -18,13 +18,24 @@ import Logo from "./Logo";
 interface HeroVideo {
   videoId: string;
   gameName: string;
+  /**
+   * Secondi da cui far partire il trailer (parametro `start` di YouTube),
+   * per saltare il cartello iniziale "contenuto riservato a un pubblico
+   * maturo" che alcuni trailer hanno incorporato nel video stesso —
+   * non è un age-gate di YouTube (quelli sono esclusi dalla whitelist,
+   * vedi sopra), solo qualche secondo di intro. Va sul singolo video
+   * perché ogni intro ha una durata diversa. Default 0 se assente.
+   */
+  startSeconds?: number;
 }
 
 // Whitelist curata: embed consentito, nessun age-gate/region-lock, gameplay
 // reale (non trailer con loghi/testo in sovraimpressione) — vedi issue #182.
 // Curare/estendere questa lista è una decisione di contenuto, non di codice.
+
 const HERO_VIDEOS: HeroVideo[] = [
-  { videoId: "E3Huy2cdih0", gameName: "ELDEN RING" },
+  // Aggiunti +6s perché il trailer apre con un cartello "contenuto maturo".
+  { videoId: "E3Huy2cdih0", gameName: "ELDEN RING", startSeconds: 6 },
   { videoId: "B9hU6UJX_pc", gameName: "Baldur's Gate 3" },
   { videoId: "N-xHcvug3WI", gameName: "Grand Theft Auto V" },
   { videoId: "pEh2sa13XyU", gameName: "Euro Truck Simulator 2" },
@@ -97,7 +108,7 @@ export default function HeroSection() {
         <div className="absolute inset-0">
           <iframe
             id="hero-video"
-            src={`https://www.youtube.com/embed/${heroVideo.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=${heroVideo.videoId}&showinfo=0&rel=0&modestbranding=1&playsinline=1`}
+            src={`https://www.youtube.com/embed/${heroVideo.videoId}?enablejsapi=1&autoplay=1&mute=1&controls=0&loop=1&playlist=${heroVideo.videoId}&showinfo=0&rel=0&modestbranding=1&playsinline=1&start=${heroVideo.startSeconds ?? 0}`}
             className="absolute top-1/2 left-1/2 min-w-full min-h-full"
             style={{
               width: "100vw",
