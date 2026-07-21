@@ -30,11 +30,14 @@ interface LibraryItemCardProps {
 /**
  * Mostra una voce della libreria utente (backlog).
  *
- * Layout a card singola (non più due <div> separati per copertina+titolo
- * e azioni): copertina a tutta altezza sulla sinistra, informazioni e
- * bottoni impilati sulla destra. Per lo stato "wishlist" il badge di
- * stato viene sostituito da un cuore in alto a destra sulla card, invece
- * di occupare spazio accanto al titolo.
+ * Card a dimensione fissa (w-[488px] h-[122px]): copertina a tutta altezza
+ * sulla sinistra, informazioni e bottoni impilati sulla destra. Il
+ * contenitore è `relative` perché il cuore dello stato "wishlist" è
+ * posizionato `absolute` rispetto alla card stessa (senza `relative` qui,
+ * il cuore finisce ancorato al primo antenato posizionato più esterno e
+ * viene tagliato via da `overflow-hidden` — è così che si era rotto).
+ * Per lo stato "wishlist" il badge di stato viene nascosto e sostituito
+ * dal cuore, invece di mostrare entrambi.
  *
  * NOTA rimossa durante la migrazione TSX: la versione .jsx precedente
  * leggeva un campo `item.inactivityWarning` per mostrare un banner
@@ -57,80 +60,91 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
   // proprio id, non per il gameId collegato. Passare game.id qui
   // modificherebbe/cancellerebbe la voce sbagliata.
   return (
-    <div className="bg-vz-charcoal rounded-xl border border-slate-800 overflow-hidden">
-      <div className="flex gap-3 p-3">
-        <div
-          onClick={(e) => { e.stopPropagation(); navigate({ to: "/games/$id", params: { id: String(item.game.id) } }); }}
-          className="cursor-pointer group"
-        >
-          {item.game.headerImageUrl ? (
-            <img
-              src={item.game.headerImageUrl}
-              alt={item.game.name}
-              className="w-24 aspect-[92/43] object-cover rounded-lg bg-slate-900 flex-shrink-0 group-hover:opacity-80 transition-opacity"
-              loading="lazy"
-            />
-          ) : (
-            <GameCoverPlaceholder
-              name={item.game.name}
-              seed={item.game.id}
-              className="w-24 h-14 rounded-lg flex-shrink-0 group-hover:opacity-80 transition-opacity"
-            />
-          )}
-        </div>
-        <div className="flex-1 min-w-0">
+    <div className="relative bg-vz-charcoal rounded-xl border border-slate-800 overflow-hidden flex gap-2 p-2 w-[488px] h-[122px]">
+      {/* Copertina — self-stretch la fa crescere in altezza fino a
+          combaciare con la colonna di destra. Con la card a dimensione
+          fissa la copertina ha sempre la stessa altezza in ogni vista/
+          stato, invece di dipendere da quanto contenuto ha la colonna
+          di destra. */}
+      <div
+        onClick={(e) => { e.stopPropagation(); navigate({ to: "/games/$id", params: { id: String(item.game.id) } }); }}
+        className="w-28 flex-shrink-0 self-stretch cursor-pointer group"
+      >
+        {item.game.headerImageUrl ? (
+          <img
+            src={item.game.headerImageUrl}
+            alt={item.game.name}
+            className="w-full h-full object-cover rounded-lg bg-slate-900 group-hover:opacity-80 transition-opacity"
+            loading="lazy"
+          />
+        ) : (
+          <GameCoverPlaceholder
+            name={item.game.name}
+            seed={item.game.id}
+            className="w-full h-full rounded-lg group-hover:opacity-80 transition-opacity"
+          />
+        )}
+      </div>
+
+      {/* Info + azioni, colonna destra — dimensione fissa (350x104) così
+          resta identica in ogni vista/stato, indipendentemente da quanti
+          bottoni/badge mostra una determinata voce. */}
+      <div className="w-[350px] h-[104px] flex flex-col justify-between">
+        <div>
           <h3
             onClick={(e) => { e.stopPropagation(); navigate({ to: "/games/$id", params: { id: String(item.game.id) } }); }}
-            className="font-semibold text-white truncate cursor-pointer hover:text-vz-lime transition-colors"
+            className="font-semibold text-white truncate pr-8 cursor-pointer hover:text-vz-lime transition-colors"
           >
             {item.game.name}
           </h3>
-          <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[item.status]}`}>
-            {t(`library.status.${item.status}`)}
-          </span>
+          {!isWishlisted && (
+            <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[item.status]}`}>
+              {t(`library.status.${item.status}`)}
+            </span>
+          )}
         </div>
-      </div>
 
-      {/* Azioni di cambio stato — quali bottoni mostrare dipende dallo stato attuale */}
-      <div className="px-3 pb-3 pt-2 border-t border-slate-800/50 flex flex-wrap gap-2">
-        {item.status === "wishlist" && (
-          <button
-            onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
-            className="text-xs px-3 py-1 rounded-full bg-vz-lime text-vz-navy font-semibold"
-          >
-            {t("library.moveToBacklog")}
-          </button>
-        )}
-        {item.status === "playing" && (
-          <>
+        {/* Azioni di cambio stato — quali bottoni mostrare dipende dallo stato attuale */}
+        <div className="flex flex-wrap gap-2 mt-2">
+          {isWishlisted && (
             <button
-              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "finished"); }}
-              className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
+              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
+              className="text-xs px-3 py-1 rounded-full bg-vz-lime text-vz-navy font-semibold"
             >
-              {t("library.markAsFinished")}
+              {t("library.markAsInProgress")}
             </button>
+          )}
+          {item.status === "playing" && (
+            <>
+              <button
+                onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "finished"); }}
+                className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
+              >
+                {t("library.markAsFinished")}
+              </button>
+              <button
+                onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "abandoned"); }}
+                className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
+              >
+                {t("library.markAsAbandoned")}
+              </button>
+            </>
+          )}
+          {item.status === "abandoned" && (
             <button
-              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "abandoned"); }}
-              className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
+              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
+              className="text-xs px-3 py-1 rounded-full border border-blue-400 text-blue-300"
             >
-              {t("library.markAsAbandoned")}
+              {t("library.markAsInProgress")}
             </button>
-          </>
-        )}
-        {item.status === "abandoned" && (
+          )}
           <button
-            onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
-            className="text-xs px-3 py-1 rounded-full border border-blue-400 text-blue-300"
+            onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
+            className="text-xs px-3 py-1 rounded-full text-slate-500 hover:text-vz-pink"
           >
-            {t("library.markAsInProgress")}
+            {t("library.remove")}
           </button>
-        )}
-        <button
-          onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
-          className="text-xs px-3 py-1 rounded-full text-slate-500 hover:text-vz-pink"
-        >
-          {t("library.remove")}
-        </button>
+        </div>
       </div>
 
       {/* Cuore in alto a destra al posto del badge "In lista dei desideri" —
