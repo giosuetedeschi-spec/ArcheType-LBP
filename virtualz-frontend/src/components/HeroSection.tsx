@@ -35,10 +35,10 @@ interface HeroVideo {
 
 const HERO_VIDEOS: HeroVideo[] = [
   // Aggiunti +6s perché il trailer apre con un cartello "contenuto maturo".
-  { videoId: "E3Huy2cdih0", gameName: "ELDEN RING", startSeconds: 6 },
-  { videoId: "B9hU6UJX_pc", gameName: "Baldur's Gate 3" },
-  { videoId: "N-xHcvug3WI", gameName: "Grand Theft Auto V" },
-  { videoId: "pEh2sa13XyU", gameName: "Euro Truck Simulator 2" },
+  { videoId: "E3Huy2cdih0", gameName: "ELDEN RING", startSeconds: 20 },
+  { videoId: "B9hU6UJX_pc", gameName: "Baldur's Gate 3", startSeconds: 120 },
+  { videoId: "N-xHcvug3WI", gameName: "Grand Theft Auto V", startSeconds: 10 },
+  { videoId: "pEh2sa13XyU", gameName: "Euro Truck Simulator 2", startSeconds: 240  },
 ];
 
 const HERO_VIDEO_SESSION_KEY = "vz-hero-video-id";
