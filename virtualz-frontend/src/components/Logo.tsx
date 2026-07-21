@@ -9,7 +9,7 @@ interface LogoProps {
 
 /**
  * Logo VirtualZ in due varianti:
- * - 'text': wordmark con gradiente blu→rosa ("Virtual") e rosa→lime ("Z")
+ * - 'text': wordmark "VirtualZ" in lime pieno (vz-lime), parola unica.
  * - 'image': gemma sfaccettata SVG inline, gradiente blu→viola allineato
  *   all'attacco del wordmark (stessi anchor di blue-500 → purple-500).
  *   SVG inline al posto del vecchio /logo.png: niente asset da servire,
@@ -23,13 +23,8 @@ export const Logo: React.FC<LogoProps> = ({
 }) => {
   if (variant === 'text') {
     return (
-      <div className={className}>
-        <span className="bg-gradient-to-r from-vz-pink to-slate-100 bg-clip-text text-transparent">
-          Virtual
-        </span>
-        <span className="text-vz-lime">
-          Z
-        </span>
+      <div className={`font-display text-vz-lime ${className}`}>
+        VirtualZ
       </div>
     );
   }
