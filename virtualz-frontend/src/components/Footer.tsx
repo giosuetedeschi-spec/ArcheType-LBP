@@ -37,9 +37,9 @@ export default function Footer() {
           <div>
             <h3 className="font-display font-semibold text-white mb-4">{t("footer.support.title")}</h3>
             <ul className="space-y-2">
-              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.help")}</Link></li>
-              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.contact")}</Link></li>
-              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.privacy")}</Link></li>
+              <li><Link to="/faq" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.help")}</Link></li>
+              <li><Link to="/contact" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.contact")}</Link></li>
+              <li><Link to="/privacy" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.privacy")}</Link></li>
             </ul>
           </div>
         </div>
