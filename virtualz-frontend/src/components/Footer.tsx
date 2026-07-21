@@ -48,7 +48,13 @@ export default function Footer() {
             <Logo className="text-2xl group-hover:scale-105 transition-transform" variant="text" />
           </Link>
           <p className="text-xs text-slate-500 text-center md:text-right">
-            © Archetype Analytics 2025-{currentYear} - Beni G., Digiglio A., Galarza J.G., Tedeschi G., Vurchio L., El Mbimbey M.
+            © Archetype Analytics 2025-{currentYear} -{" "}
+            <a href="https://github.com/girellebenibenj-byte" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">Beni G.</a>,{" "}
+            <a href="https://github.com/annadigiglio-lgtm" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">Digiglio A.</a>,{" "}
+            <a href="https://github.com/joshua-BID" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">Galarza J.G.</a>,{" "}
+            <a href="https://github.com/giosuetedeschi-spec" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">Tedeschi G.</a>,{" "}
+            <a href="https://github.com/LorVur" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">Vurchio L.</a>,{" "}
+            <a href="https://github.com/MDL-CNAKE" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">El Mbimbey M.</a>
           </p>
         </div>
       </div>
