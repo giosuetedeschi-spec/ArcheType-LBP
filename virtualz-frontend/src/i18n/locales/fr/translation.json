@@ -185,7 +185,10 @@
     "cancel": "Annuler",
     "confirm": "Confirmer",
     "language": "Langue",
-    "free": "Gratuit"
+    "free": "Gratuit",
+    "next": "Suivant",
+    "previous": "Précédent",
+    "backToHome": "Retour à l'accueil"
   },
   "home": {
     "tagline": "Bon retour",
@@ -270,5 +273,40 @@
     "pink": "Rose",
     "white": "Blanc",
     "black": "Noir"
+  },
+  "contact": {
+    "title": "Contact"
+  },
+  "faq": {
+    "title": "Centre d'assistance",
+    "intro": "Les questions les plus fréquentes sur VirtualZ. Vous ne trouvez pas ce que vous cherchez ?",
+    "contactLink": "Contactez-nous",
+    "q1": "Comment récupérer le mot de passe de mon compte ?",
+    "a1": "Depuis la page de connexion, cliquez sur \"Mot de passe oublié\" et suivez les instructions envoyées par email.",
+    "q2": "Comment lier mon compte Steam à VirtualZ ?",
+    "a2": "Allez dans Profil → Paramètres et cliquez sur \"Lier Steam\". Vous serez redirigé vers la page d'autorisation de Steam.",
+    "q3": "Pourquoi ne vois-je pas tous mes jeux dans la bibliothèque ?",
+    "a3": "La synchronisation avec Steam peut prendre quelques minutes après la liaison du compte. Si le problème persiste, essayez de relier votre compte depuis les Paramètres.",
+    "q4": "Comment ajouter un jeu à ma liste de souhaits ?",
+    "a4": "Ouvrez la page du jeu dans le Catalogue et cliquez sur l'icône en forme de cœur en haut à droite.",
+    "q5": "Puis-je utiliser VirtualZ sur mobile ?",
+    "a5": "Oui, le site est responsive et fonctionne sur smartphones et tablettes via le navigateur."
+  },
+  "privacy": {
+    "title": "Politique de confidentialité",
+    "lastUpdated": "Dernière mise à jour :",
+    "section1Title": "1. Responsable du traitement",
+    "section1Body": "VirtualZ est un projet développé dans le cadre d'un programme de formation ITS, pour le client fictif Zero Lag S.r.l. Cette politique a un but illustratif et ne constitue pas un document juridiquement contraignant.",
+    "section2Title": "2. Données collectées",
+    "section2Body": "Lors de l'inscription, nous collectons le nom d'utilisateur, l'email et, si vous choisissez de vous connecter via un fournisseur externe, les informations de base du profil (nom d'utilisateur, email, avatar) fournies par Steam ou Google.",
+    "section3Title": "3. Finalité du traitement",
+    "section3Body": "Les données sont utilisées exclusivement pour faire fonctionner votre compte, votre bibliothèque de jeux personnelle, les statistiques de jeu et les fonctionnalités sociales (amis, classements). Elles ne sont jamais partagées avec des tiers ni utilisées à des fins publicitaires.",
+    "section4Title": "4. Conservation des données",
+    "section4Body": "Les données restent associées à votre compte jusqu'à ce que vous demandiez leur suppression, en nous contactant aux adresses indiquées sur la page Contact.",
+    "section5Title": "5. Vos droits",
+    "section5Body": "Vous pouvez demander à tout moment l'accès, la correction ou la suppression de vos données en écrivant à"
+  },
+  "comingSoonPage": {
+    "body": "Cette fonctionnalité est en cours de développement. Revenez bientôt pour découvrir les nouveautés !"
   }
 }

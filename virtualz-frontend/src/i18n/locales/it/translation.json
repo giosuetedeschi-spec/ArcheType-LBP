@@ -185,7 +185,10 @@
     "cancel": "Annulla",
     "confirm": "Conferma",
     "language": "Lingua",
-    "free": "Gratis"
+    "free": "Gratis",
+    "next": "Successivo",
+    "previous": "Precedente",
+    "backToHome": "Torna alla Home"
   },
   "home": {
     "tagline": "Bentornato",
@@ -270,5 +273,40 @@
     "pink": "Rosa",
     "white": "Bianco",
     "black": "Nero"
+  },
+  "contact": {
+    "title": "Contatti"
+  },
+  "faq": {
+    "title": "Centro assistenza",
+    "intro": "Le domande più frequenti su VirtualZ. Non trovi quello che cerchi?",
+    "contactLink": "Contattaci",
+    "q1": "Come recupero la password del mio account?",
+    "a1": "Dalla pagina di login, clicca su \"Password dimenticata\" e segui le istruzioni via email.",
+    "q2": "Come collego il mio account Steam a VirtualZ?",
+    "a2": "Vai su Profilo → Impostazioni e clicca su \"Collega Steam\". Verrai reindirizzato alla pagina di autorizzazione di Steam.",
+    "q3": "Perché non vedo tutti i miei giochi nella libreria?",
+    "a3": "La sincronizzazione con Steam può richiedere qualche minuto dopo il collegamento dell'account. Se il problema persiste, prova a ricollegare l'account da Impostazioni.",
+    "q4": "Come aggiungo un gioco alla Wishlist?",
+    "a4": "Apri la pagina del gioco nel Catalogo e clicca sull'icona a forma di cuore in alto a destra.",
+    "q5": "Posso usare VirtualZ da mobile?",
+    "a5": "Sì, il sito è responsive e funziona da smartphone e tablet tramite il browser."
+  },
+  "privacy": {
+    "title": "Informativa sulla privacy",
+    "lastUpdated": "Ultimo aggiornamento:",
+    "section1Title": "1. Titolare del trattamento",
+    "section1Body": "VirtualZ è un progetto sviluppato nell'ambito di un percorso formativo ITS, per il cliente dimostrativo Zero Lag S.r.l. Questa informativa ha scopo illustrativo e non costituisce un documento legale vincolante.",
+    "section2Title": "2. Dati raccolti",
+    "section2Body": "In fase di registrazione raccogliamo username, email e, se scegli il login tramite provider esterno, le informazioni base del profilo (nome utente, email, avatar) fornite da Steam o Google.",
+    "section3Title": "3. Finalità del trattamento",
+    "section3Body": "I dati vengono usati esclusivamente per far funzionare l'account, la libreria giochi personale, le statistiche di gioco e le funzionalità social (amici, classifiche). Non vengono ceduti a terzi né usati per finalità pubblicitarie.",
+    "section4Title": "4. Conservazione dei dati",
+    "section4Body": "I dati restano associati al tuo account finché non richiedi la cancellazione dello stesso, contattandoci agli indirizzi riportati nella pagina Contatti.",
+    "section5Title": "5. I tuoi diritti",
+    "section5Body": "Puoi richiedere in qualsiasi momento accesso, correzione o cancellazione dei tuoi dati scrivendo a"
+  },
+  "comingSoonPage": {
+    "body": "Questa funzionalità è in fase di sviluppo. Torna presto per scoprire le novità!"
   }
 }
