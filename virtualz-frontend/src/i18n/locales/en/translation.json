@@ -53,6 +53,8 @@
     "platforms": "Platforms",
     "noResults": "No games found with these filters.",
     "loadMore": "Load more",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
     "sortBy": "Sort by",
     "sortRelevance": "Relevance",
     "sortNameAsc": "Name (A-Z)",
@@ -120,8 +122,7 @@
     "searchInLibrary": "Search in your library...",
     "inactivityWarning": "You haven't touched this game in a while. Mark it as abandoned?",
     "confirmAbandon": "Yes, abandon it",
-    "dismissWarning": "No, still playing",
-    "removeTooltip": "Remove"
+    "dismissWarning": "No, still playing"
   },
   "leaderboard": {
     "title": "Leaderboard",

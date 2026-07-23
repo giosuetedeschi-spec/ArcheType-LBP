@@ -53,6 +53,8 @@
     "platforms": "Plataformas",
     "noResults": "No se encontraron juegos con estos filtros.",
     "loadMore": "Cargar más",
+    "previousPage": "Página anterior",
+    "nextPage": "Página siguiente",
     "sortBy": "Ordenar por",
     "sortRelevance": "Relevancia",
     "sortNameAsc": "Nombre (A-Z)",
@@ -120,8 +122,7 @@
     "searchInLibrary": "Buscar en tu biblioteca...",
     "inactivityWarning": "No has tocado este juego en un tiempo. ¿Lo marcas como abandonado?",
     "confirmAbandon": "Sí, abandonarlo",
-    "dismissWarning": "No, todavía juego",
-    "removeTooltip": "Quitar"
+    "dismissWarning": "No, todavía juego"
   },
   "leaderboard": {
     "title": "Clasificación",
