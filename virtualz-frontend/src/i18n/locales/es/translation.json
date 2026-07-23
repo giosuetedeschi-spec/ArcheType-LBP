@@ -122,7 +122,8 @@
     "searchInLibrary": "Buscar en tu biblioteca...",
     "inactivityWarning": "No has tocado este juego en un tiempo. ¿Lo marcas como abandonado?",
     "confirmAbandon": "Sí, abandonarlo",
-    "dismissWarning": "No, todavía juego"
+    "dismissWarning": "No, todavía juego",
+    "removeTooltip": "Quitar"
   },
   "leaderboard": {
     "title": "Clasificación",
