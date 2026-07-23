@@ -131,7 +131,7 @@ export default function HeroSection() {
       {/* Hero content */}
       <div className="relative z-10 h-full flex flex-col items-center justify-center px-4 text-center">
         <div className="animate-fade-in-up mb-6">
-          <Logo className="text-5xl sm:text-6xl md:text-7xl" variant="text" />
+          <Logo className="text-7xl sm:text-8xl md:text-9xl" variant="text" />
         </div>
 
         <p

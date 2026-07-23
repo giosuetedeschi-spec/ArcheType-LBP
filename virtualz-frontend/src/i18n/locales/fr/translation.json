@@ -53,6 +53,8 @@
     "platforms": "Plateformes",
     "noResults": "Aucun jeu trouvé avec ces filtres.",
     "loadMore": "Charger plus",
+    "previousPage": "Page précédente",
+    "nextPage": "Page suivante",
     "sortBy": "Trier par",
     "sortRelevance": "Pertinence",
     "sortNameAsc": "Nom (A-Z)",

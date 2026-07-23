@@ -60,7 +60,7 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
   // proprio id, non per il gameId collegato. Passare game.id qui
   // modificherebbe/cancellerebbe la voce sbagliata.
   return (
-    <div className="relative bg-vz-charcoal rounded-xl border border-slate-800 overflow-hidden flex gap-2 p-2 w-[488px] h-[122px]">
+    <div className="relative bg-vz-charcoal rounded-xl border border-slate-800 overflow-hidden flex gap-2 p-2 w-full min-h-[122px]">
       {/* Copertina — self-stretch la fa crescere in altezza fino a
           combaciare con la colonna di destra. Con la card a dimensione
           fissa la copertina ha sempre la stessa altezza in ogni vista/
@@ -86,10 +86,12 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
         )}
       </div>
 
-      {/* Info + azioni, colonna destra — dimensione fissa (350x104) così
-          resta identica in ogni vista/stato, indipendentemente da quanti
-          bottoni/badge mostra una determinata voce. */}
-      <div className="w-[350px] h-[104px] flex flex-col justify-between">
+      {/* Info + azioni, colonna destra — flessibile (flex-1 + min-w-0) invece
+          che a dimensione fissa, così la card si adatta a ogni larghezza di
+          viewport senza sovrapporre testo e cestino (era il problema sotto
+          i ~1000px). min-h-[104px] mantiene comunque un'altezza minima
+          coerente quando il contenuto è poco. */}
+      <div className="flex-1 min-w-0 min-h-[104px] flex flex-col justify-between">
         <div>
           <h3
             onClick={(e) => { e.stopPropagation(); navigate({ to: "/games/$id", params: { id: String(item.game.id) } }); }}
@@ -104,8 +106,11 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
           )}
         </div>
 
-        {/* Azioni di cambio stato — quali bottoni mostrare dipende dallo stato attuale */}
-        <div className="flex flex-wrap gap-2 mt-2">
+        {/* Azioni di cambio stato — quali bottoni mostrare dipende dallo stato attuale.
+            pr-9 riserva lo spazio del cestino (assoluto in basso a destra):
+            se un'etichetta tradotta è troppo lunga per stare sulla riga senza
+            invadere quello spazio, va semplicemente a capo invece di finirci sotto. */}
+        <div className="flex flex-wrap gap-2 mt-2 pr-9">
           {isWishlisted && (
             <button
               onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
