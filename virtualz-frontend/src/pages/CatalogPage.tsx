@@ -168,7 +168,7 @@ export default function CatalogPage() {
     setLoading(true);
     setError(null);
     try {
-      const params: CatalogSearchParams = { page, size: 20 };
+      const params: CatalogSearchParams = { page, size: 24 };
       if (filters.search) params.name = filters.search;
       if (filters.genre) params.genre = filters.genre;
       if (filters.minPrice) params.minPrice = Number(filters.minPrice);
@@ -531,23 +531,53 @@ export default function CatalogPage() {
           )}
 
           {/* Paginazione */}
-          {!loading && !error && totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2 mt-10 flex-wrap">
-              {Array.from({ length: Math.min(totalPages, 10) }).map((_, i) => (
+          {!loading && !error && totalPages > 1 && (() => {
+            // Finestra di massimo 10 numeri di pagina centrata sulla pagina
+            // corrente, così da non fermarsi più fissa alla pagina 10: quando
+            // si va avanti la finestra scorre insieme alla pagina attiva.
+            const windowSize = Math.min(totalPages, 10);
+            const windowStart = Math.max(
+              0,
+              Math.min(page - Math.floor(windowSize / 2), totalPages - windowSize)
+            );
+            const pageNumbers = Array.from({ length: windowSize }, (_, i) => windowStart + i);
+
+            return (
+              <div className="flex justify-center items-center gap-2 mt-10 flex-wrap">
                 <button
-                  key={i}
-                  onClick={() => setPage(i)}
-                  className={`w-9 h-9 rounded-full text-sm transition-colors ${
-                    i === page
-                      ? "bg-vz-lime text-vz-navy font-semibold"
-                      : "text-slate-400 hover:text-white hover:bg-vz-charcoal"
-                  }`}
+                  onClick={() => setPage((p) => Math.max(0, p - 1))}
+                  disabled={page === 0}
+                  aria-label={t("catalog.previousPage")}
+                  className="w-9 h-9 rounded-full text-sm text-slate-400 hover:text-white hover:bg-vz-charcoal transition-colors disabled:opacity-30 disabled:pointer-events-none"
                 >
-                  {i + 1}
+                  ‹
                 </button>
-              ))}
-            </div>
-          )}
+
+                {pageNumbers.map((i) => (
+                  <button
+                    key={i}
+                    onClick={() => setPage(i)}
+                    className={`w-9 h-9 rounded-full text-sm transition-colors ${
+                      i === page
+                        ? "bg-vz-lime text-vz-navy font-semibold"
+                        : "text-slate-400 hover:text-white hover:bg-vz-charcoal"
+                    }`}
+                  >
+                    {i + 1}
+                  </button>
+                ))}
+
+                <button
+                  onClick={() => setPage((p) => Math.min(totalPages - 1, p + 1))}
+                  disabled={page >= totalPages - 1}
+                  aria-label={t("catalog.nextPage")}
+                  className="w-9 h-9 rounded-full text-sm text-slate-400 hover:text-white hover:bg-vz-charcoal transition-colors disabled:opacity-30 disabled:pointer-events-none"
+                >
+                  ›
+                </button>
+              </div>
+            );
+          })()}
         </div>
       </div>
     </div>
