@@ -155,7 +155,7 @@ export default function HeroSection() {
           {!isAuthenticated && (
             <Link
               to="/register"
-              className="px-10 py-4 rounded-full border-2 border-slate-300/70 text-slate-100 font-semibold text-lg hover:bg-white hover:text-vz-navy transition-all duration-200"
+              className="px-10 py-4 rounded-full border-2 border-vz-pink text-vz-pink font-semibold text-lg hover:bg-vz-pink hover:text-vz-navy transition-all duration-200"
             >
               {t("home.getStarted")}
             </Link>

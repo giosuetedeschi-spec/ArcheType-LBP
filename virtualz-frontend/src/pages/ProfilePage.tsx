@@ -160,7 +160,8 @@ export default function ProfilePage() {
       <div className="mb-8">
         {steamLinked ? (
           <span className="inline-flex items-center gap-2 text-sm text-slate-400">
-            🎮 {t("profile.steamLinked")}
+            <img src="https://cdn.simpleicons.org/steam/94a3b8" alt="Steam" className="h-4 w-4" />
+            {t("profile.steamLinked")}
           </span>
         ) : (
           <button
@@ -171,7 +172,8 @@ export default function ProfilePage() {
             }}
             className="inline-flex items-center gap-2 text-sm rounded-lg bg-[#1b2838] px-4 py-2 text-white hover:bg-[#2a475e] transition-colors"
           >
-            🎮 {t("profile.linkSteam")}
+            <img src="https://cdn.simpleicons.org/steam/white" alt="Steam" className="h-4 w-4" />
+            {t("profile.linkSteam")}
           </button>
         )}
       </div>
