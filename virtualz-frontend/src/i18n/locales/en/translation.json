@@ -53,6 +53,8 @@
     "platforms": "Platforms",
     "noResults": "No games found with these filters.",
     "loadMore": "Load more",
+    "previousPage": "Previous page",
+    "nextPage": "Next page",
     "sortBy": "Sort by",
     "sortRelevance": "Relevance",
     "sortNameAsc": "Name (A-Z)",
