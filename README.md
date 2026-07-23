@@ -27,11 +27,16 @@ ArcheType-LBP è un'applicazione web per organizzare, esplorare e gestire la tua
 
 | Layer | Tecnologia |
 |---|---|
-| **Frontend** | React + Vite + TypeScript, shadcn/ui, Tailwind CSS |
-| **Backend** | Java Spring Boot |
-| **Database** | PostgreSQL 17 |
-| **API** | REST API
-| **Auth** | JWT + session management |
+| **Frontend** | React 19 + Vite + TypeScript, Tailwind CSS v4 |
+| **Routing / Data** | TanStack Router, TanStack Query |
+| **i18n** | i18next / react-i18next (IT, EN, FR, ES) |
+| **Icone** | lucide-react, Simple Icons (loghi Steam/Google) |
+| **Backend** | Java 21 + Spring Boot 3.3 (Web, Data JPA, Security, Validation, Cache) |
+| **Database** | PostgreSQL 18 |
+| **Migrazioni schema** | Flyway |
+| **Cache** | Caffeine |
+| **API** | REST API |
+| **Auth** | JWT (JJWT) — login email/username, Steam (OpenID, funzionante), Google (mock — richiede credenziali reali per il flusso completo) |
 | **Container** | Docker Compose (frontend + backend + DB + populate) |
 
 ---
@@ -40,25 +45,37 @@ ArcheType-LBP è un'applicazione web per organizzare, esplorare e gestire la tua
 
 ```
 ArcheType-LBP/
-├── virtualz-frontend/      # React SPA (Vite + TypeScript)
+├── virtualz-frontend/       # React SPA (Vite + TypeScript)
 │   ├── src/
-│   │   ├── components/      # Componenti UI (shadcn/ui + custom)
-│   │   ├── routes/          # Pagine dell'app (catalog, library, ...)
-│   │   ├── lib/             # Utilities, API client, store
-│   │   └── hooks/           # Custom React hooks
+│   │   ├── components/      # Componenti UI riusabili
+│   │   ├── pages/            # Pagine (Home, Catalogo, Libreria, Profilo, ...)
+│   │   ├── routes/            # Definizioni route (TanStack Router)
+│   │   ├── context/           # React context (Auth, ...)
+│   │   ├── services/          # Client API (axios)
+│   │   ├── i18n/               # Traduzioni IT/EN/FR/ES
+│   │   ├── lib/                 # Utility varie
+│   │   ├── types/               # Tipi TypeScript condivisi
+│   │   └── test/                 # Setup/utility di test (Vitest)
+│   ├── public/               # Asset statici (favicon, immagini)
 │   ├── Dockerfile
 │   └── nginx.conf
-├── backend/                 # Spring Boot API
+├── backend/                  # Spring Boot API
 │   └── src/main/java/com/archetype/lbp/
-│       ├── controller/     # REST controllers
-│       ├── service/        # Business logic
-│       ├── repository/     # JPA repositories
-│       └── model/          # Entità JPA
-├── db/                      # Database schema (init.sql)
-├── scripts/                 # Popolamento DB, test Steam API, analisi colori
+│       ├── controller/       # REST controller
+│       ├── service/           # Business logic
+│       ├── repository/         # Repository JPA
+│       ├── model/               # Entità JPA
+│       ├── dto/                  # Data Transfer Object
+│       ├── security/              # JWT, filtri, OAuth Steam
+│       ├── config/                 # Configurazione (Security, CORS, ...)
+│       ├── exception/               # Gestione errori centralizzata
+│       └── util/                     # Utility (es. palette colori copertine)
+│   └── src/main/resources/db/migration/  # Migrazioni schema (Flyway)
+├── db/                        # Schema iniziale Docker (init.sql, initdb.d/)
+├── scripts/                    # Popolamento DB, test Steam API, analisi colori
+├── docs/                        # Documentazione tecnica di dettaglio
 ├── docker-compose.yml
-├
-└── Palette colori proposta.md # Design system colori
+└── README.md
 ```
 
 ---
@@ -164,11 +181,11 @@ Questo progetto è in **sviluppo attivo**. Le funzionalità sono implementate in
 
 | Fase | Stato |
 |---|---|
-| 🗄️ Database & Modellazione | 🟠 In corso |
-| 🔧 Backend API | 🟠 In corso |
-| 🎨 Frontend Pagine | ⏳ Pianificato |
-| 🔐 Autenticazione | ⏳ Pianificato |
-| 🌐 i18n & Accessibilità | 🟠 In corso |
+| 🗄️ Database & Modellazione | ✅ Completato |
+| 🔧 Backend API | ✅ Completato |
+| 🎨 Frontend Pagine | ✅ Completato |
+| 🔐 Autenticazione | 🟠 In corso (email/username + Steam funzionanti, Google in mock) |
+| 🌐 i18n & Accessibilità | ✅ Completato (IT/EN/FR/ES, modalità colorblind) |
 
 Legend: ✅ Completato | 🟠 In corso | ⏳ Pianificato
 

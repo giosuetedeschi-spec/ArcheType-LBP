@@ -17,7 +17,6 @@ import { API_BASE_URL } from "../services/api";
  * accantonato per ora in attesa di credenziali reali — vedi issue #268 —
  * per non bloccare la scadenza del 28/07 su una dipendenza esterna.
  *
- * @see docs/auth-steam-google.md — design dell'autenticazione OAuth
  * @see docs/DOCS_MOCK_GOOGLE_AUTH.md — perché il mock Google
  * @see issue #249 — loghi ufficiali bottoni OAuth
  */
@@ -69,7 +68,7 @@ export default function OAuthButtons() {
         <button
           type="button"
           onClick={handleGoogleLogin}
-          className="w-full flex items-center justify-center gap-3 rounded-lg border border-slate-700 bg-vz-charcoal px-4 py-2.5 text-sm font-medium text-slate-300 hover:bg-slate-800 transition-colors cursor-pointer"
+          className="w-full flex items-center justify-center gap-3 rounded-lg bg-[#1b2838] px-4 py-2.5 text-sm font-medium text-white hover:bg-[#2a475e] transition-colors"
         >
           <img src="https://cdn.simpleicons.org/google" alt="Google" className="h-5 w-5" />
           {t("auth.continueWithGoogle") || "Continua con Google"}

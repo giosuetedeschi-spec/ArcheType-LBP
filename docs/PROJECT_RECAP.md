@@ -46,7 +46,6 @@ ArcheType-LBP/
 ├── scripts/                # Popolamento DB da dataset Steam, test Steam API, analisi colori
 ├── Marguerite_Datasets/    # Original dataset exploration (games.csv ~390MB, games.json, steam_games.db)
 ├── docs/                   # Feature-specific docs (auth, colorblind, wishlist, steam purchase, game detail)
-├── SUPABASE.md             # Migration guide: Spring Boot → Supabase BaaS
 ├── FRONTEND_ARCHITECTURE.md # Layout, component hierarchy, data flow
 ├── docker-compose.yml      # 4-service orchestration
 └── API_REFERENCE.md        # Full REST endpoint documentation
@@ -143,14 +142,6 @@ The `scripts/populate_db.py` script:
 2. Cleans data (dedup by steam_app_id, normalizes column names)
 3. Batch-inserts games into the `games` table using `psycopg2.extras.execute_values`
 4. Uses `ON CONFLICT DO NOTHING` for idempotent inserts
-
-### Supabase Migration Path
-
-There's a detailed migration plan (`SUPABASE.md`) to replace the Spring Boot backend entirely with **Supabase** (PostgreSQL BaaS), which would:
-- Eliminate the Java backend (~512MB RAM → 0)
-- Auto-generate REST/GraphQL APIs from the schema
-- Provide built-in auth, real-time WebSocket, and row-level security
-- Deploy frontend to Vercel with Supabase free tier
 
 ---
 
