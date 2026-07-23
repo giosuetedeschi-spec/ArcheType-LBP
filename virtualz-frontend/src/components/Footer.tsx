@@ -37,16 +37,24 @@ export default function Footer() {
           <div>
             <h3 className="font-display font-semibold text-white mb-4">{t("footer.support.title")}</h3>
             <ul className="space-y-2">
-              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.help")}</Link></li>
-              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.contact")}</Link></li>
-              <li><Link to="/coming-soon" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.privacy")}</Link></li>
+              <li><Link to="/faq" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.help")}</Link></li>
+              <li><Link to="/contact" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.contact")}</Link></li>
+              <li><Link to="/privacy" className="text-sm text-slate-400 hover:text-vz-lime transition-colors">{t("footer.support.privacy")}</Link></li>
             </ul>
           </div>
         </div>
         <div className="border-t border-slate-800 pt-8 flex flex-col md:flex-row items-center justify-between gap-4">
-          <Logo className="text-2xl" variant="text" />
+          <Link to="/" className="group shrink-0">
+            <Logo className="text-2xl group-hover:scale-105 transition-transform" variant="text" />
+          </Link>
           <p className="text-xs text-slate-500 text-center md:text-right">
-            © Archetype Analytics 2025-{currentYear} - Beni G., Digiglio A., Galarza J.G., Tedeschi G., Vurchio L., El Mbimbey M.
+            © Archetype Analytics 2025-{currentYear} -{" "}
+            <a href="https://github.com/girellebenibenj-byte" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">Beni G.</a>,{" "}
+            <a href="https://github.com/annadigiglio-lgtm" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">Digiglio A.</a>,{" "}
+            <a href="https://github.com/joshua-BID" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">Galarza J.G.</a>,{" "}
+            <a href="https://github.com/giosuetedeschi-spec" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">Tedeschi G.</a>,{" "}
+            <a href="https://github.com/LorVur" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">Vurchio L.</a>,{" "}
+            <a href="https://github.com/MDL-CNAKE" target="_blank" rel="noopener noreferrer" className="hover:text-vz-lime transition-colors">El Mbimbey M.</a>
           </p>
         </div>
       </div>

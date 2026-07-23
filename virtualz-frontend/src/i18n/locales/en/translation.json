@@ -47,6 +47,7 @@
     "searchPlaceholder": "Search a game...",
     "filters": "Filters",
     "genre": "Genre",
+    "color": "Color",
     "minPrice": "Min price",
     "maxPrice": "Max price",
     "platforms": "Platforms",
@@ -184,7 +185,10 @@
     "cancel": "Cancel",
     "confirm": "Confirm",
     "language": "Language",
-    "free": "Free"
+    "free": "Free",
+    "next": "Next",
+    "previous": "Previous",
+    "backToHome": "Back to Home"
   },
   "home": {
     "tagline": "Welcome back",
@@ -256,5 +260,53 @@
     "earlyAccess": "Early Access",
     "freeToPlay": "Free to Play",
     "massivelyMultiplayer": "Massively Multiplayer"
+  },
+  "colors": {
+    "green": "Green",
+    "red": "Red",
+    "blue": "Blue",
+    "yellow": "Yellow",
+    "purple": "Purple",
+    "orange": "Orange",
+    "cyan": "Cyan",
+    "brown": "Brown",
+    "pink": "Pink",
+    "white": "White",
+    "black": "Black"
+  },
+  "contact": {
+    "title": "Contact"
+  },
+  "faq": {
+    "title": "Help Center",
+    "intro": "Frequently asked questions about VirtualZ. Can't find what you're looking for?",
+    "contactLink": "Contact us",
+    "q1": "How do I recover my account password?",
+    "a1": "From the login page, click \"Forgot password\" and follow the instructions sent by email.",
+    "q2": "How do I link my Steam account to VirtualZ?",
+    "a2": "Go to Profile → Settings and click \"Link Steam\". You'll be redirected to Steam's authorization page.",
+    "q3": "Why can't I see all my games in the library?",
+    "a3": "Syncing with Steam can take a few minutes after linking your account. If the issue persists, try relinking your account from Settings.",
+    "q4": "How do I add a game to my Wishlist?",
+    "a4": "Open the game's page in the Catalog and click the heart icon in the top right corner.",
+    "q5": "Can I use VirtualZ on mobile?",
+    "a5": "Yes, the site is responsive and works on smartphones and tablets through the browser."
+  },
+  "privacy": {
+    "title": "Privacy Policy",
+    "lastUpdated": "Last updated:",
+    "section1Title": "1. Data Controller",
+    "section1Body": "VirtualZ is a project developed as part of an ITS training program, for the fictional client Zero Lag S.r.l. This policy is illustrative and does not constitute a legally binding document.",
+    "section2Title": "2. Data We Collect",
+    "section2Body": "During registration we collect username, email, and, if you choose to log in via an external provider, basic profile information (username, email, avatar) provided by Steam or Google.",
+    "section3Title": "3. Purpose of Processing",
+    "section3Body": "Data is used exclusively to run your account, your personal game library, gameplay statistics, and social features (friends, leaderboards). It is never shared with third parties or used for advertising.",
+    "section4Title": "4. Data Retention",
+    "section4Body": "Data remains linked to your account until you request its deletion, by contacting us at the addresses listed on the Contact page.",
+    "section5Title": "5. Your Rights",
+    "section5Body": "You can request access, correction, or deletion of your data at any time by writing to"
+  },
+  "comingSoonPage": {
+    "body": "This feature is under development. Check back soon to discover what's new!"
   }
 }

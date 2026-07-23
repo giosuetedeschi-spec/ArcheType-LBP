@@ -1,3 +1,4 @@
+import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { Heart } from "lucide-react";
 import type { LibraryItem, LibraryStatus } from "@/types/api";
@@ -29,11 +30,14 @@ interface LibraryItemCardProps {
 /**
  * Mostra una voce della libreria utente (backlog).
  *
- * Layout a card singola (non più due <div> separati per copertina+titolo
- * e azioni): copertina a tutta altezza sulla sinistra, informazioni e
- * bottoni impilati sulla destra. Per lo stato "wishlist" il badge di
- * stato viene sostituito da un cuore in alto a destra sulla card, invece
- * di occupare spazio accanto al titolo.
+ * Card a dimensione fissa (w-[488px] h-[122px]): copertina a tutta altezza
+ * sulla sinistra, informazioni e bottoni impilati sulla destra. Il
+ * contenitore è `relative` perché il cuore dello stato "wishlist" è
+ * posizionato `absolute` rispetto alla card stessa (senza `relative` qui,
+ * il cuore finisce ancorato al primo antenato posizionato più esterno e
+ * viene tagliato via da `overflow-hidden` — è così che si era rotto).
+ * Per lo stato "wishlist" il badge di stato viene nascosto e sostituito
+ * dal cuore, invece di mostrare entrambi.
  *
  * NOTA rimossa durante la migrazione TSX: la versione .jsx precedente
  * leggeva un campo `item.inactivityWarning` per mostrare un banner
@@ -48,6 +52,7 @@ interface LibraryItemCardProps {
  */
 export default function LibraryItemCard({ item, onStatusChange, onRemove }: LibraryItemCardProps) {
   const { t } = useTranslation();
+  const navigate = useNavigate();
   const isWishlisted = item.status === "wishlist";
 
   // IMPORTANTE: passiamo sempre item.id (l'id della VOCE di backlog),
@@ -58,19 +63,26 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
     <div className="relative bg-vz-charcoal rounded-xl border border-slate-800 overflow-hidden flex gap-2 p-2 w-[488px] h-[122px]">
       {/* Copertina — self-stretch la fa crescere in altezza fino a
           combaciare con la colonna di destra. Con la card a dimensione
-          fissa (w-[488px] h-[122px]) la copertina ha sempre la stessa
-          altezza in ogni vista/stato, invece di dipendere da quanto
-          contenuto ha la colonna di destra. */}
-      <div className="w-28 flex-shrink-0 self-stretch">
+          fissa la copertina ha sempre la stessa altezza in ogni vista/
+          stato, invece di dipendere da quanto contenuto ha la colonna
+          di destra. */}
+      <div
+        onClick={(e) => { e.stopPropagation(); navigate({ to: "/games/$id", params: { id: String(item.game.id) } }); }}
+        className="w-28 flex-shrink-0 self-stretch cursor-pointer group"
+      >
         {item.game.headerImageUrl ? (
           <img
             src={item.game.headerImageUrl}
             alt={item.game.name}
-            className="w-full h-full object-cover rounded-lg bg-slate-900"
+            className="w-full h-full object-cover rounded-lg bg-slate-900 group-hover:opacity-80 transition-opacity"
             loading="lazy"
           />
         ) : (
-          <GameCoverPlaceholder name={item.game.name} seed={item.game.id} className="w-full h-full rounded-lg" />
+          <GameCoverPlaceholder
+            name={item.game.name}
+            seed={item.game.id}
+            className="w-full h-full rounded-lg group-hover:opacity-80 transition-opacity"
+          />
         )}
       </div>
 
@@ -79,7 +91,12 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
           bottoni/badge mostra una determinata voce. */}
       <div className="w-[350px] h-[104px] flex flex-col justify-between">
         <div>
-          <h3 className="font-semibold text-white truncate pr-8">{item.game.name}</h3>
+          <h3
+            onClick={(e) => { e.stopPropagation(); navigate({ to: "/games/$id", params: { id: String(item.game.id) } }); }}
+            className="font-semibold text-white truncate pr-8 cursor-pointer hover:text-vz-lime transition-colors"
+          >
+            {item.game.name}
+          </h3>
           {!isWishlisted && (
             <span className={`inline-block mt-1 text-xs px-2 py-0.5 rounded-full ${STATUS_COLORS[item.status]}`}>
               {t(`library.status.${item.status}`)}
@@ -91,7 +108,7 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
         <div className="flex flex-wrap gap-2 mt-2">
           {isWishlisted && (
             <button
-              onClick={() => onStatusChange(item.id, "playing")}
+              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
               className="text-xs px-3 py-1 rounded-full bg-vz-lime text-vz-navy font-semibold"
             >
               {t("library.markAsInProgress")}
@@ -100,13 +117,13 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
           {item.status === "playing" && (
             <>
               <button
-                onClick={() => onStatusChange(item.id, "finished")}
+                onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "finished"); }}
                 className="text-xs px-3 py-1 rounded-full border border-vz-lime text-vz-lime"
               >
                 {t("library.markAsFinished")}
               </button>
               <button
-                onClick={() => onStatusChange(item.id, "abandoned")}
+                onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "abandoned"); }}
                 className="text-xs px-3 py-1 rounded-full border border-slate-600 text-slate-400"
               >
                 {t("library.markAsAbandoned")}
@@ -115,14 +132,14 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
           )}
           {item.status === "abandoned" && (
             <button
-              onClick={() => onStatusChange(item.id, "playing")}
+              onClick={(e) => { e.stopPropagation(); onStatusChange(item.id, "playing"); }}
               className="text-xs px-3 py-1 rounded-full border border-blue-400 text-blue-300"
             >
               {t("library.markAsInProgress")}
             </button>
           )}
           <button
-            onClick={() => onRemove(item.id)}
+            onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
             className="text-xs px-3 py-1 rounded-full text-slate-500 hover:text-vz-pink"
           >
             {t("library.remove")}

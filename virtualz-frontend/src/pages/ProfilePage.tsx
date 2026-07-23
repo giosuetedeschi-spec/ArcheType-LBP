@@ -37,6 +37,7 @@ export default function ProfilePage() {
   const [leaderboard, setLeaderboard] = useState<LeaderboardResponse | null>(null);
   const [myReviews, setMyReviews] = useState<Review[]>([]);
   const [steamLinked, setSteamLinked] = useState(false);
+  const [avatarUrl, setAvatarUrl] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
@@ -80,6 +81,7 @@ export default function ProfilePage() {
       setLeaderboard(leaderboardResult);
       setMyReviews(myReviewsResult);
       setSteamLinked(myProfile.steamLinked);
+      setAvatarUrl(myProfile.avatarUrl);
 
       // Statistiche per ogni amico (giochi posseduti/in corso), in
       // parallelo — stesso pattern usato in FriendsPage.tsx.
@@ -137,9 +139,9 @@ export default function ProfilePage() {
   if (!user) return null;
 
   return (
-    <div className="max-w-4xl mx-auto px-4 py-8">
+    <div className="max-w-5xl mx-auto px-4 py-8">
       <div className="flex items-center gap-4 mb-4">
-        <Avatar username={user.username} size={64} variant="lime" className="text-2xl" />
+        <Avatar username={user.username} avatarUrl={avatarUrl} size={64} variant="lime" className="text-2xl" />
         <div>
           <h1 className="text-2xl font-display font-bold text-white">{user.username}</h1>
           <p className="text-sm text-slate-400">{t("stats.title")}</p>
@@ -158,7 +160,8 @@ export default function ProfilePage() {
       <div className="mb-8">
         {steamLinked ? (
           <span className="inline-flex items-center gap-2 text-sm text-slate-400">
-            🎮 {t("profile.steamLinked")}
+            <img src="https://cdn.simpleicons.org/steam/94a3b8" alt="Steam" className="h-4 w-4" />
+            {t("profile.steamLinked")}
           </span>
         ) : (
           <button
@@ -169,7 +172,8 @@ export default function ProfilePage() {
             }}
             className="inline-flex items-center gap-2 text-sm rounded-lg bg-[#1b2838] px-4 py-2 text-white hover:bg-[#2a475e] transition-colors"
           >
-            🎮 {t("profile.linkSteam")}
+            <img src="https://cdn.simpleicons.org/steam/white" alt="Steam" className="h-4 w-4" />
+            {t("profile.linkSteam")}
           </button>
         )}
       </div>
@@ -293,12 +297,12 @@ export default function ProfilePage() {
                     key={review.id}
                     to="/games/$id"
                     params={{ id: String(review.gameId) }}
-                    className="flex items-center gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-3 hover:border-vz-lime transition-colors"
+                    className="flex items-center gap-3 bg-vz-charcoal rounded-xl border border-slate-800 p-2 hover:border-vz-lime transition-colors"
                   >
                     <img
                       src={review.gameHeaderImageUrl || "https://placehold.co/120x67/111827/ffffff?text=No+Image"}
                       alt={review.gameName}
-                      className="w-20 aspect-[92/43] object-cover rounded-lg bg-slate-900 shrink-0"
+                      className="w-30 aspect-[92/43] object-cover rounded-lg bg-slate-900 shrink-0"
                     />
                     <div className="min-w-0 flex-1">
                       <p className="text-white font-medium truncate">{review.gameName}</p>

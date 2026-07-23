@@ -91,7 +91,7 @@ export default function Navbar() {
         {/* Logo + payoff, sempre cliccabile verso la home */}
         {/* Logo, sempre cliccabile verso la home */}
         <Link to="/" className="group shrink-0">
-          <Logo size={64} className="group-hover:scale-105 transition-transform" />
+          <Logo size={44} className="group-hover:scale-105 transition-transform" />
         </Link>
 
         {/* Menu di navigazione principale — visibile da lg in su, indipendentemente dal login.

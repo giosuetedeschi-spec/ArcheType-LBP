@@ -9,11 +9,10 @@ interface LogoProps {
 
 /**
  * Logo VirtualZ in due varianti:
- * - 'text': wordmark con gradiente blu→rosa ("Virtual") e rosa→lime ("Z")
- * - 'image': gemma sfaccettata SVG inline, gradiente blu→viola allineato
- *   all'attacco del wordmark (stessi anchor di blue-500 → purple-500).
- *   SVG inline al posto del vecchio /logo.png: niente asset da servire,
- *   scala nitida a ogni size e colori sincronizzati col brand.
+ * - 'text': wordmark "VirtualZ" in lime pieno (vz-lime), parola unica.
+ * - 'image': forma reale del logo di Lorenzo (tracciata dal PNG originale),
+ *   gradiente lime→blu (vz-lime → sky-400) invece del teal/verde originale
+ *   — versione approvata da Giosuè. Vedi issue #220.
  */
 export const Logo: React.FC<LogoProps> = ({
   size = 64,
@@ -23,40 +22,51 @@ export const Logo: React.FC<LogoProps> = ({
 }) => {
   if (variant === 'text') {
     return (
-      <div className={className}>
-        <span className="bg-gradient-to-r from-vz-pink to-slate-100 bg-clip-text text-transparent">
-          Virtual
-        </span>
-        <span className="text-vz-lime">
-          Z
-        </span>
+      <div className={`font-display text-vz-lime ${className}`}>
+        VirtualZ
       </div>
     );
   }
-
   return (
     <svg
-      viewBox="0 0 64 64"
+      viewBox="0 0 253.761737 290.607621"
       role="img"
       aria-label="VirtualZ Logo"
       style={{
         width: size,
         height: size,
-        filter: glow ? 'drop-shadow(0 0 8px rgba(99, 102, 241, 0.6))' : 'none',
+        filter: glow ? 'drop-shadow(0 0 8px rgba(56, 189, 248, 0.5))' : 'none',
       }}
       className={className}
     >
       <defs>
-        <linearGradient id="vz-gem" x1="0" y1="0" x2="1" y2="1">
-          <stop offset="0" stopColor="#ff66c4" />
-          <stop offset="1" stopColor="#a855f7" />
+        <linearGradient id="vz-gem-lime-blue" gradientUnits="userSpaceOnUse" x1="1265" y1="3965" x2="3803" y2="1077">
+          <stop offset="0" stopColor="#e1f16b" />
+          <stop offset="1" stopColor="#38bdf8" />
         </linearGradient>
       </defs>
-      <polygon points="32,6 53,15 53,31 32,58 11,31 11,15" fill="url(#vz-gem)" />
-      <polygon points="11,15 32,6 32,24" fill="#fff" opacity="0.22" />
-      <polygon points="53,15 32,6 32,24" fill="#0f1729" opacity="0.18" />
-      <polygon points="11,15 11,31 32,58 32,24" fill="#fff" opacity="0.10" />
-      <polygon points="53,15 53,31 32,58 32,24" fill="#0f1729" opacity="0.28" />
+      <g transform="translate(-126.500000,397.974533) scale(0.100000,-0.100000)" fill="url(#vz-gem-lime-blue)" stroke="none">
+        <path d="M2358 3914 c-103 -94 -219 -206 -216 -209 2 -2 41 4 88 12 123 21
+358 13 464 -16 137 -38 251 -99 361 -194 l39 -34 -61 -109 c-56 -101 -154
+-282 -178 -329 -10 -19 -21 -20 -345 -20 l-335 0 -35 68 c-19 37 -42 72 -50
+77 -24 15 -270 13 -269 -2 0 -7 42 -96 92 -198 l92 -185 502 -3 501 -2 57 107
+c32 60 75 140 96 178 160 299 249 471 249 485 0 17 -90 97 -222 197 -165 126
+-341 196 -573 228 -173 25 -173 25 -257 -51z"/>
+        <path d="M2029 3940 c-115 -24 -196 -53 -299 -107 -209 -110 -376 -289 -442
+-475 -18 -51 -22 -86 -22 -184 l-1 -122 104 -203 c58 -112 152 -297 210 -410
+l105 -206 110 -7 c61 -3 220 -6 353 -6 l242 0 -6 -48 c-5 -44 0 -59 61 -185
+36 -75 69 -137 73 -137 5 0 29 42 56 93 108 211 259 493 268 502 21 21 2 25
+-133 25 -79 0 -309 3 -511 7 l-369 6 -150 302 -151 302 0 95 c0 82 4 103 27
+153 36 80 97 148 250 280 123 106 346 324 346 339 0 9 -25 6 -121 -14z"/>
+        <path d="M3601 3298 c-22 -59 -80 -175 -234 -468 -115 -220 -284 -548 -412
+-800 -68 -135 -175 -346 -238 -470 l-115 -225 -89 -3 -88 -3 -155 311 c-85
+171 -161 316 -168 322 -13 11 -267 16 -278 5 -4 -3 3 -21 14 -39 10 -18 57
+-105 102 -193 46 -88 100 -191 120 -230 21 -38 77 -148 126 -244 55 -107 96
+-177 109 -183 12 -5 107 -6 240 -1 l220 8 34 70 c19 39 85 167 146 285 62 118
+156 301 210 405 54 105 101 195 105 200 4 6 56 105 115 220 59 116 127 246
+150 290 253 478 276 527 282 594 l6 59 -79 76 c-44 41 -84 76 -89 76 -6 0 -21
+-28 -34 -62z"/>
+      </g>
     </svg>
   );
 };
