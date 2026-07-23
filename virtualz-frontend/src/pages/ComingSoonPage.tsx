@@ -4,7 +4,7 @@ import { Rocket } from "lucide-react";
 export default function ComingSoonPage() {
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center">
-      <Rocket className="w-20 h-20 text-vz-lime mb-6 animate-bounce" />
+      <Rocket className="w-20 h-20 text-vz-pink mb-6 animate-bounce" />
       <h1 className="text-4xl md:text-5xl font-display font-bold text-white mb-4">
         Coming Soon
       </h1>
