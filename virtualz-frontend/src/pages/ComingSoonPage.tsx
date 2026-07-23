@@ -1,7 +1,9 @@
 import { Link } from "@tanstack/react-router";
+import { useTranslation } from "react-i18next";
 import { Rocket } from "lucide-react";
 
 export default function ComingSoonPage() {
+  const { t } = useTranslation();
   return (
     <div className="min-h-screen flex flex-col items-center justify-center px-4 text-center">
       <Rocket className="w-20 h-20 text-vz-pink mb-6 animate-bounce" />
@@ -9,13 +11,13 @@ export default function ComingSoonPage() {
         Coming Soon
       </h1>
       <p className="text-lg text-zinc-400 max-w-md mb-8">
-        Questa funzionalità è in fase di sviluppo. Torna presto per scoprire le novità!
+        {t("comingSoonPage.body")}
       </p>
       <Link
         to="/"
         className="px-8 py-3 rounded-full bg-vz-lime text-vz-navy font-semibold hover:opacity-90 transition-opacity"
       >
-        Torna alla Home
+        {t("common.backToHome")}
       </Link>
     </div>
   );
