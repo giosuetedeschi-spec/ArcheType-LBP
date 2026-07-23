@@ -120,7 +120,8 @@
     "searchInLibrary": "Search in your library...",
     "inactivityWarning": "You haven't touched this game in a while. Mark it as abandoned?",
     "confirmAbandon": "Yes, abandon it",
-    "dismissWarning": "No, still playing"
+    "dismissWarning": "No, still playing",
+    "removeTooltip": "Remove"
   },
   "leaderboard": {
     "title": "Leaderboard",
