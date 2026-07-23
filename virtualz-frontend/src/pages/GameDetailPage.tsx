@@ -3,7 +3,7 @@ import { useParams } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
 import { isAxiosError } from "axios";
 import { getGameById } from "../services/gamesApi";
-import { addToLibrary, getLibrary } from "../services/libraryApi";
+import { addToLibrary, getLibrary, removeFromLibrary } from "../services/libraryApi";
 import { getGameReviews, addOrUpdateReview, removeReview } from "../services/reviewsApi";
 import { useAuth } from "../context/AuthContext";
 import StarRating from "../components/StarRating";
@@ -80,6 +80,10 @@ export default function GameDetailPage() {
   }, [id, t, fetchReviews, fetchLibrary]);
 
   const ownedEntry = game ? library.find((i) => i.game.id === game.id && i.status !== "wishlist") : undefined;
+  // Voce di libreria con status "wishlist" per il gioco corrente — usata per
+  // colorare di rosso il pulsante "Lista desideri" una volta che il gioco è
+  // già stato aggiunto (feedback visivo immediato dopo il click).
+  const wishlistEntry = game ? library.find((i) => i.game.id === game.id && i.status === "wishlist") : undefined;
 
   // Precompila il form quando arriva/cambia la propria recensione esistente.
   useEffect(() => {
@@ -129,6 +133,25 @@ export default function GameDetailPage() {
       // isAxiosError() stringe il tipo di `err` (unknown in un blocco
       // catch) in modo sicuro, invece di un cast/any — stesso pattern
       // usato in RegisterPage.tsx.
+      const message = isAxiosError<{ message?: string }>(err)
+        ? err.response?.data?.message
+        : undefined;
+      setActionMessage(message || t("common.error"));
+    }
+  }
+
+  /**
+   * Toglie il gioco corrente dalla wishlist, controparte di handleAdd("wishlist")
+   * — permette al pulsante di funzionare come un toggle on/off invece che in
+   * una sola direzione.
+   */
+  async function handleRemoveFromWishlist() {
+    if (!isAuthenticated || !user || !wishlistEntry) return;
+    try {
+      await removeFromLibrary(user.id, wishlistEntry.id);
+      setActionMessage(null);
+      fetchLibrary();
+    } catch (err) {
       const message = isAxiosError<{ message?: string }>(err)
         ? err.response?.data?.message
         : undefined;
@@ -189,10 +212,14 @@ export default function GameDetailPage() {
         <div className="flex gap-3 mb-6 flex-wrap">
           {!ownedEntry && (
             <button
-              onClick={() => handleAdd("wishlist")}
-              className="px-4 py-2 rounded-full border border-vz-pink text-vz-pink hover:bg-vz-pink/10 transition-colors text-sm font-medium"
+              onClick={() => (wishlistEntry ? handleRemoveFromWishlist() : handleAdd("wishlist"))}
+              className={
+                wishlistEntry
+                  ? "px-4 py-2 rounded-full bg-vz-pink border border-vz-pink text-white text-sm font-medium transition-colors"
+                  : "px-4 py-2 rounded-full border border-vz-pink text-vz-pink hover:bg-vz-pink/10 transition-colors text-sm font-medium"
+              }
             >
-              ♥ {t("game.addToWishlist")}
+              ♥ {wishlistEntry ? t("library.status.wishlist") : t("game.addToWishlist")}
             </button>
           )}
           {ownedEntry ? (
