@@ -120,7 +120,8 @@
     "searchInLibrary": "Cerca nella tua libreria...",
     "inactivityWarning": "Non aggiorni questo gioco da un po'. Lo segni come abbandonato?",
     "confirmAbandon": "Sì, abbandona",
-    "dismissWarning": "No, ci gioco ancora"
+    "dismissWarning": "No, ci gioco ancora",
+    "removeTooltip": "Rimuovi"
   },
   "leaderboard": {
     "title": "Classifica",

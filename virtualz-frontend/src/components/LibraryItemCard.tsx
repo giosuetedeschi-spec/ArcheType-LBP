@@ -1,6 +1,6 @@
 import { useNavigate } from "@tanstack/react-router";
 import { useTranslation } from "react-i18next";
-import { Heart } from "lucide-react";
+import { Heart, Trash2 } from "lucide-react";
 import type { LibraryItem, LibraryStatus } from "@/types/api";
 import GameCoverPlaceholder from "./GameCoverPlaceholder";
 
@@ -138,12 +138,6 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
               {t("library.markAsInProgress")}
             </button>
           )}
-          <button
-            onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
-            className="text-xs px-3 py-1 rounded-full text-slate-500 hover:text-vz-pink"
-          >
-            {t("library.remove")}
-          </button>
         </div>
       </div>
 
@@ -158,6 +152,30 @@ export default function LibraryItemCard({ item, onStatusChange, onRemove }: Libr
           strokeWidth={0}
         />
       )}
+
+      {/* Cestino in basso a destra della card, al posto del vecchio link
+          testuale "Rimuovi dalla libreria". Al passaggio del mouse mostra
+          un tooltip con il testo breve "Rimuovi" (chiave i18n dedicata
+          library.removeTooltip, separata da library.remove che resta la
+          label estesa usata altrove). Il tooltip è costruito a mano con
+          group/trash + opacity invece del solo attributo title del
+          browser, per poterne controllare l'aspetto grafico. */}
+      <div className="absolute bottom-2 right-2 group/trash">
+        <span
+          role="tooltip"
+          className="pointer-events-none absolute bottom-full right-0 mb-1.5 whitespace-nowrap rounded-md border border-slate-700 bg-slate-900 px-2 py-1 text-xs text-white opacity-0 shadow-lg transition-opacity group-hover/trash:opacity-100"
+        >
+          {t("library.removeTooltip")}
+        </span>
+        <button
+          type="button"
+          onClick={(e) => { e.stopPropagation(); onRemove(item.id); }}
+          aria-label={t("library.removeTooltip")}
+          className="p-1.5 rounded-full text-slate-500 hover:text-vz-pink hover:bg-slate-800/60 transition-colors"
+        >
+          <Trash2 className="w-4 h-4" />
+        </button>
+      </div>
     </div>
   );
 }
