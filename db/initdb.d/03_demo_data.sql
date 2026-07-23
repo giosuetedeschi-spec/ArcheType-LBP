@@ -138,3 +138,14 @@ WHERE (s.username = 'gamer_elena' AND r.username = 'gamer_paolo')
    OR (s.username = 'gamer_giulia' AND r.username = 'gamer_matteo')
    OR (s.username = 'gamer_valentina' AND r.username = 'gamer_carlo')
 ON CONFLICT DO NOTHING;
+
+-- Avatar segnaposto per gli utenti demo sopra, con la stessa logica
+-- deterministica della registrazione reale (UserService.buildCatAvatarUrl
+-- e scripts/seed_test_data.py: ?lock=<id> restituisce sempre lo stesso
+-- gatto per quell'id). Gli INSERT sopra non impostano avatar_url perché
+-- l'id è assegnato solo dopo l'insert stesso; senza questo backfill, ogni
+-- avvio a volume vuoto lascia gli utenti demo senza foto (solo cerchio a
+-- iniziale) finché non si lancia manualmente scripts/seed_test_data.py.
+UPDATE users
+SET avatar_url = 'https://loremflickr.com/200/200/cat?lock=' || id
+WHERE avatar_url IS NULL OR avatar_url = '';
