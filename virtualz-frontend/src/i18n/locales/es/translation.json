@@ -185,7 +185,10 @@
     "cancel": "Cancelar",
     "confirm": "Confirmar",
     "language": "Idioma",
-    "free": "Gratis"
+    "free": "Gratis",
+    "next": "Siguiente",
+    "previous": "Anterior",
+    "backToHome": "Volver al inicio"
   },
   "home": {
     "tagline": "Bienvenido de nuevo",
@@ -270,5 +273,40 @@
     "pink": "Rosa",
     "white": "Blanco",
     "black": "Negro"
+  },
+  "contact": {
+    "title": "Contacto"
+  },
+  "faq": {
+    "title": "Centro de ayuda",
+    "intro": "Las preguntas más frecuentes sobre VirtualZ. ¿No encuentras lo que buscas?",
+    "contactLink": "Contáctanos",
+    "q1": "¿Cómo recupero la contraseña de mi cuenta?",
+    "a1": "Desde la página de inicio de sesión, haz clic en \"Olvidé mi contraseña\" y sigue las instrucciones enviadas por email.",
+    "q2": "¿Cómo vinculo mi cuenta de Steam a VirtualZ?",
+    "a2": "Ve a Perfil → Configuración y haz clic en \"Vincular Steam\". Serás redirigido a la página de autorización de Steam.",
+    "q3": "¿Por qué no veo todos mis juegos en la biblioteca?",
+    "a3": "La sincronización con Steam puede tardar unos minutos después de vincular la cuenta. Si el problema persiste, intenta volver a vincular la cuenta desde Configuración.",
+    "q4": "¿Cómo añado un juego a mi lista de deseos?",
+    "a4": "Abre la página del juego en el Catálogo y haz clic en el icono de corazón en la esquina superior derecha.",
+    "q5": "¿Puedo usar VirtualZ desde el móvil?",
+    "a5": "Sí, el sitio es responsive y funciona en smartphones y tablets a través del navegador."
+  },
+  "privacy": {
+    "title": "Política de privacidad",
+    "lastUpdated": "Última actualización:",
+    "section1Title": "1. Responsable del tratamiento",
+    "section1Body": "VirtualZ es un proyecto desarrollado en el marco de un programa formativo ITS, para el cliente ficticio Zero Lag S.r.l. Esta política tiene fines ilustrativos y no constituye un documento legalmente vinculante.",
+    "section2Title": "2. Datos recopilados",
+    "section2Body": "Durante el registro recopilamos nombre de usuario, email y, si eliges iniciar sesión a través de un proveedor externo, información básica del perfil (nombre de usuario, email, avatar) proporcionada por Steam o Google.",
+    "section3Title": "3. Finalidad del tratamiento",
+    "section3Body": "Los datos se usan exclusivamente para hacer funcionar tu cuenta, tu biblioteca de juegos personal, las estadísticas de juego y las funciones sociales (amigos, clasificaciones). Nunca se comparten con terceros ni se usan con fines publicitarios.",
+    "section4Title": "4. Conservación de los datos",
+    "section4Body": "Los datos permanecen asociados a tu cuenta hasta que solicites su eliminación, contactándonos en las direcciones indicadas en la página de Contacto.",
+    "section5Title": "5. Tus derechos",
+    "section5Body": "Puedes solicitar en cualquier momento el acceso, corrección o eliminación de tus datos escribiendo a"
+  },
+  "comingSoonPage": {
+    "body": "Esta función está en desarrollo. ¡Vuelve pronto para descubrir las novedades!"
   }
 }
