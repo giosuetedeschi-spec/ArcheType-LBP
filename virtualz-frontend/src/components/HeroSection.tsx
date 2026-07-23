@@ -163,10 +163,14 @@ export default function HeroSection() {
         </div>
       </div>
 
-      {/* Scroll-down indicator */}
-      <div className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10 animate-bounce">
-        <svg className="w-8 h-8 text-white/70" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+      {/* Scroll-down indicator — doppia freccia come da mockup (Home Page - Header).
+          Ancorata al fondo della sezione (come faceva l'originale bianca): deve dare
+          l'affordance "c'è altro sotto, scorri" — staccata dal blocco logo/tagline/bottoni
+          invece che appiccicata lì sotto, e più grande per avere presenza da fondo pagina. */}
+      <div className="absolute bottom-8 sm:bottom-10 left-1/2 -translate-x-1/2 z-10 animate-bounce">
+        <svg className="w-16 h-16 sm:w-20 sm:h-20 text-vz-pink" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M7 6l5 5 5-5" />
+          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={3.5} d="M7 13l5 5 5-5" />
         </svg>
       </div>
     </section>
