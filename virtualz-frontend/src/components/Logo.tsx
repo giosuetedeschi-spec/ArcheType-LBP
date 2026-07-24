@@ -22,7 +22,7 @@ export const Logo: React.FC<LogoProps> = ({
 }) => {
   if (variant === 'text') {
     return (
-      <div className={`font-display text-vz-lime ${className}`}>
+      <div className={`font-display text-vz-lime cursor-default select-none ${className}`}>
         VirtualZ
       </div>
     );
@@ -37,7 +37,7 @@ export const Logo: React.FC<LogoProps> = ({
         height: size,
         filter: glow ? 'drop-shadow(0 0 8px rgba(56, 189, 248, 0.5))' : 'none',
       }}
-      className={className}
+      className={`cursor-default select-none ${className}`}
     >
       <defs>
         <linearGradient id="vz-gem-lime-blue" gradientUnits="userSpaceOnUse" x1="1265" y1="3965" x2="3803" y2="1077">

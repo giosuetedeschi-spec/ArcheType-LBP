@@ -38,7 +38,7 @@ const HERO_VIDEOS: HeroVideo[] = [
   { videoId: "E3Huy2cdih0", gameName: "ELDEN RING", startSeconds: 20 },
   { videoId: "B9hU6UJX_pc", gameName: "Baldur's Gate 3", startSeconds: 120 },
   { videoId: "N-xHcvug3WI", gameName: "Grand Theft Auto V", startSeconds: 10 },
-  { videoId: "pEh2sa13XyU", gameName: "Euro Truck Simulator 2", startSeconds: 240  },
+  { videoId: "pEh2sa13XyU", gameName: "Euro Truck Simulator 2", startSeconds: 240 },
 ];
 
 const HERO_VIDEO_SESSION_KEY = "vz-hero-video-id";
@@ -92,7 +92,8 @@ export default function HeroSection() {
   }, []);
 
   return (
-    <section className="relative h-screen w-full overflow-hidden">
+    /* DOPO */
+<section className="relative h-[calc(100dvh-4rem)] sm:h-[calc(100dvh-5rem)] w-full overflow-hidden">
       {/* Sfondo di fallback brandizzato: sempre presente sotto al video */}
       <div
         className="absolute inset-0 bg-vz-navy-deep"
@@ -134,8 +135,9 @@ export default function HeroSection() {
           <Logo className="text-7xl sm:text-8xl md:text-9xl" variant="text" />
         </div>
 
+        {/* AGGIUNTE CLASSI cursor-default select-none */}
         <p
-          className="text-lg sm:text-xl md:text-2xl text-slate-300 font-display font-light mb-10 tracking-wide animate-fade-in-up"
+          className="text-lg sm:text-xl md:text-2xl text-slate-300 font-display font-light mb-10 tracking-wide animate-fade-in-up cursor-default select-none"
           style={{ animationDelay: "200ms" }}
         >
           {t("nav.tagline")}
