@@ -51,12 +51,13 @@ export default function LoginPage() {
 
   return (
     // 1. Contenitore principale a schermo intero con l'immagine di sfondo impostata tramite CSS inline
-    <div
-      className="relative min-h-screen w-full flex items-center justify-center bg-cover bg-center bg-no-repeat py-12 px-4"
-      style={{
-        backgroundImage: "url('/register-bg.webp')", // Stessa immagine di sfondo della pagina di registrazione
-      }}
-    >
+    /* DOPO */
+<div
+  className="relative min-h-[calc(100dvh-4rem)] sm:min-h-[calc(100dvh-5rem)] w-full flex items-center justify-center bg-cover bg-center bg-no-repeat py-12 px-4"
+  style={{
+    backgroundImage: "url('/register-bg.webp')",
+  }}
+>
       {/* 2. OVERLAY: Copre tutto lo sfondo con il colore #272727 e trasparenza all'80% (0.8) */}
       <div
         className="absolute inset-0 pointer-events-none"
