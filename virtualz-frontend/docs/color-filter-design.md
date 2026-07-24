@@ -11,7 +11,7 @@ Colonne: `steam_appid INT FK`, `dominant_color VARCHAR(12)` (es. "0,128,0")
 
 ### 2. Endpoint
 - `GET /api/games/color/<color_name>` — Ritorna giochi per colore (green, red, blue, yellow, purple, orange, cyan, brown, pink, white, black)
-- `GET /api/games/color/custom?r=0&g=128&b=0` — Filtra per RGB approssimativo (±30 per canale)
+- `GET /api/games/color/custom?r=0&g=128&b=0` — Filtra per RGB approssimativo (±55 per canale)
 
 ### 3. Logica
 Il client invia un color name OU i tre canali RGB. Il server confronta

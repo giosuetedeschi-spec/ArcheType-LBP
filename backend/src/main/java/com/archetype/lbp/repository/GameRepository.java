@@ -112,9 +112,16 @@ public interface GameRepository extends JpaRepository<Game, Long>, JpaSpecificat
             }
             int[] targetRgb = ColorPalette.resolve(color);
             if (targetRgb != null) {
-                // ±30 per canale (design doc), su un match "nessun colore
-                // calcolato" (colorR null) semplicemente non entra nel range.
-                int tolerance = 30;
+                // ±55 per canale (alzata da ±30: con la tolleranza stretta
+                // troppe cover percettibilmente dello stesso colore, ma con
+                // una tonalità leggermente diversa, restavano fuori dai
+                // risultati — soprattutto per i colori saturi come
+                // verde/blu/giallo/viola/arancione/ciano/rosa, dove i valori
+                // RGB "esatti" occupano una fetta stretta rispetto
+                // all'enorme varietà di cover del dataset). Su un match
+                // "nessun colore calcolato" (colorR null) semplicemente non
+                // entra nel range, quindi resta escluso comunque.
+                int tolerance = 55;
                 predicates.add(cb.between(root.get("colorR"), targetRgb[0] - tolerance, targetRgb[0] + tolerance));
                 predicates.add(cb.between(root.get("colorG"), targetRgb[1] - tolerance, targetRgb[1] + tolerance));
                 predicates.add(cb.between(root.get("colorB"), targetRgb[2] - tolerance, targetRgb[2] + tolerance));

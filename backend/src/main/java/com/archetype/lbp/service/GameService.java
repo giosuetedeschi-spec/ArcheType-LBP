@@ -124,7 +124,7 @@ public class GameService {
     }
 
     /**
-     * Giochi la cui cover ha colore dominante entro ±30 per canale RGB dal
+     * Giochi la cui cover ha colore dominante entro ±55 per canale RGB dal
      * nome colore richiesto (vedi ColorPalette per la palette supportata).
      */
     @Transactional(readOnly = true)

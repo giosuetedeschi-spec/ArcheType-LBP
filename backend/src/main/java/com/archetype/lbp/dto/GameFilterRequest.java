@@ -31,7 +31,7 @@ public class GameFilterRequest {
     private Boolean vr;
 
     // Nome colore dalla palette (vedi ColorPalette) -- filtra i giochi la cui
-    // cover ha colore dominante entro ±30 per canale RGB dal colore richiesto.
+    // cover ha colore dominante entro ±55 per canale RGB dal colore richiesto.
     private String color;
 
     // Media delle recensioni utente (tabella reviews, scala 1-5) — distinta
