@@ -521,6 +521,53 @@ def _parse_bool(value) -> bool:
 
 ADULT_GENRE_NAMES = {"Nudity", "Sexual Content", "Gore", "Violent"}
 
+# Parole chiave nel nome ad alta precisione per contenuto esplicito — un
+# titolo che le contiene è (quasi) sempre davvero per adulti, a differenza di
+# parole più ambigue come "adult"/"mature" (motivo per cui NON sono incluse:
+# titoli legittimi tipo "Mature: A Story" darebbero falsi positivi). Stesso
+# criterio già usato per "hentai", qui esteso ad altri termini con la stessa
+# proprietà di essere marcatori quasi univoci del genere, tipicamente usati
+# esplicitamente dagli stessi publisher/sviluppatori nel titolo:
+#  - "nsfw", "r18", "r-18", "18+"  → disclaimer espliciti da parte del dev
+#  - "ecchi", "eroge"              → termini di genere giapponesi specifici
+#                                     per contenuto sessuale/erotico
+#  - "onahole"                     → prodotto/oggetto esplicitamente adulto
+# NOTA: questi conteggi non sono stati verificati sul dataset reale (a
+# differenza degli 807/9 riportati sopra per "hentai" — qui non era
+# disponibile il CSV per ricontare). Vale la pena rilanciare lo script e
+# controllare quanti giochi in più vengono marcati mature con l'elenco esteso,
+# prima di aggiungere altre parole ancora più ambigue.
+#
+# Elenco aggiuntivo su richiesta esplicita (titoli specifici osservati nel
+# catalogo, non più coperti dall'elenco sopra): "milf", "butt", "lonely
+# santa", "sex", "sexy", "cutie", "bdsm", più un secondo giro di parole
+# ("naughty", "booty", "dominatrixes", "temptations", "succubus harem",
+# "lust", "desire", "pussies", "lesbian", "eros", "lonely christmas",
+# "femboy", "body omg").
+#
+# "girl", "hot", "summer", "sweet", "gal", "geek" erano state proposte come
+# parole singole in questo stesso secondo giro, ma scartate: sono termini
+# troppo generici, presenti in moltissimi titoli senza alcun contenuto per
+# adulti (es. "Hot Wheels", "Summer in Mara"). Al loro posto si usano le
+# combinazioni più precise "hot girl", "hot summer", "hot body", "hot
+# sweet", "gal geek", "sweet geek" — molto più raramente presenti in titoli
+# innocui. "furry" resta invece come parola singola, su richiesta esplicita,
+# pur essendo generica quanto le altre: se emergono troppi falsi positivi
+# (es. giochi con protagonisti animali antropomorfi non a sfondo sessuale)
+# va tolta da qui.
+NAME_ADULT_KEYWORDS = {
+    "hentai", "nsfw", "r18", "r-18", "18+", "ecchi", "eroge", "onahole",
+    "milf", "butt", "lonely santa", "sex", "sexy", "fuck", "fucking",
+    "cutie", "cute", "sweet", "slave", "seducer", "bdsm",
+    "naughty", "booty", "dominatrixes", "temptations", "succubus harem",
+    "lust", "desire", "pussies", "lesbian", "eros", "lonely christmas",
+    "femboy", "furry", "body omg",
+    "hot girl", "hot summer", "hot body", "hot sweet",
+    "gal geek", "sweet geek",
+    "waifu", "big titties", "jigsaw", "nude",
+    "hearts and love", "monster girl",
+}
+
 
 def _parse_mature(required_age_value, genres: list, name: str) -> bool:
     """Deriva il flag unico "contenuto sensibile/per adulti" da tre segnali del dataset.
@@ -534,17 +581,20 @@ def _parse_mature(required_age_value, genres: list, name: str) -> bool:
        poi esteso a Gore/Violent su richiesta esplicita — 257 giochi Gore,
        414 Violent nel dataset reale, ~569 dei quali non ancora coperti
        dagli altri due segnali).
-    3. Il nome del gioco contiene "hentai" (case-insensitive). Verificato sul
-       dataset reale: 807 giochi hanno "hentai" nel nome, di cui solo 9 sono
-       già coperti dai due segnali sopra — gli altri 798 sfuggirebbero del
-       tutto altrimenti. Nessun segnale aggiuntivo utile trovato nella
-       colonna "Tags" del CSV (mai importata finora): dove valorizzata,
-       contiene solo "Nudity"/"Sexual Content" con gli stessi identici
-       conteggi già presenti in "Genres", nessun tag "Hentai"/"NSFW" a sé.
-       Euristica sul nome scelta perché ad alta precisione (un titolo con
-       "hentai" esplicito è quasi sempre davvero contenuto per adulti) — non
-       si usano altre parole più ambigue (es. "adult", "mature") per evitare
-       falsi positivi su titoli legittimi.
+    3. Il nome del gioco contiene una delle parole chiave in
+       NAME_ADULT_KEYWORDS (case-insensitive) — inizialmente solo "hentai"
+       (807 giochi nel dataset reale, di cui solo 9 già coperti dai due
+       segnali sopra — gli altri 798 sfuggirebbero del tutto altrimenti),
+       poi esteso ad altri termini con la stessa proprietà di alta
+       precisione (vedi commento su NAME_ADULT_KEYWORDS più sopra). Nessun
+       segnale aggiuntivo utile trovato nella colonna "Tags" del CSV (mai
+       importata finora): dove valorizzata, contiene solo "Nudity"/"Sexual
+       Content" con gli stessi identici conteggi già presenti in "Genres",
+       nessun tag "Hentai"/"NSFW" a sé. Euristica sul nome scelta perché ad
+       alta precisione (un titolo con questi termini espliciti è quasi
+       sempre davvero contenuto per adulti) — non si usano parole più
+       ambigue (es. "adult", "mature") per evitare falsi positivi su titoli
+       legittimi.
 
     Args:
         required_age_value: valore grezzo dalla colonna required_age
@@ -567,7 +617,7 @@ def _parse_mature(required_age_value, genres: list, name: str) -> bool:
     if genres and ADULT_GENRE_NAMES.intersection(genres):
         return True
 
-    if name and "hentai" in name.lower():
+    if name and any(keyword in name.lower() for keyword in NAME_ADULT_KEYWORDS):
         return True
 
     return False
